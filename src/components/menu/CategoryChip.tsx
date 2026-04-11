@@ -1,0 +1,92 @@
+import { Pressable, Text } from "react-native";
+import {
+  Beef,
+  CupSoda,
+  Drumstick,
+  Flame,
+  type LucideIcon,
+  Package,
+  Pizza,
+  Salad,
+  UtensilsCrossed,
+  Wheat,
+} from "lucide-react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+
+import { colors } from "@/constants/theme";
+import type { Category } from "@/types";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  "smash-burgers": Beef,
+  wraps: Wheat,
+  tacos: Flame,
+  tasty: Pizza,
+  bowls: Salad,
+  box: Package,
+  bucket: Drumstick,
+  plats: UtensilsCrossed,
+  boissons: CupSoda,
+};
+
+export type CategoryChipProps = {
+  category: Category;
+  selected?: boolean;
+  onPress: () => void;
+};
+
+export default function CategoryChip({
+  category,
+  selected = false,
+  onPress,
+}: CategoryChipProps): React.ReactElement {
+  const pressScale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: pressScale.value }],
+  }));
+
+  const Icon = CATEGORY_ICONS[category.id] ?? UtensilsCrossed;
+  const iconColor = selected ? colors.onSecondaryContainer : colors.onSurface;
+
+  return (
+    <AnimatedPressable
+      accessibilityRole="button"
+      accessibilityLabel={category.name}
+      accessibilityState={{ selected }}
+      onPress={onPress}
+      onPressIn={() => {
+        pressScale.value = withTiming(0.98, { duration: 120 });
+      }}
+      onPressOut={() => {
+        pressScale.value = withTiming(1, { duration: 160 });
+      }}
+      className={`flex-row items-center rounded-lg ${
+        selected ? "bg-secondary-container" : "bg-surface-container-high"
+      }`}
+      style={[
+        {
+          paddingHorizontal: 20,
+          paddingVertical: 14,
+          gap: 10,
+        },
+        animatedStyle,
+      ]}
+    >
+      <Icon size={18} color={iconColor} strokeWidth={2} />
+      <Text
+        className={`font-sans-bold ${
+          selected ? "text-on-secondary-container" : "text-on-surface"
+        }`}
+        style={{ fontSize: 14 }}
+      >
+        {category.name}
+      </Text>
+    </AnimatedPressable>
+  );
+}

@@ -192,7 +192,7 @@ export const PRODUCTS: Product[] = [
     priceEUR: 9,
     variants: smashVariants(9),
     imageUrl: imgUrl("Rosti"),
-    tags: [],
+    tags: ["TOP"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
   },
@@ -216,7 +216,7 @@ export const PRODUCTS: Product[] = [
     priceEUR: 9,
     variants: smashVariants(9),
     imageUrl: imgUrl("Smoky"),
-    tags: [],
+    tags: ["NOUVEAU"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
   },
@@ -586,3 +586,21 @@ export const CATEGORIES_BY_ID: Readonly<Record<string, Category>> = Object.freez
     return acc;
   }, {}),
 );
+
+// -- feature selection --------------------------------------------------
+
+/**
+ * Signature product for the Accueil hero card. Prefers a smash burger that
+ * carries the TOP tag, falls back to any smash burger, and finally any
+ * product — so it is guaranteed to return something even if the data shifts.
+ */
+export function getFeaturedProduct(): Product {
+  const signature = PRODUCTS.find(
+    (p) => p.categoryId === "smash-burgers" && p.tags.includes("TOP"),
+  );
+  if (signature) return signature;
+  const anySmash = PRODUCTS.find((p) => p.categoryId === "smash-burgers");
+  if (anySmash) return anySmash;
+  // PRODUCTS is non-empty by construction above.
+  return PRODUCTS[0]!;
+}

@@ -1,13 +1,19 @@
 export const colors = {
   primary: "#b7102a",
   primaryDark: "#8a0c20",
+  primaryContainer: "#db313f",
+  secondaryContainer: "#f5e3a3",
+  onSecondaryContainer: "#6b4b00",
   surface: "#fdf9ee",
-  surfaceElevated: "#ffffff",
+  surfaceContainerLowest: "#ffffff",
+  surfaceContainer: "#f1eee3",
+  surfaceContainerHigh: "#e8e3d0",
   onSurface: "#1c1c15",
   onSurfaceVariant: "#6b6658",
   outline: "#e5ddc7",
   success: "#2f8a4c",
   danger: "#c8321f",
+  editorialRule: "#e4bebc",
 } as const;
 
 export const spacing = {
@@ -27,7 +33,7 @@ export const radius = {
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 24,
+  xl: 48,
   pill: 999,
 } as const;
 
@@ -38,14 +44,22 @@ export const font = {
   semibold: "PlusJakartaSans_600SemiBold",
   bold: "PlusJakartaSans_700Bold",
   extraBold: "PlusJakartaSans_800ExtraBold",
+  extraBoldItalic: "PlusJakartaSans_800ExtraBold_Italic",
 } as const;
 
 export const shadow = {
   card: {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
+    shadowColor: "#1c1c15",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.05,
     shadowRadius: 16,
     elevation: 3,
+  },
+  hero: {
+    shadowColor: "#1c1c15",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.06,
+    shadowRadius: 24,
+    elevation: 6,
   },
 } as const;
