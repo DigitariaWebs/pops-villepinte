@@ -1,23 +1,21 @@
 import {
-  useFonts as useBebasNeue,
-  BebasNeue_400Regular,
-} from "@expo-google-fonts/bebas-neue";
-import {
-  useFonts as usePoppins,
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-} from "@expo-google-fonts/poppins";
+  useFonts,
+  PlusJakartaSans_400Regular,
+  PlusJakartaSans_500Medium,
+  PlusJakartaSans_600SemiBold,
+  PlusJakartaSans_700Bold,
+  PlusJakartaSans_800ExtraBold,
+  PlusJakartaSans_800ExtraBold_Italic,
+} from "@expo-google-fonts/plus-jakarta-sans";
 
 export function useAppFonts(): boolean {
-  const [bebasLoaded] = useBebasNeue({ BebasNeue_400Regular });
-  const [poppinsLoaded] = usePoppins({
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
+  const [loaded] = useFonts({
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
+    PlusJakartaSans_800ExtraBold_Italic,
   });
-
-  return bebasLoaded && poppinsLoaded;
+  return loaded;
 }
