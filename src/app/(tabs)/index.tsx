@@ -3,7 +3,6 @@ import { Animated as RNAnimated, Dimensions, Pressable, ScrollView, Text, View }
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ArrowRight, Heart } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
@@ -91,12 +90,11 @@ export default function AccueilScreen(): React.ReactElement {
   );
 
   const greetingName = name === "Invité" ? "toi" : name;
-  const insets = useSafeAreaInsets();
 
   return (
-    <Screen floatingBottom={<FloatingCartBar />} edges={[]}>
-      {/* ── LOGO + FOOD PATTERN — extends behind notch ── */}
-      <View style={{ height: insets.top + 80, overflow: "hidden", position: "relative" }}>
+    <Screen floatingBottom={<FloatingCartBar />}>
+      {/* ── LOGO + FOOD PATTERN ── */}
+      <View style={{ height: 90, overflow: "hidden", position: "relative" }}>
         {/* Dense tiny food illustration pattern */}
         <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
           {/* Row 1 */}
