@@ -3,6 +3,7 @@ import "../../global.css";
 import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
@@ -30,19 +31,21 @@ export default function RootLayout(): React.ReactNode {
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar style="dark" />
-      {!splashDone ? (
-        <AnimatedSplash onComplete={() => setSplashDone(true)} />
-      ) : (
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
-          <Stack.Screen name="cart" options={{ presentation: "modal" }} />
-          <Stack.Screen name="checkout" />
-          <Stack.Screen name="order/[id]" />
-        </Stack>
-      )}
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <StatusBar style="dark" />
+        {!splashDone ? (
+          <AnimatedSplash onComplete={() => setSplashDone(true)} />
+        ) : (
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
+            <Stack.Screen name="cart" options={{ presentation: "modal" }} />
+            <Stack.Screen name="checkout" />
+            <Stack.Screen name="order/[id]" />
+          </Stack>
+        )}
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }

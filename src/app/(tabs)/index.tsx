@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { ScrollView, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 
+import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import CravingCard from "@/components/home/CravingCard";
 import Greeting from "@/components/home/Greeting";
 import SectionHeader from "@/components/home/SectionHeader";
@@ -30,7 +31,7 @@ export default function AccueilScreen(): React.ReactElement {
   const greetingName = name === "Invité" ? "vous" : name;
 
   return (
-    <Screen>
+    <Screen floatingBottom={<FloatingCartBar />}>
       <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
         <Greeting name={greetingName} />
       </View>

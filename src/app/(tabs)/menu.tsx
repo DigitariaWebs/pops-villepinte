@@ -4,6 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { Search as SearchIcon } from "lucide-react-native";
 import Animated, { LinearTransition } from "react-native-reanimated";
 
+import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
 import CategoryRail, {
   type CategoryRailSelection,
@@ -74,7 +75,10 @@ export default function MenuScreen(): React.ReactElement {
       : CATEGORIES.find((c) => c.id === selectedId) ?? null;
 
   return (
-    <Screen stickyHeaderIndices={[1]}>
+    <Screen
+      stickyHeaderIndices={[1]}
+      floatingBottom={<FloatingCartBar />}
+    >
       {/* [0] Top editorial header */}
       <View
         className="flex-row items-start justify-between"
