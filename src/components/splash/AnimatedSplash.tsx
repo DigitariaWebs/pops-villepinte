@@ -71,7 +71,7 @@ export default function AnimatedSplash({
           nativeControls={false}
           allowsPictureInPicture={false}
           contentFit="contain"
-          style={{ width: 280, height: 280 }}
+          style={{ width: 240, height: 240 }}
         />
       </View>
     </Pressable>
