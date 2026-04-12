@@ -11,17 +11,14 @@ import AuthFlow from "@/components/auth/AuthFlow";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import AnimatedSplash from "@/components/splash/AnimatedSplash";
 import { useAppFonts } from "@/constants/fonts";
-import { useAuthStore } from "@/store/auth.store";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout(): React.ReactNode {
   const fontsLoaded = useAppFonts();
-  const hasSeenOnboarding = useAuthStore((s) => s.hasSeenOnboarding);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const markOnboardingSeen = useAuthStore((s) => s.markOnboardingSeen);
-  const login = useAuthStore((s) => s.login);
   const [splashDone, setSplashDone] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -40,20 +37,20 @@ export default function RootLayout(): React.ReactNode {
     );
   }
 
-  if (!hasSeenOnboarding) {
+  if (!onboardingDone) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
-        <OnboardingFlow onComplete={markOnboardingSeen} />
+        <OnboardingFlow onComplete={() => setOnboardingDone(true)} />
       </GestureHandlerRootView>
     );
   }
 
-  if (!isAuthenticated) {
+  if (!authed) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
-        <AuthFlow onComplete={(phone) => login(phone)} />
+        <AuthFlow onComplete={() => setAuthed(true)} />
       </GestureHandlerRootView>
     );
   }
