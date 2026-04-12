@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Text, View } from "react-native";
+import { Dimensions, Text, View } from "react-native";
+import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { Search as SearchIcon } from "lucide-react-native";
 import Animated, { LinearTransition } from "react-native-reanimated";
@@ -14,6 +15,62 @@ import ProductRow from "@/components/menu/ProductRow";
 import SearchField, { normalizeSearch } from "@/components/menu/SearchField";
 import { colors, font, radius } from "@/constants/theme";
 import { CATEGORIES, PRODUCTS } from "@/data/menu";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const burgerIll = require("../../../assets/images/burgerillustartion.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const friesIll = require("../../../assets/images/friesillustartion.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tacosIll = require("../../../assets/images/tacosillustartion.png") as number;
+
+const { width: SW } = Dimensions.get("window");
+
+const ICONS = [burgerIll, friesIll, tacosIll];
+const ROTATIONS = [-10, 14, -6, 18, -12, 8, -16, 10, -4, 20, -8, 12, -14, 6, -18, 16];
+
+function FoodPatternBg(): React.ReactElement {
+  const rows = 12;
+  const cols = Math.ceil(SW / 38);
+  const items: React.ReactElement[] = [];
+  let idx = 0;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const src = ICONS[idx % ICONS.length]!;
+      const rot = ROTATIONS[idx % ROTATIONS.length]!;
+      items.push(
+        <Image
+          key={`${r}-${c}`}
+          source={src}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 28,
+            height: 28,
+            top: r * 60 + (c % 2 === 0 ? 0 : 30),
+            left: c * 38 + (r % 2 === 0 ? 0 : 18),
+            transform: [{ rotate: `${rot}deg` }],
+            opacity: 0.06,
+          }}
+        />,
+      );
+      idx++;
+    }
+  }
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: rows * 60 + 40,
+      }}
+    >
+      {items}
+    </View>
+  );
+}
 
 export default function MenuScreen(): React.ReactElement {
   const params = useLocalSearchParams<{ cat?: string }>();
@@ -169,9 +226,11 @@ export default function MenuScreen(): React.ReactElement {
         )}
       </View>
 
-      {/* [2] Content */}
+      {/* [2] Content with food pattern background */}
+      <View style={{ position: "relative" }}>
+        <FoodPatternBg />
       {isSearching ? (
-        <View style={{ paddingTop: 16, backgroundColor: colors.white }}>
+        <View style={{ paddingTop: 16 }}>
           {filteredProducts.length === 0 ? (
             <View
               style={{
@@ -229,7 +288,7 @@ export default function MenuScreen(): React.ReactElement {
           )}
         </View>
       ) : selectedId === "all" ? (
-        <View style={{ backgroundColor: colors.white }}>
+        <View>
           {groupedByCategory.map(({ category, products }, catIdx) => (
             <View
               key={category.id}
@@ -247,7 +306,7 @@ export default function MenuScreen(): React.ReactElement {
           ))}
         </View>
       ) : selectedCategory !== null ? (
-        <View style={{ backgroundColor: colors.white }}>
+        <View>
           <MenuSectionTitle
             name={selectedCategory.name}
             count={filteredProducts.length}
@@ -257,6 +316,7 @@ export default function MenuScreen(): React.ReactElement {
           ))}
         </View>
       ) : null}
+      </View>
     </Screen>
   );
 }
