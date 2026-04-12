@@ -49,7 +49,7 @@ function FoodPatternBg(): React.ReactElement {
             top: r * 60 + (c % 2 === 0 ? 0 : 30),
             left: c * 38 + (r % 2 === 0 ? 0 : 18),
             transform: [{ rotate: `${rot}deg` }],
-            opacity: 0.06,
+            opacity: 0.2,
           }}
         />,
       );
