@@ -14,6 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import IconButton from "@/components/common/IconButton";
 import OrderRecap from "@/components/checkout/OrderRecap";
+import OrderConfirmation from "@/components/order/OrderConfirmation";
 import PickupCard from "@/components/checkout/PickupCard";
 import CommitToggle from "@/components/form/CommitToggle";
 import TextField from "@/components/form/TextField";
@@ -51,6 +52,8 @@ export default function CheckoutScreen(): React.ReactElement {
   const [confirmed, setConfirmed] = useState<boolean>(false);
   const [nameError, setNameError] = useState<string | undefined>();
   const [phoneError, setPhoneError] = useState<string | undefined>();
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -118,10 +121,18 @@ export default function CheckoutScreen(): React.ReactElement {
     incrementOrderCount();
     const newOrder = placeOrder(items, total, name.trim());
     clearCart();
-    router.replace({
-      pathname: "/order/[id]",
-      params: { id: newOrder.id },
-    });
+    setPendingOrderId(newOrder.id);
+    setShowConfirmation(true);
+  };
+
+  const handleConfirmationDone = (): void => {
+    setShowConfirmation(false);
+    if (pendingOrderId !== null) {
+      router.replace({
+        pathname: "/order/[id]",
+        params: { id: pendingOrderId },
+      });
+    }
   };
 
   if (items.length === 0) {
@@ -320,6 +331,11 @@ export default function CheckoutScreen(): React.ReactElement {
           </View>
         </Pressable>
       </View>
+
+      <OrderConfirmation
+        visible={showConfirmation}
+        onDone={handleConfirmationDone}
+      />
     </KeyboardAvoidingView>
   );
 }

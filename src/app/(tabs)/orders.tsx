@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Package, Receipt } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 
+import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
 import ActiveOrderCard from "@/components/orders/ActiveOrderCard";
 import OrdersEmpty from "@/components/orders/OrdersEmpty";
@@ -40,7 +41,7 @@ export default function OrdersScreen(): React.ReactElement {
 
   if (!hasContent) {
     return (
-      <Screen scroll={false}>
+      <Screen scroll={false} floatingBottom={<FloatingCartBar />}>
         {/* Header */}
         <View
           style={{
@@ -91,7 +92,7 @@ export default function OrdersScreen(): React.ReactElement {
   }
 
   return (
-    <Screen>
+    <Screen floatingBottom={<FloatingCartBar />}>
       {/* Header */}
       <View
         style={{

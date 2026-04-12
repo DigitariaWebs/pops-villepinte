@@ -1,6 +1,6 @@
 import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { ChevronRight, ShoppingBag } from "lucide-react-native";
+import { ShoppingBag } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   FadeOut,
@@ -12,13 +12,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { useEffect } from "react";
 
-import { colors } from "@/constants/theme";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
-
-const TAB_BAR_OFFSET = 90;
 
 export default function FloatingCartBar(): React.ReactElement | null {
   const router = useRouter();
@@ -58,9 +55,9 @@ export default function FloatingCartBar(): React.ReactElement | null {
       exiting={FadeOut.duration(200)}
       style={{
         position: "absolute",
-        left: 24,
-        right: 24,
-        bottom: insets.bottom + TAB_BAR_OFFSET,
+        left: 20,
+        right: 20,
+        bottom: insets.bottom + 60,
       }}
     >
       <AnimatedPressable
@@ -73,41 +70,59 @@ export default function FloatingCartBar(): React.ReactElement | null {
         onPressOut={() => {
           pressScale.value = withTiming(1, { duration: 160 });
         }}
-        className="bg-on-surface flex-row items-center justify-between rounded-full"
         style={[
           {
-            paddingHorizontal: 24,
-            paddingVertical: 16,
-            shadowColor: colors.ink,
-            shadowOffset: { width: 0, height: 12 },
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            borderRadius: 16,
+            backgroundColor: "#FFCE00",
+            paddingHorizontal: 20,
+            paddingVertical: 14,
+            shadowColor: "#111111",
+            shadowOffset: { width: 0, height: 8 },
             shadowOpacity: 0.18,
-            shadowRadius: 24,
+            shadowRadius: 20,
             elevation: 10,
           },
           animatedStyle,
         ]}
       >
-        <View className="flex-row items-center" style={{ gap: 12 }}>
-          <ShoppingBag size={18} color={colors.surface} strokeWidth={2.25} />
+        {/* Left: bag icon + item count */}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+          <ShoppingBag size={18} color="#111111" strokeWidth={2.25} />
           <Text
-            className="font-sans-semibold"
-            style={{ fontSize: 14, color: colors.surface }}
+            style={{
+              fontFamily: "Poppins_600SemiBold",
+              fontSize: 14,
+              color: "#111111",
+            }}
           >
             {itemLabel}
           </Text>
         </View>
 
-        <View className="flex-row items-center" style={{ gap: 8 }}>
+        {/* Right: price + "VOIR LE PANIER" */}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
           <Text
-            className="text-primary"
             style={{
               fontFamily: "BebasNeue_400Regular",
-              fontSize: 18,
+              fontSize: 20,
+              color: "#111111",
             }}
           >
             {formatPriceEUR(total)}
           </Text>
-          <ChevronRight size={18} color={colors.surface} strokeWidth={2.5} />
+          <Text
+            style={{
+              fontFamily: "Poppins_600SemiBold",
+              fontSize: 11,
+              color: "#111111",
+              letterSpacing: 0.5,
+            }}
+          >
+            VOIR LE PANIER {"\u2192"}
+          </Text>
         </View>
       </AnimatedPressable>
     </Animated.View>
