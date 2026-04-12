@@ -3,6 +3,7 @@ import { Animated as RNAnimated, Dimensions, Pressable, ScrollView, Text, View }
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ArrowRight, Heart } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
@@ -90,11 +91,12 @@ export default function AccueilScreen(): React.ReactElement {
   );
 
   const greetingName = name === "Invité" ? "toi" : name;
+  const insets = useSafeAreaInsets();
 
   return (
-    <Screen floatingBottom={<FloatingCartBar />}>
-      {/* ── LOGO + FOOD PATTERN ── */}
-      <View style={{ height: 90, overflow: "hidden", position: "relative" }}>
+    <Screen floatingBottom={<FloatingCartBar />} edges={[]}>
+      {/* ── LOGO + FOOD PATTERN — extends behind notch ── */}
+      <View style={{ height: insets.top + 80, overflow: "hidden", position: "relative" }}>
         {/* Dense tiny food illustration pattern */}
         <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
           {/* Row 1 */}
@@ -140,8 +142,8 @@ export default function AccueilScreen(): React.ReactElement {
           <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 58, left: 336, transform: [{ rotate: "8deg" }], opacity: 0.25 }} />
           <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 56, left: 364, transform: [{ rotate: "-18deg" }], opacity: 0.25 }} />
         </View>
-        {/* Logo centered */}
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", zIndex: 10 }}>
+        {/* Logo centered below notch */}
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", paddingBottom: 8, zIndex: 10 }}>
           <Image
             source={logoImage}
             contentFit="contain"
