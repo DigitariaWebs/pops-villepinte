@@ -42,7 +42,8 @@ function MarqueeTape(): React.ReactElement {
       style={{
         overflow: "hidden",
         backgroundColor: colors.accent,
-        paddingVertical: 5,
+        height: 28,
+        justifyContent: "center",
         marginTop: 14,
       }}
     >
