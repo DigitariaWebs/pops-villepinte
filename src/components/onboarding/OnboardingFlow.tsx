@@ -170,8 +170,8 @@ export default function OnboardingFlow({
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
-      {/* Slide 1 only: warning tapes + burger image */}
-      {currentIndex === 0 ? (
+      {/* Warning tapes on slides 1 & 2 */}
+      {currentIndex <= 1 ? (
         <>
           <WarningTape top={140} rotate="-6deg" index={0} direction="left" />
           <WarningTape top={190} rotate="-6deg" index={1} direction="right" />
