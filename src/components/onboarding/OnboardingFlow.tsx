@@ -274,7 +274,7 @@ export default function OnboardingFlow({
                 flex: 1,
                 backgroundColor: "transparent",
                 paddingHorizontal: 32,
-                paddingTop: isSlide3 ? insets.top + 56 : insets.top + 60,
+                paddingTop: isSlide3 ? insets.top + 90 : insets.top + 60,
                 paddingBottom: insets.bottom + 120,
                 justifyContent: isSlide3 ? "flex-start" : "flex-end",
               }}
