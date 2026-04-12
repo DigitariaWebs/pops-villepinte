@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { Dimensions, Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Dimensions, type LayoutChangeEvent, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { Search as SearchIcon } from "lucide-react-native";
@@ -28,8 +28,8 @@ const { width: SW } = Dimensions.get("window");
 const ICONS = [burgerIll, friesIll, tacosIll];
 const ROTATIONS = [-10, 14, -6, 18, -12, 8, -16, 10, -4, 20, -8, 12, -14, 6, -18, 16];
 
-function FoodPatternBg(): React.ReactElement {
-  const rows = 50;
+function FoodPatternBg({ height }: { height: number }): React.ReactElement {
+  const rows = Math.ceil(height / 70) + 2;
   const cols = Math.ceil(SW / 55);
   const items: React.ReactElement[] = [];
   let idx = 0;
@@ -68,7 +68,7 @@ function FoodPatternBg(): React.ReactElement {
         top: 0,
         left: 0,
         right: 0,
-        height: rows * 70 + 50,
+        height,
       }}
     >
       {items}
@@ -92,6 +92,11 @@ export default function MenuScreen(): React.ReactElement {
     // Don't depend on selectedId — we only want this to react to URL changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.cat]);
+
+  const [contentHeight, setContentHeight] = useState(2000);
+  const onContentLayout = useCallback((e: LayoutChangeEvent) => {
+    setContentHeight(e.nativeEvent.layout.height);
+  }, []);
 
   const isSearching = query.trim().length > 0;
   const normalizedQuery = useMemo(
@@ -231,8 +236,8 @@ export default function MenuScreen(): React.ReactElement {
       </View>
 
       {/* [2] Content with food pattern background */}
-      <View style={{ position: "relative" }}>
-        <FoodPatternBg />
+      <View style={{ position: "relative" }} onLayout={onContentLayout}>
+        <FoodPatternBg height={contentHeight} />
       {isSearching ? (
         <View style={{ paddingTop: 16 }}>
           {filteredProducts.length === 0 ? (
