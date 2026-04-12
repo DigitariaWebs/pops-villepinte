@@ -13,8 +13,10 @@ export const colors = {
   onSurface: "#1c1c15",
   onSurfaceVariant: "#6b6658",
   outline: "#e5ddc7",
+  outlineVariant: "#cdc5b4",
   success: "#2f8a4c",
   danger: "#c8321f",
+  error: "#ba1a1a",
   editorialRule: "#e4bebc",
 } as const;
 

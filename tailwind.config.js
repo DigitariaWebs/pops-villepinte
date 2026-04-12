@@ -19,8 +19,10 @@ module.exports = {
         "on-surface": "#1c1c15",
         "on-surface-variant": "#6b6658",
         outline: "#e5ddc7",
+        "outline-variant": "#cdc5b4",
         success: "#2f8a4c",
         danger: "#c8321f",
+        error: "#ba1a1a",
       },
       fontFamily: {
         display: ["PlusJakartaSans_800ExtraBold_Italic"],
