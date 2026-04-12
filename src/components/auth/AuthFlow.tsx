@@ -16,7 +16,7 @@ import { useProfileStore } from "@/store/profile.store";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logoImage = require("../../../assets/images/logo.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const tacosImage = require("../../../assets/images/tacos.png") as number;
+const burgerIcon = require("../../../assets/images/burgerIcon.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const wingsImage = require("../../../assets/images/wings.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -331,50 +331,36 @@ export default function AuthFlow({
         </Pressable>
       </View>
 
-      {/* Food illustrations — diagonal scatter in bottom 30%, low opacity */}
+      {/* Food illustrations — fill bottom 35% with repeating pattern */}
       <View
         pointerEvents="none"
-        style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%" }}
+        style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "35%" }}
       >
-        <Image
-          source={wingsImage}
-          contentFit="contain"
-          style={{
-            position: "absolute",
-            width: 130,
-            height: 130,
-            top: 0,
-            left: -10,
-            transform: [{ rotate: "-12deg" }],
-            opacity: 0.12,
-          }}
-        />
-        <Image
-          source={friesImage}
-          contentFit="contain"
-          style={{
-            position: "absolute",
-            width: 120,
-            height: 120,
-            top: 55,
-            left: "36%",
-            transform: [{ rotate: "8deg" }],
-            opacity: 0.12,
-          }}
-        />
-        <Image
-          source={tacosImage}
-          contentFit="contain"
-          style={{
-            position: "absolute",
-            width: 140,
-            height: 140,
-            top: 10,
-            right: -20,
-            transform: [{ rotate: "18deg" }],
-            opacity: 0.12,
-          }}
-        />
+        {/* Row 1 */}
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 90, height: 90, top: 0, left: 10, transform: [{ rotate: "-10deg" }], opacity: 0.12 }} />
+        <Image source={wingsImage} contentFit="contain"
+          style={{ position: "absolute", width: 85, height: 85, top: 10, left: "30%", transform: [{ rotate: "12deg" }], opacity: 0.12 }} />
+        <Image source={friesImage} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 0, left: "58%", transform: [{ rotate: "-5deg" }], opacity: 0.12 }} />
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 90, height: 90, top: 15, right: -10, transform: [{ rotate: "18deg" }], opacity: 0.12 }} />
+        {/* Row 2 */}
+        <Image source={friesImage} contentFit="contain"
+          style={{ position: "absolute", width: 75, height: 75, top: 80, left: -5, transform: [{ rotate: "15deg" }], opacity: 0.12 }} />
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 85, height: 85, top: 75, left: "22%", transform: [{ rotate: "-8deg" }], opacity: 0.12 }} />
+        <Image source={wingsImage} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 85, left: "48%", transform: [{ rotate: "6deg" }], opacity: 0.12 }} />
+        <Image source={friesImage} contentFit="contain"
+          style={{ position: "absolute", width: 85, height: 85, top: 70, right: 10, transform: [{ rotate: "-14deg" }], opacity: 0.12 }} />
+        {/* Row 3 */}
+        <Image source={wingsImage} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 155, left: 15, transform: [{ rotate: "10deg" }], opacity: 0.12 }} />
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 90, height: 90, top: 150, left: "35%", transform: [{ rotate: "-12deg" }], opacity: 0.12 }} />
+        <Image source={friesImage} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 160, right: 20, transform: [{ rotate: "8deg" }], opacity: 0.12 }} />
       </View>
 
       {/* Logo centered at very bottom */}
