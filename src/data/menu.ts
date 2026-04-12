@@ -1,13 +1,36 @@
 // PRICES MARKED "TBD" ARE PLACEHOLDERS — confirmed prices only on Bowls/Box (10/15/30 €).
 // Replace with real prices once Abdoullah confirms.
+//
+// IMAGES: hand-picked Unsplash photos, one per category (CATEGORY_IMAGES below).
+// All 37 products inside a category share the same hero photo for now —
+// Abdoullah will swap these for real shop photography later. To swap a single
+// category, edit one URL in CATEGORY_IMAGES; to swap a single product, set
+// `imageUrl` directly on that product.
 
 import type { Category, Product, ProductVariant, Supplement } from "@/types";
 
 // -- helpers ------------------------------------------------------------
 
-function imgUrl(name: string): string {
-  // URL-encode then swap %20 for + so the placeholder service renders spaces cleanly.
-  return `https://placehold.co/600x400/FFCE00/111111?text=${encodeURIComponent(name).replace(/%20/g, "+")}`;
+const UNSPLASH_PARAMS = "w=800&h=560&fit=crop&auto=format&q=80";
+
+function unsplash(photoId: string): string {
+  return `https://images.unsplash.com/photo-${photoId}?${UNSPLASH_PARAMS}`;
+}
+
+const CATEGORY_IMAGES: Readonly<Record<string, string>> = Object.freeze({
+  "smash-burgers": unsplash("1568901346375-23c9450c58cd"),
+  wraps: unsplash("1626700051175-6818013e1d4f"),
+  tacos: unsplash("1599974579688-8dbdd335c77f"),
+  tasty: unsplash("1551024601-bec78aea704b"),
+  bowls: unsplash("1546069901-ba9599a7e63c"),
+  box: unsplash("1513104890138-7c749659a591"),
+  bucket: unsplash("1562967914-608f82629710"),
+  plats: unsplash("1604908176997-125f25cc6f3d"),
+  boissons: unsplash("1554866585-cd94860890b7"),
+});
+
+function imgFor(categoryId: string): string {
+  return CATEGORY_IMAGES[categoryId] ?? CATEGORY_IMAGES["smash-burgers"]!;
 }
 
 function smashVariants(basePrice: number): ProductVariant[] {
@@ -123,7 +146,9 @@ const PLATS_SUPPLEMENTS = [
 
 // -- products -----------------------------------------------------------
 
-export const PRODUCTS: Product[] = [
+// `imageUrl` is injected from CATEGORY_IMAGES below so we have one place to
+// swap photography per category. Authors only specify the data fields here.
+const RAW_PRODUCTS: Omit<Product, "imageUrl">[] = [
   // Smash Burgers ------------------------------------------------------
   {
     id: "smash-chicken",
@@ -131,7 +156,6 @@ export const PRODUCTS: Product[] = [
     name: "Chicken Burger",
     description: "Poulet croustillant, pain brioché smashé, cheddar fondant.",
     priceEUR: 7,
-    imageUrl: imgUrl("Chicken Burger"),
     tags: [],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -143,7 +167,6 @@ export const PRODUCTS: Product[] = [
     description: "Pain brioché smashé, double cheddar fondant, sauce maison.",
     priceEUR: 8,
     variants: smashVariants(8),
-    imageUrl: imgUrl("Cheese"),
     tags: ["TOP"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -155,7 +178,6 @@ export const PRODUCTS: Product[] = [
     description: "Steak haché smashé minute, oignons grillés, double cheddar.",
     priceEUR: 8,
     variants: smashVariants(8),
-    imageUrl: imgUrl("Beef"),
     tags: ["TOP"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -167,7 +189,6 @@ export const PRODUCTS: Product[] = [
     description: "Raclette coulante, oignons confits, pain brioché smashé.",
     priceEUR: 9,
     variants: smashVariants(9),
-    imageUrl: imgUrl("Raclette"),
     tags: [],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -179,7 +200,6 @@ export const PRODUCTS: Product[] = [
     description: "Bacon croustillant, cheddar fondant, sauce barbecue maison.",
     priceEUR: 9,
     variants: smashVariants(9),
-    imageUrl: imgUrl("Bacon"),
     tags: [],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -191,7 +211,6 @@ export const PRODUCTS: Product[] = [
     description: "Galette de pommes de terre dorée, cheddar, sauce crémeuse.",
     priceEUR: 9,
     variants: smashVariants(9),
-    imageUrl: imgUrl("Rosti"),
     tags: ["TOP"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -203,7 +222,6 @@ export const PRODUCTS: Product[] = [
     description: "Double steak, double cheddar, bacon — pour les affamés.",
     priceEUR: 9,
     variants: smashVariants(9),
-    imageUrl: imgUrl("Mixte"),
     tags: [],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -215,7 +233,6 @@ export const PRODUCTS: Product[] = [
     description: "Sauce barbecue fumée, cheddar, bacon, oignons caramélisés.",
     priceEUR: 9,
     variants: smashVariants(9),
-    imageUrl: imgUrl("Smoky"),
     tags: ["NOUVEAU"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -227,7 +244,6 @@ export const PRODUCTS: Product[] = [
     description: "Chèvre fondant, miel, noix, sauce moutarde à l'ancienne.",
     priceEUR: 9,
     variants: smashVariants(9),
-    imageUrl: imgUrl("Chèvre Miel"),
     tags: ["NOUVEAU"],
     availableSupplements: SMASH_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -240,7 +256,6 @@ export const PRODUCTS: Product[] = [
     name: "Wrap Tenders",
     description: "Tortilla moelleuse, tenders croustillants, sauce POP'S.",
     priceEUR: 7,
-    imageUrl: imgUrl("Wrap Tenders"),
     tags: [],
     availableSupplements: WRAP_SUPPLEMENTS,
     prepTimeMinutes: 10,
@@ -251,7 +266,6 @@ export const PRODUCTS: Product[] = [
     name: "Wrap Master",
     description: "Tortilla, steak haché, cheddar, crudités, sauce maison.",
     priceEUR: 8,
-    imageUrl: imgUrl("Wrap Master"),
     tags: ["TOP"],
     availableSupplements: WRAP_SUPPLEMENTS,
     prepTimeMinutes: 10,
@@ -262,7 +276,6 @@ export const PRODUCTS: Product[] = [
     name: "Wrap Nashville 🔥",
     description: "Tortilla, poulet mariné au piment Nashville, sauce fraîcheur.",
     priceEUR: 8,
-    imageUrl: imgUrl("Wrap Nashville"),
     tags: ["SPICY"],
     availableSupplements: WRAP_SUPPLEMENTS,
     prepTimeMinutes: 10,
@@ -275,7 +288,6 @@ export const PRODUCTS: Product[] = [
     name: "Tacos Tenders",
     description: "Galette tacos, tenders, cheddar fondant, sauce algérienne.",
     priceEUR: 7,
-    imageUrl: imgUrl("Tacos Tenders"),
     tags: [],
     availableSupplements: TACOS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -286,7 +298,6 @@ export const PRODUCTS: Product[] = [
     name: "Tacos Viande Hachée",
     description: "Galette tacos, steak haché, double sauce, frites.",
     priceEUR: 8,
-    imageUrl: imgUrl("Tacos Viande Hachée"),
     tags: ["TOP"],
     availableSupplements: TACOS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -297,7 +308,6 @@ export const PRODUCTS: Product[] = [
     name: "Tacos Cordon Bleu",
     description: "Galette tacos, cordon bleu, cheddar, sauce samouraï.",
     priceEUR: 8,
-    imageUrl: imgUrl("Tacos Cordon Bleu"),
     tags: [],
     availableSupplements: TACOS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -310,7 +320,6 @@ export const PRODUCTS: Product[] = [
     name: "Tasty Mixte",
     description: "Plateau généreux à partager — viandes, frites, sauces maison.",
     priceEUR: 7,
-    imageUrl: imgUrl("Tasty Mixte"),
     tags: [],
     availableSupplements: TASTY_SUPPLEMENTS,
     prepTimeMinutes: 10,
@@ -321,7 +330,6 @@ export const PRODUCTS: Product[] = [
     name: "Tasty Sucré",
     description: "Version sucrée — gaufres, glace, chantilly, topping au choix.",
     priceEUR: 7,
-    imageUrl: imgUrl("Tasty Sucré"),
     tags: [],
     availableSupplements: TASTY_SUPPLEMENTS,
     prepTimeMinutes: 10,
@@ -332,7 +340,6 @@ export const PRODUCTS: Product[] = [
     name: "Tasty Piquant",
     description: "Pour les amateurs de sensations — sauces fortes, épices maison.",
     priceEUR: 7,
-    imageUrl: imgUrl("Tasty Piquant"),
     tags: ["SPICY"],
     availableSupplements: TASTY_SUPPLEMENTS,
     prepTimeMinutes: 10,
@@ -346,7 +353,6 @@ export const PRODUCTS: Product[] = [
     description: "Riz, tenders croustillants, légumes frais, sauce au choix.",
     priceEUR: 10,
     variants: SIZE_VARIANTS,
-    imageUrl: imgUrl("Bowl Tenders"),
     tags: [],
     availableSupplements: BOWL_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -358,7 +364,6 @@ export const PRODUCTS: Product[] = [
     description: "Riz, galette de pommes de terre, légumes grillés, sauce maison.",
     priceEUR: 10,
     variants: SIZE_VARIANTS,
-    imageUrl: imgUrl("Bowl Galette"),
     tags: [],
     availableSupplements: BOWL_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -370,7 +375,6 @@ export const PRODUCTS: Product[] = [
     description: "Riz, poulet Nashville bien piquant, crudités, sauce fraîcheur.",
     priceEUR: 10,
     variants: SIZE_VARIANTS,
-    imageUrl: imgUrl("Bowl Nashville"),
     tags: ["SPICY"],
     availableSupplements: BOWL_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -384,7 +388,6 @@ export const PRODUCTS: Product[] = [
     description: "Assortiment généreux à composer — plusieurs viandes au choix.",
     priceEUR: 10,
     variants: SIZE_VARIANTS,
-    imageUrl: imgUrl("Box 1"),
     tags: [],
     availableSupplements: BOX_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -396,7 +399,6 @@ export const PRODUCTS: Product[] = [
     description: "Box familiale à partager — viandes, frites, boissons incluses.",
     priceEUR: 10,
     variants: SIZE_VARIANTS,
-    imageUrl: imgUrl("Box 2"),
     tags: ["TOP"],
     availableSupplements: BOX_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -408,7 +410,6 @@ export const PRODUCTS: Product[] = [
     description: "La grosse box pour les grosses faims — tout y passe.",
     priceEUR: 10,
     variants: SIZE_VARIANTS,
-    imageUrl: imgUrl("Box 3"),
     tags: [],
     availableSupplements: BOX_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -421,7 +422,6 @@ export const PRODUCTS: Product[] = [
     name: "Bucket Tenders",
     description: "12 tenders croustillants à partager, 3 sauces au choix.",
     priceEUR: 12,
-    imageUrl: imgUrl("Bucket Tenders"),
     tags: [],
     availableSupplements: BUCKET_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -432,7 +432,6 @@ export const PRODUCTS: Product[] = [
     name: "Bucket Wings",
     description: "Ailes de poulet marinées, croustillantes, sauces maison.",
     priceEUR: 12,
-    imageUrl: imgUrl("Bucket Wings"),
     tags: [],
     availableSupplements: BUCKET_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -443,7 +442,6 @@ export const PRODUCTS: Product[] = [
     name: "Bucket Pops",
     description: "Pop corn chicken dorés, dips variés, à grignoter à plusieurs.",
     priceEUR: 12,
-    imageUrl: imgUrl("Bucket Pops"),
     tags: [],
     availableSupplements: BUCKET_SUPPLEMENTS,
     prepTimeMinutes: 15,
@@ -454,7 +452,6 @@ export const PRODUCTS: Product[] = [
     name: "Bucket Familial 🔥",
     description: "Gros bucket pour toute la famille — wings, tenders, pops Nashville.",
     priceEUR: 25,
-    imageUrl: imgUrl("Bucket Familial"),
     tags: ["SPICY", "TOP"],
     availableSupplements: BUCKET_SUPPLEMENTS,
     prepTimeMinutes: 20,
@@ -467,7 +464,6 @@ export const PRODUCTS: Product[] = [
     name: "Cuisse de poulet",
     description: "Cuisse confite au four, peau dorée, accompagnement inclus.",
     priceEUR: 8,
-    imageUrl: imgUrl("Cuisse de poulet"),
     tags: [],
     availableSupplements: PLATS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -478,7 +474,6 @@ export const PRODUCTS: Product[] = [
     name: "Saucisse",
     description: "Saucisse grillée maison, pain, moutarde à l'ancienne.",
     priceEUR: 6,
-    imageUrl: imgUrl("Saucisse"),
     tags: [],
     availableSupplements: PLATS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -489,7 +484,6 @@ export const PRODUCTS: Product[] = [
     name: "Coque Monsieur",
     description: "Croque revisité POP'S — jambon, fromage fondant, pain doré.",
     priceEUR: 7,
-    imageUrl: imgUrl("Coque Monsieur"),
     tags: [],
     availableSupplements: PLATS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -500,7 +494,6 @@ export const PRODUCTS: Product[] = [
     name: "Pâtes poulet crème fraîche",
     description: "Pâtes fraîches, poulet rôti, crème fraîche généreuse.",
     priceEUR: 9,
-    imageUrl: imgUrl("Pâtes poulet crème fraîche"),
     tags: [],
     availableSupplements: PLATS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -511,7 +504,6 @@ export const PRODUCTS: Product[] = [
     name: "Riz thaï",
     description: "Riz thaï parfumé, légumes sautés, sauce soja maison.",
     priceEUR: 7,
-    imageUrl: imgUrl("Riz thaï"),
     tags: [],
     availableSupplements: PLATS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -522,7 +514,6 @@ export const PRODUCTS: Product[] = [
     name: "Brick de poulet",
     description: "Brick croustillante, poulet épicé, herbes fraîches.",
     priceEUR: 6,
-    imageUrl: imgUrl("Brick de poulet"),
     tags: [],
     availableSupplements: PLATS_SUPPLEMENTS,
     prepTimeMinutes: 12,
@@ -535,7 +526,6 @@ export const PRODUCTS: Product[] = [
     name: "Coca 33cl",
     description: "Canette bien fraîche, classique indémodable.",
     priceEUR: 2,
-    imageUrl: imgUrl("Coca 33cl"),
     tags: [],
     availableSupplements: [],
     prepTimeMinutes: 0,
@@ -546,7 +536,6 @@ export const PRODUCTS: Product[] = [
     name: "Oasis 33cl",
     description: "Canette Oasis fruitée, bien fraîche pour accompagner.",
     priceEUR: 2,
-    imageUrl: imgUrl("Oasis 33cl"),
     tags: [],
     availableSupplements: [],
     prepTimeMinutes: 0,
@@ -557,12 +546,16 @@ export const PRODUCTS: Product[] = [
     name: "Eau 50cl",
     description: "Bouteille d'eau plate 50 cl, pour l'hydratation.",
     priceEUR: 1.5,
-    imageUrl: imgUrl("Eau 50cl"),
     tags: [],
     availableSupplements: [],
     prepTimeMinutes: 0,
   },
 ];
+
+export const PRODUCTS: Product[] = RAW_PRODUCTS.map((p) => ({
+  ...p,
+  imageUrl: imgFor(p.categoryId),
+}));
 
 // -- lookup maps --------------------------------------------------------
 

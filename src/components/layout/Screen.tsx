@@ -1,6 +1,8 @@
 import { ScrollView, View } from "react-native";
 import { type Edge, SafeAreaView } from "react-native-safe-area-context";
 
+import { colors } from "@/constants/theme";
+
 export type ScreenProps = {
   children: React.ReactNode;
   scroll?: boolean;
@@ -16,6 +18,13 @@ export type ScreenProps = {
 
 const DEFAULT_EDGES: readonly Edge[] = ["top"];
 
+// SafeAreaView is from react-native-safe-area-context (third-party). NativeWind
+// v5 only auto-wraps the core RN components — so the className prop is dropped
+// here and the view collapses to 0 height. We pass an explicit inline style
+// instead. First-party components below (View, ScrollView, Pressable) still
+// use className normally.
+const SAFE_AREA_STYLE = { flex: 1, backgroundColor: colors.surface } as const;
+
 export default function Screen({
   children,
   scroll = true,
@@ -26,10 +35,11 @@ export default function Screen({
   const hasFloating = floatingBottom !== undefined && floatingBottom !== null;
 
   return (
-    <SafeAreaView edges={edges} className="flex-1 bg-surface">
-      <View className="flex-1">
+    <SafeAreaView edges={edges} style={SAFE_AREA_STYLE}>
+      <View style={{ flex: 1 }}>
         {scroll ? (
           <ScrollView
+            style={{ flex: 1 }}
             showsVerticalScrollIndicator={false}
             contentInsetAdjustmentBehavior="automatic"
             contentContainerStyle={{ paddingBottom: 128 }}
@@ -38,7 +48,7 @@ export default function Screen({
             {children}
           </ScrollView>
         ) : (
-          <View className="flex-1">{children}</View>
+          <View style={{ flex: 1 }}>{children}</View>
         )}
         {hasFloating ? (
           <View
