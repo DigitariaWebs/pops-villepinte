@@ -19,6 +19,40 @@ const burgerImage = require("../../../assets/images/burger.png") as number;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
+const TAPE_TEXT = "POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · ";
+
+function WarningTape({ top, rotate }: { top: number; rotate: string }): React.ReactElement {
+  return (
+    <View
+      pointerEvents="none"
+      style={{
+        position: "absolute",
+        top,
+        left: -40,
+        right: -40,
+        zIndex: 5,
+        transform: [{ rotate }],
+        backgroundColor: "rgba(0,0,0,0.08)",
+        paddingVertical: 10,
+        overflow: "hidden",
+      }}
+    >
+      <Text
+        numberOfLines={1}
+        style={{
+          fontFamily: "BebasNeue_400Regular",
+          fontSize: 16,
+          letterSpacing: 6,
+          color: "rgba(0,0,0,0.15)",
+          textAlign: "center",
+        }}
+      >
+        {TAPE_TEXT}
+      </Text>
+    </View>
+  );
+}
+
 type Slide = {
   id: string;
   icon: typeof UtensilsCrossed;
@@ -93,6 +127,10 @@ export default function OnboardingFlow({
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
+      {/* Warning tape strips — diagonal grey bands with POP'S */}
+      <WarningTape top={320} rotate="-6deg" />
+      <WarningTape top={370} rotate="-6deg" />
+
       {/* Big burger image — top-right, rotated, overflowing */}
       {currentIndex === 0 ? (
         <View
