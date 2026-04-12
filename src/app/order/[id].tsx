@@ -1,9 +1,311 @@
-import { View, Text } from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Pressable, ScrollView, Text, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ArrowLeft } from "lucide-react-native";
+import * as Haptics from "expo-haptics";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 
-export default function Screen(): React.ReactNode {
+import IconButton from "@/components/common/IconButton";
+import Toast from "@/components/common/Toast";
+import CountdownRing from "@/components/order/CountdownRing";
+import OrderStatusPill from "@/components/order/OrderStatusPill";
+import OrderTimeline from "@/components/order/OrderTimeline";
+import PickupInstructions from "@/components/order/PickupInstructions";
+import SuccessOverlay from "@/components/order/SuccessOverlay";
+import { colors } from "@/constants/theme";
+import { useCountdown } from "@/hooks/useCountdown";
+import { useOrdersStore } from "@/store/orders.store";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+const MOCK_TICK_MS = 3000;
+const MOCK_PREPARING_THRESHOLD = 0.15;
+
+export default function OrderDetailScreen(): React.ReactElement {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { id } = useLocalSearchParams<{ id: string }>();
+
+  const order = useOrdersStore((s) => {
+    if (s.active?.id === id) return s.active;
+    return s.history.find((o) => o.id === id) ?? null;
+  });
+  const advanceStatus = useOrdersStore((s) => s.advanceStatus);
+  const markPickedUp = useOrdersStore((s) => s.markPickedUp);
+
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const countdown = useCountdown(
+    order?.createdAt ?? new Date().toISOString(),
+    order?.estimatedReadyAt ?? new Date().toISOString(),
+  );
+
+  const ctaScale = useSharedValue(1);
+  const ctaStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: ctaScale.value }],
+  }));
+
+  // Mock progression — auto-advance through statuses for demo purposes.
+  const hasAdvancedToPreparing = useRef(false);
+  const hasAdvancedToReady = useRef(false);
+
+  useEffect(() => {
+    if (!order || order.status === "cancelled" || order.status === "picked_up") return;
+
+    const tick = setInterval(() => {
+      const now = Date.now();
+      const created = new Date(order.createdAt).getTime();
+      const target = new Date(order.estimatedReadyAt).getTime();
+      const totalWindow = target - created;
+      if (totalWindow <= 0) return;
+      const elapsed = (now - created) / totalWindow;
+
+      if (
+        order.status === "received" &&
+        elapsed >= MOCK_PREPARING_THRESHOLD &&
+        !hasAdvancedToPreparing.current
+      ) {
+        hasAdvancedToPreparing.current = true;
+        advanceStatus(order.id, "preparing");
+      }
+
+      if (elapsed >= 1 && !hasAdvancedToReady.current) {
+        hasAdvancedToReady.current = true;
+        advanceStatus(order.id, "ready");
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
+    }, MOCK_TICK_MS);
+
+    return () => clearInterval(tick);
+  }, [order, advanceStatus]);
+
+  const handleEnRoute = useCallback(() => {
+    void Haptics.selectionAsync();
+    setToastMessage("On t'attend !");
+    setToastVisible(true);
+  }, []);
+
+  const handlePickedUp = useCallback(() => {
+    if (!order) return;
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setShowSuccess(true);
+  }, [order]);
+
+  const handleSuccessFinish = useCallback(() => {
+    if (!order) return;
+    markPickedUp(order.id);
+    setShowSuccess(false);
+    router.replace("/orders");
+  }, [order, markPickedUp, router]);
+
+  if (!order) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.surface,
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 32,
+        }}
+      >
+        <Text
+          className="text-on-surface"
+          style={{
+            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontSize: 28,
+            letterSpacing: -1,
+          }}
+        >
+          Commande introuvable
+        </Text>
+        <Pressable onPress={() => router.back()} style={{ marginTop: 24 }}>
+          <Text className="font-sans-semibold text-primary" style={{ fontSize: 14 }}>
+            Retour
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  const isPreparing = order.status === "preparing";
+  const isReady = order.status === "ready";
+  const isTerminal = order.status === "picked_up" || order.status === "cancelled";
+
+  const showCtaPreparing = isPreparing;
+  const showCtaReady = isReady;
+  const showCta = (showCtaPreparing || showCtaReady) && !isTerminal;
+
   return (
-    <View className="flex-1 bg-surface items-center justify-center">
-      <Text className="font-display text-4xl text-on-surface">Pop's</Text>
+    <View style={{ flex: 1, backgroundColor: colors.surface }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: insets.top + 8,
+          paddingBottom: showCta ? 160 : 80,
+        }}
+      >
+        {/* Top bar */}
+        <View
+          className="flex-row items-center justify-between"
+          style={{ paddingHorizontal: 24, marginBottom: 8 }}
+        >
+          <IconButton
+            icon={ArrowLeft}
+            variant="light"
+            onPress={() => router.back()}
+            accessibilityLabel="Retour"
+          />
+          <OrderStatusPill status={order.status} />
+          <View style={{ width: 44 }} />
+        </View>
+
+        {/* Editorial header */}
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
+          <Text
+            className="font-sans-semibold text-on-surface-variant uppercase"
+            style={{ fontSize: 11, letterSpacing: 3 }}
+          >
+            Commande
+          </Text>
+          <Text
+            className="text-on-surface"
+            style={{
+              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontSize: 32,
+              lineHeight: 36,
+              letterSpacing: -1,
+              marginTop: 4,
+            }}
+          >
+            {order.id}
+          </Text>
+        </View>
+
+        {/* Countdown ring hero */}
+        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 40 }}>
+          <CountdownRing
+            progress={countdown.progress}
+            minutes={countdown.minutes}
+            seconds={countdown.seconds}
+            status={order.status}
+          />
+        </View>
+
+        {/* Timeline */}
+        <OrderTimeline status={order.status} />
+
+        {/* Pickup instructions */}
+        <View style={{ marginTop: 8 }}>
+          <PickupInstructions orderId={order.id} />
+        </View>
+
+        {/* Editorial tombstone */}
+        <View
+          className="items-center"
+          style={{ paddingHorizontal: 24, marginTop: 32 }}
+        >
+          <View
+            style={{
+              width: 32,
+              height: 2,
+              backgroundColor: colors.editorialRule,
+              marginBottom: 16,
+            }}
+          />
+          <Text
+            className="font-sans-semibold text-on-surface-variant uppercase"
+            style={{ fontSize: 10, letterSpacing: 3, textAlign: "center" }}
+          >
+            POP&apos;S Villepinte · Fait maison
+          </Text>
+        </View>
+      </ScrollView>
+
+      {/* STICKY CTA */}
+      {showCta ? (
+        <View
+          style={{
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            paddingHorizontal: 24,
+            paddingTop: 16,
+            paddingBottom: Math.max(insets.bottom, 16) + 8,
+            backgroundColor: colors.surface,
+          }}
+        >
+          <AnimatedPressable
+            accessibilityRole="button"
+            accessibilityLabel={
+              isReady ? "Confirmer la récupération" : "Signaler que vous êtes en route"
+            }
+            onPress={isReady ? handlePickedUp : handleEnRoute}
+            onPressIn={() => {
+              ctaScale.value = withTiming(0.98, { duration: 120 });
+            }}
+            onPressOut={() => {
+              ctaScale.value = withTiming(1, { duration: 160 });
+            }}
+            className="rounded-full items-center justify-center"
+            style={[
+              {
+                paddingHorizontal: 24,
+                paddingVertical: 18,
+                backgroundColor: isReady
+                  ? colors.success
+                  : colors.surfaceContainerHigh,
+                ...(isReady
+                  ? {
+                      shadowColor: colors.success,
+                      shadowOffset: { width: 0, height: 12 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 24,
+                      elevation: 8,
+                    }
+                  : {}),
+              },
+              ctaStyle,
+            ]}
+          >
+            <Text
+              className="uppercase"
+              style={{
+                fontFamily: "PlusJakartaSans_700Bold",
+                fontSize: 13,
+                letterSpacing: 2,
+                color: isReady ? colors.surface : colors.onSurface,
+                textAlign: "center",
+              }}
+            >
+              {isReady
+                ? "J'ai récupéré ma commande"
+                : "Je suis en route"}
+            </Text>
+          </AnimatedPressable>
+        </View>
+      ) : null}
+
+      <Toast
+        visible={toastVisible}
+        message={toastMessage}
+        onHide={() => setToastVisible(false)}
+        duration={2000}
+      />
+
+      <SuccessOverlay
+        visible={showSuccess}
+        onFinish={handleSuccessFinish}
+        customerName={order.customerName}
+      />
     </View>
   );
 }
