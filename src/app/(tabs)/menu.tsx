@@ -29,7 +29,7 @@ const ICONS = [burgerIll, friesIll, tacosIll];
 const ROTATIONS = [-10, 14, -6, 18, -12, 8, -16, 10, -4, 20, -8, 12, -14, 6, -18, 16];
 
 function FoodPatternBg(): React.ReactElement {
-  const rows = 14;
+  const rows = 50;
   const cols = Math.ceil(SW / 55);
   const items: React.ReactElement[] = [];
   let idx = 0;
@@ -47,7 +47,7 @@ function FoodPatternBg(): React.ReactElement {
             top: r * 70 + (c % 2 === 0 ? 0 : 35),
             left: c * 55 + (r % 2 === 0 ? 0 : 26),
             transform: [{ rotate: `${rot}deg` }],
-            opacity: 0.25,
+            opacity: 0.12,
           }}
         >
           <Image
