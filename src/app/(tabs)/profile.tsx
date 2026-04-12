@@ -11,6 +11,7 @@ import {
   User,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
 
 import Screen from "@/components/layout/Screen";
 import TextField from "@/components/form/TextField";
@@ -90,10 +91,7 @@ export default function ProfileScreen(): React.ReactElement {
   };
 
   const logout = useAuthStore((s) => s.logout);
-
-  const handleStubPress = (): void => {
-    Alert.alert("Bientôt", "Cette fonctionnalité arrive dans une prochaine version.");
-  };
+  const router = useRouter();
 
   const handleLogout = (): void => {
     Alert.alert(
@@ -379,7 +377,7 @@ export default function ProfileScreen(): React.ReactElement {
         </View>
 
         <View style={{ paddingHorizontal: 20 }}>
-          <SettingsRow icon={Heart} label="Favoris" onPress={handleStubPress} />
+          <SettingsRow icon={Heart} label="Favoris" onPress={() => router.push("/settings/favoris")} />
           <View
             style={{
               height: 1,
@@ -387,7 +385,7 @@ export default function ProfileScreen(): React.ReactElement {
               marginLeft: 56,
             }}
           />
-          <SettingsRow icon={Award} label="Fidelite" onPress={handleStubPress} />
+          <SettingsRow icon={Award} label="Fidelite" onPress={() => router.push("/settings/fidelite")} />
           <View
             style={{
               height: 1,
@@ -395,7 +393,7 @@ export default function ProfileScreen(): React.ReactElement {
               marginLeft: 56,
             }}
           />
-          <SettingsRow icon={Bell} label="Notifications" onPress={handleStubPress} />
+          <SettingsRow icon={Bell} label="Notifications" onPress={() => router.push("/settings/notifications")} />
           <View
             style={{
               height: 1,
@@ -403,7 +401,7 @@ export default function ProfileScreen(): React.ReactElement {
               marginLeft: 56,
             }}
           />
-          <SettingsRow icon={FileText} label="Conditions generales" onPress={handleStubPress} />
+          <SettingsRow icon={FileText} label="Conditions generales" onPress={() => router.push("/settings/conditions")} />
           <View
             style={{
               height: 1,
@@ -411,7 +409,7 @@ export default function ProfileScreen(): React.ReactElement {
               marginLeft: 56,
             }}
           />
-          <SettingsRow icon={MessageCircle} label="Nous contacter" onPress={handleStubPress} />
+          <SettingsRow icon={MessageCircle} label="Nous contacter" onPress={() => router.push("/settings/contact")} />
           <View
             style={{
               height: 1,

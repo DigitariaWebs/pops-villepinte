@@ -88,6 +88,7 @@ export default function RootLayout(): React.ReactNode {
           <Stack.Screen name="cart" options={{ presentation: "modal" }} />
           <Stack.Screen name="checkout" />
           <Stack.Screen name="order/[id]" />
+          <Stack.Screen name="settings/[slug]" />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>
