@@ -172,12 +172,24 @@ export default function OnboardingFlow({
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
-      {/* Warning tapes on all slides */}
-      <WarningTape top={140} rotate="-6deg" index={0} direction="left" />
-      <WarningTape top={190} rotate="-6deg" index={1} direction="right" />
-      <WarningTape top={240} rotate="-6deg" index={2} direction="left" />
-      <WarningTape top={290} rotate="-6deg" index={3} direction="right" />
-      <WarningTape top={340} rotate="-6deg" index={4} direction="left" />
+      {/* Warning tapes — top area on slides 1&2, bottom area on slide 3 */}
+      {currentIndex <= 1 ? (
+        <>
+          <WarningTape top={140} rotate="-6deg" index={0} direction="left" />
+          <WarningTape top={190} rotate="-6deg" index={1} direction="right" />
+          <WarningTape top={240} rotate="-6deg" index={2} direction="left" />
+          <WarningTape top={290} rotate="-6deg" index={3} direction="right" />
+          <WarningTape top={340} rotate="-6deg" index={4} direction="left" />
+        </>
+      ) : (
+        <>
+          <WarningTape top={440} rotate="-6deg" index={0} direction="left" />
+          <WarningTape top={490} rotate="-6deg" index={1} direction="right" />
+          <WarningTape top={540} rotate="-6deg" index={2} direction="left" />
+          <WarningTape top={590} rotate="-6deg" index={3} direction="right" />
+          <WarningTape top={640} rotate="-6deg" index={4} direction="left" />
+        </>
+      )}
 
       {currentIndex === 0 ? (
         <View
@@ -221,19 +233,17 @@ export default function OnboardingFlow({
         </View>
       ) : null}
 
-      {/* Tacos image — slide 3, centered */}
+      {/* Tacos image — slide 3, bottom flush */}
       {currentIndex === 2 ? (
         <View
           pointerEvents="none"
           style={{
             position: "absolute",
-            top: 0,
+            bottom: 0,
             left: 0,
             right: 0,
-            bottom: 0,
             zIndex: 5,
             alignItems: "center",
-            justifyContent: "center",
           }}
         >
           <Image
@@ -264,7 +274,7 @@ export default function OnboardingFlow({
                 flex: 1,
                 backgroundColor: "transparent",
                 paddingHorizontal: 32,
-                paddingTop: isSlide3 ? insets.top + 24 : insets.top + 60,
+                paddingTop: isSlide3 ? insets.top + 80 : insets.top + 60,
                 paddingBottom: insets.bottom + 120,
                 justifyContent: isSlide3 ? "flex-start" : "flex-end",
               }}
@@ -316,18 +326,20 @@ export default function OnboardingFlow({
         }}
       />
 
-      {/* Bottom controls */}
+      {/* Controls — bottom on slides 1&2, top on slide 3 */}
       <View
         style={{
           position: "absolute",
-          bottom: 0,
+          ...(currentIndex === 2
+            ? { top: 0, paddingTop: insets.top + 16 }
+            : { bottom: 0, paddingBottom: insets.bottom + 24 }),
           left: 0,
           right: 0,
           paddingHorizontal: 32,
-          paddingBottom: insets.bottom + 24,
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "space-between",
+          zIndex: 20,
         }}
       >
         <Pressable onPress={handleSkip} hitSlop={16}>
