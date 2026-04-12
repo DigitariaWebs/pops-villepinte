@@ -1,13 +1,14 @@
 import { useCallback } from "react";
 import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
+import { Package, Receipt } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 
 import Screen from "@/components/layout/Screen";
 import ActiveOrderCard from "@/components/orders/ActiveOrderCard";
 import OrdersEmpty from "@/components/orders/OrdersEmpty";
 import PastOrderRow from "@/components/orders/PastOrderRow";
-import { colors } from "@/constants/theme";
+import { colors, font, radius, shadow } from "@/constants/theme";
 import { useCartStore } from "@/store/cart.store";
 import { useOrdersStore } from "@/store/orders.store";
 import type { Order } from "@/types";
@@ -40,26 +41,50 @@ export default function OrdersScreen(): React.ReactElement {
   if (!hasContent) {
     return (
       <Screen scroll={false}>
-        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
-          <Text
-            className="font-sans-semibold text-on-surface-variant uppercase"
-            style={{ fontSize: 11, letterSpacing: 3 }}
-          >
-            Mes commandes
-          </Text>
-          <Text
-            className="text-on-surface"
+        {/* Header */}
+        <View
+          style={{
+            backgroundColor: colors.white,
+            paddingHorizontal: 20,
+            paddingTop: 12,
+            paddingBottom: 16,
+          }}
+        >
+          <View
             style={{
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 44,
-              lineHeight: 48,
-              letterSpacing: -1.5,
-              marginTop: 4,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+              marginBottom: 4,
             }}
           >
-            Historique
+            <Receipt size={16} color={colors.primary} strokeWidth={2.5} />
+            <Text
+              style={{
+                fontFamily: font.bodySemi,
+                fontSize: 13,
+                color: colors.primary,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+              }}
+            >
+              Suivi & historique
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontFamily: font.display,
+              fontSize: 48,
+              lineHeight: 50,
+              color: colors.ink,
+              letterSpacing: 1,
+            }}
+          >
+            MES COMMANDES
           </Text>
         </View>
+
+        {/* Empty state */}
         <OrdersEmpty />
       </Screen>
     );
@@ -67,47 +92,133 @@ export default function OrdersScreen(): React.ReactElement {
 
   return (
     <Screen>
-      <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
-        <Text
-          className="font-sans-semibold text-on-surface-variant uppercase"
-          style={{ fontSize: 11, letterSpacing: 3 }}
-        >
-          Mes commandes
-        </Text>
-        <Text
-          className="text-on-surface"
+      {/* Header */}
+      <View
+        style={{
+          backgroundColor: colors.white,
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: 8,
+        }}
+      >
+        <View
           style={{
-            fontFamily: "BebasNeue_400Regular",
-            fontSize: 44,
-            lineHeight: 48,
-            letterSpacing: -1.5,
-            marginTop: 4,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 4,
           }}
         >
-          Historique
+          <Receipt size={16} color={colors.primary} strokeWidth={2.5} />
+          <Text
+            style={{
+              fontFamily: font.bodySemi,
+              fontSize: 13,
+              color: colors.primary,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+            }}
+          >
+            Suivi & historique
+          </Text>
+        </View>
+        <Text
+          style={{
+            fontFamily: font.display,
+            fontSize: 48,
+            lineHeight: 50,
+            color: colors.ink,
+            letterSpacing: 1,
+          }}
+        >
+          MES COMMANDES
         </Text>
       </View>
 
+      {/* Active order */}
       {active !== null ? (
-        <View style={{ marginTop: 24 }}>
+        <View style={{ marginTop: 20 }}>
+          <View
+            style={{
+              paddingHorizontal: 20,
+              marginBottom: 12,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <View
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: colors.success,
+              }}
+            />
+            <Text
+              style={{
+                fontFamily: font.bodyBold,
+                fontSize: 13,
+                color: colors.success,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+              }}
+            >
+              En cours
+            </Text>
+          </View>
           <ActiveOrderCard order={active} />
         </View>
       ) : null}
 
+      {/* Past orders */}
       {history.length > 0 ? (
         <View style={{ marginTop: 32 }}>
-          <Text
-            className="font-sans-bold text-on-surface-variant uppercase"
+          <View
             style={{
-              fontSize: 10,
-              letterSpacing: 2,
-              paddingHorizontal: 24,
+              paddingHorizontal: 20,
               marginBottom: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
             }}
           >
-            Commandes passées
-          </Text>
-          <View style={{ gap: 16 }}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+            >
+              <Package size={16} color={colors.inkMuted} strokeWidth={2} />
+              <Text
+                style={{
+                  fontFamily: font.display,
+                  fontSize: 22,
+                  color: colors.ink,
+                  letterSpacing: 0.5,
+                }}
+              >
+                HISTORIQUE
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: colors.ink,
+                borderRadius: radius.pill,
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: font.bodyBold,
+                  fontSize: 12,
+                  color: colors.white,
+                }}
+              >
+                {history.length}
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ gap: 14 }}>
             {history.map((order) => (
               <PastOrderRow
                 key={order.id}
@@ -119,23 +230,35 @@ export default function OrdersScreen(): React.ReactElement {
         </View>
       ) : null}
 
+      {/* Footer */}
       <View
-        className="items-center"
-        style={{ paddingHorizontal: 24, marginTop: 32 }}
+        style={{
+          alignItems: "center",
+          paddingHorizontal: 20,
+          marginTop: 32,
+          marginBottom: 16,
+        }}
       >
         <View
           style={{
-            width: 32,
-            height: 2,
-            backgroundColor: colors.border,
-            marginBottom: 16,
+            width: 40,
+            height: 3,
+            backgroundColor: colors.primary,
+            marginBottom: 12,
+            borderRadius: 2,
           }}
         />
         <Text
-          className="font-sans-semibold text-on-surface-variant uppercase"
-          style={{ fontSize: 10, letterSpacing: 3, textAlign: "center" }}
+          style={{
+            fontFamily: font.bodySemi,
+            fontSize: 11,
+            letterSpacing: 2,
+            textAlign: "center",
+            color: colors.inkMuted,
+            textTransform: "uppercase",
+          }}
         >
-          Pop&apos;s Villepinte · Fait maison
+          Pop's Villepinte - Fait maison
         </Text>
       </View>
     </Screen>

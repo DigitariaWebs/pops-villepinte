@@ -12,7 +12,7 @@ import CategoryRail, {
 import MenuSectionTitle from "@/components/menu/MenuSectionTitle";
 import ProductRow from "@/components/menu/ProductRow";
 import SearchField, { normalizeSearch } from "@/components/menu/SearchField";
-import { colors } from "@/constants/theme";
+import { colors, font, radius } from "@/constants/theme";
 import { CATEGORIES, PRODUCTS } from "@/data/menu";
 
 export default function MenuScreen(): React.ReactElement {
@@ -79,42 +79,77 @@ export default function MenuScreen(): React.ReactElement {
       stickyHeaderIndices={[1]}
       floatingBottom={<FloatingCartBar />}
     >
-      {/* [0] Top editorial header */}
+      {/* [0] Header */}
       <View
-        className="flex-row items-start justify-between"
-        style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8 }}
+        style={{
+          backgroundColor: colors.white,
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: 8,
+          flexDirection: "row",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+        }}
       >
         {!searchExpanded ? (
-          <View className="flex-1 pr-4">
+          <View style={{ flex: 1, paddingRight: 16 }}>
             <Text
-              className="font-sans-semibold text-on-surface-variant uppercase"
-              style={{ fontSize: 11, letterSpacing: 3 }}
-            >
-              La Carte
-            </Text>
-            <Text
-              className="font-sans-extrabold-italic text-on-surface"
               style={{
-                fontSize: 44,
-                lineHeight: 48,
-                letterSpacing: -1.5,
+                fontFamily: font.display,
+                fontSize: 48,
+                lineHeight: 50,
+                color: colors.ink,
+                letterSpacing: 1,
+              }}
+            >
+              MENU
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
                 marginTop: 4,
               }}
             >
-              Menu
-            </Text>
-            <Text
-              className="font-sans text-on-surface-variant"
-              style={{ fontSize: 13, marginTop: 4 }}
-            >
-              {CATEGORIES.length} catégories · {PRODUCTS.length} créations
-            </Text>
+              <View
+                style={{
+                  backgroundColor: colors.primary,
+                  borderRadius: radius.pill,
+                  paddingHorizontal: 10,
+                  paddingVertical: 3,
+                }}
+              >
+                <Text
+                  style={{
+                    fontFamily: font.bodyBold,
+                    fontSize: 11,
+                    color: colors.ink,
+                    letterSpacing: 1,
+                  }}
+                >
+                  {CATEGORIES.length} categories
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontFamily: font.bodyMedium,
+                  fontSize: 13,
+                  color: colors.inkMuted,
+                }}
+              >
+                {PRODUCTS.length} produits
+              </Text>
+            </View>
           </View>
         ) : null}
 
         <View
-          className={searchExpanded ? "flex-1" : ""}
-          style={{ paddingTop: searchExpanded ? 0 : 8 }}
+          style={
+            searchExpanded
+              ? { flex: 1 }
+              : { paddingTop: 8 }
+          }
         >
           <SearchField
             value={query}
@@ -125,44 +160,64 @@ export default function MenuScreen(): React.ReactElement {
         </View>
       </View>
 
-      {/* [1] Sticky category rail (collapses to a thin spacer while searching) */}
-      <View className="bg-surface">
+      {/* [1] Sticky category rail */}
+      <View style={{ backgroundColor: colors.white }}>
         {!isSearching ? (
           <CategoryRail selectedId={selectedId} onSelect={setSelectedId} />
         ) : (
-          <View style={{ height: 8 }} />
+          <View style={{ height: 8, backgroundColor: colors.white }} />
         )}
       </View>
 
       {/* [2] Content */}
       {isSearching ? (
-        <View style={{ paddingTop: 16 }}>
+        <View style={{ paddingTop: 16, backgroundColor: colors.white }}>
           {filteredProducts.length === 0 ? (
             <View
-              className="items-center"
-              style={{ paddingVertical: 96, paddingHorizontal: 32 }}
+              style={{
+                alignItems: "center",
+                paddingVertical: 80,
+                paddingHorizontal: 32,
+              }}
             >
-              <SearchIcon
-                size={48}
-                color={colors.inkMuted}
-                strokeWidth={1.5}
-              />
-              <Text
-                className="font-sans-extrabold-italic text-on-surface"
-                style={{ fontSize: 24, letterSpacing: -0.5, marginTop: 24 }}
-              >
-                Rien trouvé
-              </Text>
-              <Text
-                className="font-sans text-on-surface-variant"
+              <View
                 style={{
-                  fontSize: 14,
-                  lineHeight: 20,
-                  marginTop: 8,
-                  textAlign: "center",
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: colors.primary,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 20,
                 }}
               >
-                Essayez un autre mot ou parcourez une catégorie.
+                <SearchIcon
+                  size={36}
+                  color={colors.ink}
+                  strokeWidth={2}
+                />
+              </View>
+              <Text
+                style={{
+                  fontFamily: font.display,
+                  fontSize: 28,
+                  color: colors.ink,
+                  letterSpacing: 0.5,
+                }}
+              >
+                RIEN TROUVE
+              </Text>
+              <Text
+                style={{
+                  fontFamily: font.body,
+                  fontSize: 14,
+                  lineHeight: 22,
+                  marginTop: 8,
+                  textAlign: "center",
+                  color: colors.inkMuted,
+                }}
+              >
+                Essayez un autre mot ou parcourez une categorie.
               </Text>
             </View>
           ) : (
@@ -174,22 +229,25 @@ export default function MenuScreen(): React.ReactElement {
           )}
         </View>
       ) : selectedId === "all" ? (
-        <View>
+        <View style={{ backgroundColor: colors.white }}>
           {groupedByCategory.map(({ category, products }, catIdx) => (
             <View
               key={category.id}
-              className={catIdx % 2 === 1 ? "bg-surface-container-low" : "bg-surface"}
+              style={{
+                backgroundColor:
+                  catIdx % 2 === 1 ? "#F8F8F5" : colors.white,
+              }}
             >
               <MenuSectionTitle name={category.name} count={products.length} />
               {products.map((p, idx) => (
                 <ProductRow key={p.id} product={p} index={idx} />
               ))}
-              <View style={{ height: 32 }} />
+              <View style={{ height: 24 }} />
             </View>
           ))}
         </View>
       ) : selectedCategory !== null ? (
-        <View>
+        <View style={{ backgroundColor: colors.white }}>
           <MenuSectionTitle
             name={selectedCategory.name}
             count={filteredProducts.length}

@@ -24,7 +24,7 @@ const DEFAULT_EDGES: readonly Edge[] = ["top"];
 // here and the view collapses to 0 height. We pass an explicit inline style
 // instead. First-party components below (View, ScrollView, Pressable) still
 // use className normally.
-const SAFE_AREA_STYLE = { flex: 1, backgroundColor: colors.background } as const;
+const SAFE_AREA_STYLE = { flex: 1, backgroundColor: colors.white } as const;
 
 export default function Screen({
   children,

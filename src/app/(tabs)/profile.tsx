@@ -3,9 +3,11 @@ import { Alert, Pressable, Text, View } from "react-native";
 import {
   Award,
   Bell,
+  CheckCircle,
   FileText,
   Heart,
   MessageCircle,
+  User,
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 
@@ -13,7 +15,7 @@ import Screen from "@/components/layout/Screen";
 import TextField from "@/components/form/TextField";
 import StatsCard from "@/components/profile/StatsCard";
 import SettingsRow from "@/components/profile/SettingsRow";
-import { colors } from "@/constants/theme";
+import { colors, font, radius, shadow } from "@/constants/theme";
 import { useProfileStore } from "@/store/profile.store";
 
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
@@ -40,7 +42,7 @@ export default function ProfileScreen(): React.ReactElement {
   const [phoneError, setPhoneError] = useState<string | undefined>();
 
   const displayName =
-    profile.name === "Invité" ? "Salut." : profile.name + ".";
+    profile.name === "Invité" ? "SALUT !" : profile.name.toUpperCase();
 
   const handlePhoneChange = (v: string): void => {
     const formatted = formatFrenchMobile(v);
@@ -52,7 +54,7 @@ export default function ProfileScreen(): React.ReactElement {
       return;
     }
     if (!PHONE_REGEX.test(digits)) {
-      setPhoneError("Numéro invalide. Format attendu : 06 ou 07 …");
+      setPhoneError("Numero invalide. Format attendu : 06 ou 07 ...");
     } else {
       setPhoneError(undefined);
     }
@@ -68,7 +70,7 @@ export default function ProfileScreen(): React.ReactElement {
     const phoneDigits = phone.replace(/\s/g, "");
 
     if (phoneDigits.length > 0 && !PHONE_REGEX.test(phoneDigits)) {
-      setPhoneError("Numéro invalide.");
+      setPhoneError("Numero invalide.");
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -86,57 +88,186 @@ export default function ProfileScreen(): React.ReactElement {
   };
 
   const handleStubPress = (): void => {
-    Alert.alert("Bientôt", "Cette fonctionnalité arrive dans une prochaine version.");
+    Alert.alert("Bientot", "Cette fonctionnalite arrive dans une prochaine version.");
   };
 
   return (
     <Screen>
-      <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
-        <Text
-          className="font-sans-semibold text-on-surface-variant uppercase"
-          style={{ fontSize: 11, letterSpacing: 3 }}
-        >
-          Mon profil
-        </Text>
-        <Text
-          className="text-on-surface"
+      {/* ── HEADER ── */}
+      <View
+        style={{
+          backgroundColor: colors.white,
+          paddingHorizontal: 20,
+          paddingTop: 12,
+          paddingBottom: 8,
+        }}
+      >
+        <View
           style={{
-            fontFamily: "BebasNeue_400Regular",
-            fontSize: 44,
-            lineHeight: 48,
-            letterSpacing: -1.5,
-            marginTop: 4,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 4,
+          }}
+        >
+          <User size={16} color={colors.primary} strokeWidth={2.5} />
+          <Text
+            style={{
+              fontFamily: font.bodySemi,
+              fontSize: 13,
+              color: colors.primary,
+              letterSpacing: 1,
+              textTransform: "uppercase",
+            }}
+          >
+            Mon profil
+          </Text>
+        </View>
+        <Text
+          style={{
+            fontFamily: font.display,
+            fontSize: 48,
+            lineHeight: 50,
+            color: colors.ink,
+            letterSpacing: 1,
           }}
         >
           {displayName}
         </Text>
       </View>
 
-      {/* Stats card */}
-      <View style={{ marginTop: 32 }}>
-        <StatsCard
-          orderCount={profile.orderCount}
-          name={profile.name === "Invité" ? "toi" : profile.name}
-        />
-      </View>
-
-      {/* Editable fields */}
-      <View style={{ marginTop: 32 }}>
-        <Text
-          className="font-sans-bold text-on-surface-variant uppercase"
+      {/* ── STATS CARD ── */}
+      <View style={{ paddingHorizontal: 20, marginTop: 20 }}>
+        <View
           style={{
-            fontSize: 10,
-            letterSpacing: 2,
-            paddingHorizontal: 24,
-            marginBottom: 16,
+            backgroundColor: colors.primary,
+            borderRadius: radius.lg,
+            padding: 24,
+            ...shadow.card,
           }}
         >
-          Informations
-        </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "flex-end",
+              justifyContent: "space-between",
+            }}
+          >
+            <View>
+              <Text
+                style={{
+                  fontFamily: font.bodyBold,
+                  fontSize: 11,
+                  letterSpacing: 2,
+                  color: colors.ink,
+                  textTransform: "uppercase",
+                  opacity: 0.6,
+                }}
+              >
+                Commandes
+              </Text>
+              <Text
+                style={{
+                  fontFamily: font.display,
+                  fontSize: 72,
+                  lineHeight: 74,
+                  color: colors.ink,
+                  letterSpacing: -2,
+                }}
+              >
+                {profile.orderCount}
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: colors.ink,
+                borderRadius: radius.pill,
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                marginBottom: 8,
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: font.bodyBold,
+                  fontSize: 11,
+                  color: colors.primary,
+                  letterSpacing: 1,
+                }}
+              >
+                {profile.orderCount === 0
+                  ? "BIENVENUE"
+                  : profile.orderCount <= 5
+                    ? "HABITUE"
+                    : profile.orderCount <= 15
+                      ? "VIP"
+                      : "LEGENDE"}
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              width: 40,
+              height: 3,
+              backgroundColor: colors.ink,
+              opacity: 0.2,
+              marginVertical: 14,
+              borderRadius: 2,
+            }}
+          />
+          <Text
+            style={{
+              fontFamily: font.bodyMedium,
+              fontSize: 14,
+              color: colors.ink,
+              opacity: 0.7,
+            }}
+          >
+            {profile.orderCount === 0
+              ? "Premier passage ? Bienvenue dans la famille Pop's."
+              : profile.orderCount <= 5
+                ? `Bienvenue chez nous, ${profile.name === "Invité" ? "toi" : profile.name}. On te reconnait deja.`
+                : profile.orderCount <= 15
+                  ? "Tu fais partie des habitues. On garde ta place au chaud."
+                  : `Legende vivante. Respect, ${profile.name === "Invité" ? "toi" : profile.name}.`}
+          </Text>
+        </View>
+      </View>
 
-        <View style={{ paddingHorizontal: 24 }}>
+      {/* ── EDITABLE FIELDS ── */}
+      <View style={{ marginTop: 32 }}>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            marginBottom: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <View
+            style={{
+              width: 4,
+              height: 20,
+              backgroundColor: colors.primary,
+              borderRadius: 2,
+            }}
+          />
+          <Text
+            style={{
+              fontFamily: font.display,
+              fontSize: 22,
+              color: colors.ink,
+              letterSpacing: 0.5,
+            }}
+          >
+            INFORMATIONS
+          </Text>
+        </View>
+
+        <View style={{ paddingHorizontal: 20 }}>
           <TextField
-            label="Prénom"
+            label="Prenom"
             value={name}
             onChangeText={handleNameChange}
             placeholder="Comment tu t'appelles ?"
@@ -146,14 +277,14 @@ export default function ProfileScreen(): React.ReactElement {
           />
         </View>
 
-        <View style={{ paddingHorizontal: 24, marginTop: 20 }}>
+        <View style={{ paddingHorizontal: 20, marginTop: 18 }}>
           <TextField
-            label="Téléphone"
+            label="Telephone"
             value={phone}
             onChangeText={handlePhoneChange}
             placeholder="06 12 34 56 78"
             error={phoneError}
-            helper="Optionnel — on t'appelle quand c'est prêt."
+            helper="Optionnel - on t'appelle quand c'est pret."
             keyboardType="phone-pad"
             autoComplete="tel"
             maxLength={14}
@@ -161,71 +292,136 @@ export default function ProfileScreen(): React.ReactElement {
           />
         </View>
 
-        <View style={{ paddingHorizontal: 24, marginTop: 20 }}>
+        <View style={{ paddingHorizontal: 20, marginTop: 22 }}>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Mettre à jour le profil"
+            accessibilityLabel="Mettre a jour le profil"
             onPress={handleSave}
-            className="bg-primary rounded-full items-center justify-center"
             style={{
+              backgroundColor: saved ? colors.success : colors.ink,
+              borderRadius: radius.pill,
               paddingVertical: 16,
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "row",
+              gap: 8,
             }}
           >
+            {saved ? (
+              <CheckCircle size={18} color={colors.white} strokeWidth={2.5} />
+            ) : null}
             <Text
-              className="uppercase"
               style={{
-                fontFamily: "Poppins_700Bold",
-                fontSize: 12,
+                fontFamily: font.bodyBold,
+                fontSize: 14,
                 letterSpacing: 2,
-                color: colors.surface,
+                color: colors.white,
+                textTransform: "uppercase",
               }}
             >
-              {saved ? "Enregistré ✓" : "Mettre à jour"}
+              {saved ? "Enregistre !" : "Mettre a jour"}
             </Text>
           </Pressable>
         </View>
       </View>
 
-      {/* Settings stubs */}
-      <View style={{ marginTop: 40 }}>
-        <Text
-          className="font-sans-bold text-on-surface-variant uppercase"
+      {/* ── SETTINGS ── */}
+      <View style={{ marginTop: 36 }}>
+        <View
           style={{
-            fontSize: 10,
-            letterSpacing: 2,
-            paddingHorizontal: 24,
+            paddingHorizontal: 20,
             marginBottom: 8,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
           }}
         >
-          Réglages
-        </Text>
-        <View style={{ paddingHorizontal: 24 }}>
+          <View
+            style={{
+              width: 4,
+              height: 20,
+              backgroundColor: colors.primary,
+              borderRadius: 2,
+            }}
+          />
+          <Text
+            style={{
+              fontFamily: font.display,
+              fontSize: 22,
+              color: colors.ink,
+              letterSpacing: 0.5,
+            }}
+          >
+            REGLAGES
+          </Text>
+        </View>
+
+        <View style={{ paddingHorizontal: 20 }}>
           <SettingsRow icon={Heart} label="Favoris" onPress={handleStubPress} />
-          <SettingsRow icon={Award} label="Fidélité" onPress={handleStubPress} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.border,
+              marginLeft: 56,
+            }}
+          />
+          <SettingsRow icon={Award} label="Fidelite" onPress={handleStubPress} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.border,
+              marginLeft: 56,
+            }}
+          />
           <SettingsRow icon={Bell} label="Notifications" onPress={handleStubPress} />
-          <SettingsRow icon={FileText} label="Conditions générales" onPress={handleStubPress} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.border,
+              marginLeft: 56,
+            }}
+          />
+          <SettingsRow icon={FileText} label="Conditions generales" onPress={handleStubPress} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.border,
+              marginLeft: 56,
+            }}
+          />
           <SettingsRow icon={MessageCircle} label="Nous contacter" onPress={handleStubPress} />
         </View>
       </View>
 
-      {/* Tombstone */}
+      {/* ── FOOTER ── */}
       <View
-        className="items-center"
-        style={{ paddingHorizontal: 24, marginTop: 40 }}
+        style={{
+          alignItems: "center",
+          paddingHorizontal: 20,
+          marginTop: 40,
+          marginBottom: 16,
+        }}
       >
         <View
           style={{
-            width: 32,
-            height: 2,
-            backgroundColor: colors.border,
-            marginBottom: 16,
+            width: 40,
+            height: 3,
+            backgroundColor: colors.primary,
+            marginBottom: 12,
+            borderRadius: 2,
           }}
         />
         <Text
-          className="font-sans-semibold text-on-surface-variant uppercase"
-          style={{ fontSize: 10, letterSpacing: 3, textAlign: "center" }}
+          style={{
+            fontFamily: font.bodySemi,
+            fontSize: 11,
+            letterSpacing: 2,
+            textAlign: "center",
+            color: colors.inkMuted,
+            textTransform: "uppercase",
+          }}
         >
-          Pop&apos;s Villepinte · v1.0 · by Progix
+          Pop's Villepinte - v1.0 - by Progix
         </Text>
       </View>
     </Screen>
