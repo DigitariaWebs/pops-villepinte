@@ -94,22 +94,9 @@ export default function AccueilScreen(): React.ReactElement {
   return (
     <Screen floatingBottom={<FloatingCartBar />}>
       {/* ── LOGO + FOOD PATTERN ── */}
-      <View style={{ height: 80, overflow: "visible", position: "relative", marginTop: -50 }}>
-        {/* Dense tiny food illustration pattern — extends under status bar */}
-        <View pointerEvents="none" style={{ position: "absolute", top: -20, left: 0, right: 0, bottom: 0 }}>
-          {/* Row 0 — under status bar */}
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: -16, left: 14, transform: [{ rotate: "8deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: -12, left: 50, transform: [{ rotate: "-14deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: -18, left: 84, transform: [{ rotate: "10deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: -10, left: 116, transform: [{ rotate: "-6deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: -16, left: 150, transform: [{ rotate: "16deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: -12, left: 182, transform: [{ rotate: "-8deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: -18, left: 216, transform: [{ rotate: "12deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: -10, left: 248, transform: [{ rotate: "-10deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: -16, left: 280, transform: [{ rotate: "6deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: -12, left: 312, transform: [{ rotate: "-16deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: -18, left: 346, transform: [{ rotate: "14deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: -10, left: 374, transform: [{ rotate: "-8deg" }], opacity: 0.25 }} />
+      <View style={{ height: 90, overflow: "hidden", position: "relative" }}>
+        {/* Dense tiny food illustration pattern */}
+        <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
           {/* Row 1 */}
           <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 4, left: 8, transform: [{ rotate: "-10deg" }], opacity: 0.25 }} />
           <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 10, left: 38, transform: [{ rotate: "15deg" }], opacity: 0.25 }} />
@@ -153,8 +140,8 @@ export default function AccueilScreen(): React.ReactElement {
           <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 58, left: 336, transform: [{ rotate: "8deg" }], opacity: 0.25 }} />
           <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 56, left: 364, transform: [{ rotate: "-18deg" }], opacity: 0.25 }} />
         </View>
-        {/* Logo centered on top */}
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", paddingBottom: 4, zIndex: 10 }}>
+        {/* Logo centered */}
+        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", zIndex: 10 }}>
           <Image
             source={logoImage}
             contentFit="contain"
