@@ -249,7 +249,7 @@ export default function OnboardingFlow({
           <Image
             source={tacosImage}
             contentFit="contain"
-            style={{ width: 420, height: 420 }}
+            style={{ width: 500, height: 500 }}
           />
         </View>
       ) : null}
