@@ -8,28 +8,23 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { ArrowLeft } from "lucide-react-native";
+import { ArrowLeft, Check, Clock, MapPin, ShieldCheck } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import IconButton from "@/components/common/IconButton";
-import OrderRecap from "@/components/checkout/OrderRecap";
 import OrderConfirmation from "@/components/order/OrderConfirmation";
-import PickupCard from "@/components/checkout/PickupCard";
-import CommitToggle from "@/components/form/CommitToggle";
 import TextField from "@/components/form/TextField";
-import { colors } from "@/constants/theme";
-import { PRODUCTS_BY_ID } from "@/data/menu";
+import { colors, font, radius } from "@/constants/theme";
+import { PRODUCTS_BY_ID, SUPPLEMENTS_BY_ID } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
-import { useCartStore } from "@/store/cart.store";
+import { getLineUnitPrice, useCartStore } from "@/store/cart.store";
 import { useOrdersStore } from "@/store/orders.store";
 import { useProfileStore } from "@/store/profile.store";
 
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
-const PHONE_DIGITS_REGEX = /\D/g;
 
 function formatFrenchMobile(raw: string): string {
-  const digits = raw.replace(PHONE_DIGITS_REGEX, "").slice(0, 10);
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
   return digits.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
 }
 
@@ -48,7 +43,9 @@ export default function CheckoutScreen(): React.ReactElement {
   const [name, setName] = useState<string>(
     profile.name === "Invité" ? "" : profile.name,
   );
-  const [phone, setPhone] = useState<string>(profile.phone ?? "");
+  const [phone, setPhone] = useState<string>(
+    profile.phone ? formatFrenchMobile(profile.phone) : "",
+  );
   const [confirmed, setConfirmed] = useState<boolean>(false);
   const [nameError, setNameError] = useState<string | undefined>();
   const [phoneError, setPhoneError] = useState<string | undefined>();
@@ -56,7 +53,7 @@ export default function CheckoutScreen(): React.ReactElement {
   const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !showConfirmation) {
       router.replace("/");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -73,11 +70,15 @@ export default function CheckoutScreen(): React.ReactElement {
     return maxPrep + 2;
   }, [items]);
 
+  const itemCount = useMemo(
+    () => items.reduce((a, i) => a + i.quantity, 0),
+    [items],
+  );
+
   const hasPhoneContent = phone.replace(/\s/g, "").length > 0;
   const phoneDigits = phone.replace(/\s/g, "");
   const isPhoneInvalid = hasPhoneContent && phoneDigits.length >= 10 && !PHONE_REGEX.test(phoneDigits);
-  const canConfirm =
-    name.trim().length >= 2 && confirmed && !isPhoneInvalid;
+  const canConfirm = name.trim().length >= 2 && confirmed && !isPhoneInvalid;
 
   const handleNameChange = (v: string): void => {
     setName(v);
@@ -101,7 +102,7 @@ export default function CheckoutScreen(): React.ReactElement {
 
   const handleConfirm = (): void => {
     if (name.trim().length < 2) {
-      setNameError("Votre prénom est requis.");
+      setNameError("Ton prénom est requis.");
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
@@ -135,13 +136,13 @@ export default function CheckoutScreen(): React.ReactElement {
     }
   };
 
-  if (items.length === 0) {
-    return <View style={{ flex: 1, backgroundColor: colors.surface }} />;
+  if (items.length === 0 && !showConfirmation) {
+    return <View style={{ flex: 1, backgroundColor: colors.white }} />;
   }
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: colors.surface }}
+      style={{ flex: 1, backgroundColor: colors.white }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={0}
     >
@@ -150,53 +151,73 @@ export default function CheckoutScreen(): React.ReactElement {
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
           paddingTop: insets.top + 8,
-          paddingBottom: 160,
+          paddingBottom: 140,
         }}
       >
         {/* Top bar */}
         <View
-          className="flex-row items-center justify-between"
-          style={{ paddingHorizontal: 24, marginBottom: 8 }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            marginBottom: 16,
+          }}
         >
-          <IconButton
-            icon={ArrowLeft}
-            variant="light"
+          <Pressable
             onPress={() => router.back()}
-            accessibilityLabel="Retour au panier"
-          />
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              backgroundColor: "#F5F5F5",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ArrowLeft size={20} color={colors.ink} strokeWidth={2.5} />
+          </Pressable>
           <Text
-            className="font-sans-semibold text-on-surface-variant uppercase"
-            style={{ fontSize: 11, letterSpacing: 3 }}
+            style={{
+              fontFamily: font.bodySemi,
+              fontSize: 13,
+              color: colors.inkMuted,
+              letterSpacing: 2,
+              textTransform: "uppercase",
+            }}
           >
             Confirmation
           </Text>
-          <View style={{ width: 44 }} />
+          <View style={{ width: 40 }} />
         </View>
 
-        {/* Editorial header */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
+        {/* Header */}
+        <View style={{ paddingHorizontal: 20 }}>
           <Text
-            className="font-sans-semibold text-on-surface-variant uppercase"
-            style={{ fontSize: 11, letterSpacing: 3 }}
+            style={{
+              fontFamily: font.display,
+              fontSize: 42,
+              lineHeight: 44,
+              color: colors.ink,
+              letterSpacing: 1,
+            }}
           >
-            Dernière étape
+            QUI COMMANDE ?
           </Text>
           <Text
-            className="text-on-surface"
             style={{
-              fontFamily: "BebasNeue_400Regular",
-              fontSize: 44,
-              lineHeight: 48,
-              letterSpacing: -1.5,
+              fontFamily: font.body,
+              fontSize: 14,
+              color: colors.inkMuted,
               marginTop: 4,
             }}
           >
-            Qui commande ?
+            Dernière étape avant de te régaler
           </Text>
         </View>
 
-        {/* Name field */}
-        <View style={{ paddingHorizontal: 24, marginTop: 32 }}>
+        {/* Fields */}
+        <View style={{ paddingHorizontal: 20, marginTop: 28 }}>
           <TextField
             label="Prénom"
             value={name}
@@ -209,8 +230,7 @@ export default function CheckoutScreen(): React.ReactElement {
           />
         </View>
 
-        {/* Phone field */}
-        <View style={{ paddingHorizontal: 24, marginTop: 20 }}>
+        <View style={{ paddingHorizontal: 20, marginTop: 16 }}>
           <TextField
             label="Téléphone"
             value={phone}
@@ -225,40 +245,198 @@ export default function CheckoutScreen(): React.ReactElement {
           />
         </View>
 
-        {/* Pickup info card */}
-        <View style={{ marginTop: 32 }}>
-          <PickupCard minutes={estimatedMinutes} />
+        {/* Separator */}
+        <View style={{ height: 8, backgroundColor: "#F5F5F5", marginTop: 24 }} />
+
+        {/* Pickup info */}
+        <View style={{ paddingHorizontal: 20, paddingVertical: 20 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginBottom: 16 }}>
+            <View
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+                backgroundColor: colors.primary,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <MapPin size={22} color={colors.ink} strokeWidth={2} />
+            </View>
+            <View>
+              <Text style={{ fontFamily: font.bodyBold, fontSize: 15, color: colors.ink }}>
+                POP'S Villepinte
+              </Text>
+              <Text style={{ fontFamily: font.body, fontSize: 12, color: colors.inkMuted, marginTop: 1 }}>
+                Avenue Gabriel Péri, 93420
+              </Text>
+            </View>
+          </View>
+
+          <View style={{ flexDirection: "row", gap: 12 }}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "#F5F5F5",
+                borderRadius: radius.lg,
+                padding: 16,
+                alignItems: "center",
+              }}
+            >
+              <Clock size={20} color={colors.ink} strokeWidth={2} />
+              <Text style={{ fontFamily: font.display, fontSize: 36, color: colors.ink, marginTop: 4 }}>
+                {estimatedMinutes}
+              </Text>
+              <Text style={{ fontFamily: font.bodySemi, fontSize: 11, color: colors.inkMuted, letterSpacing: 1 }}>
+                MINUTES
+              </Text>
+            </View>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: "#F5F5F5",
+                borderRadius: radius.lg,
+                padding: 16,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontFamily: font.bodySemi, fontSize: 12, color: colors.inkMuted }}>
+                Paiement
+              </Text>
+              <Text style={{ fontFamily: font.bodyBold, fontSize: 16, color: colors.ink, marginTop: 6 }}>
+                Sur place
+              </Text>
+              <Text style={{ fontFamily: font.body, fontSize: 11, color: colors.inkMuted, marginTop: 2 }}>
+                Cash ou CB
+              </Text>
+            </View>
+          </View>
         </View>
 
-        {/* Commitment toggle */}
-        <View style={{ paddingHorizontal: 24, marginTop: 24 }}>
-          <CommitToggle value={confirmed} onChange={setConfirmed} />
-        </View>
+        {/* Separator */}
+        <View style={{ height: 8, backgroundColor: "#F5F5F5" }} />
 
-        {/* Order recap */}
-        <View style={{ marginTop: 32 }}>
-          <OrderRecap items={items} total={total} />
-        </View>
-
-        {/* Editorial tombstone */}
-        <View
-          className="items-center"
-          style={{ paddingHorizontal: 24, marginTop: 32 }}
+        {/* Commitment */}
+        <Pressable
+          onPress={() => {
+            void Haptics.selectionAsync();
+            setConfirmed(!confirmed);
+          }}
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 20,
+            paddingVertical: 18,
+            gap: 14,
+          }}
         >
           <View
             style={{
-              width: 32,
-              height: 2,
-              backgroundColor: colors.border,
-              marginBottom: 16,
+              width: 28,
+              height: 28,
+              borderRadius: 8,
+              backgroundColor: confirmed ? colors.primary : "#F5F5F5",
+              borderWidth: confirmed ? 0 : 2,
+              borderColor: "#E0E0E0",
+              alignItems: "center",
+              justifyContent: "center",
             }}
-          />
-          <Text
-            className="font-sans-semibold text-on-surface-variant uppercase"
-            style={{ fontSize: 10, letterSpacing: 3, textAlign: "center" }}
           >
-            Paiement sur place · Villepinte
+            {confirmed ? <Check size={16} color={colors.ink} strokeWidth={3} /> : null}
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontFamily: font.bodySemi, fontSize: 14, color: colors.ink }}>
+              Je viens chercher ma commande
+            </Text>
+            <Text style={{ fontFamily: font.body, fontSize: 12, color: colors.inkMuted, marginTop: 2 }}>
+              Ta parole compte — pas de no-show.
+            </Text>
+          </View>
+          <ShieldCheck size={20} color={confirmed ? colors.primary : colors.inkMuted} strokeWidth={2} />
+        </Pressable>
+
+        {/* Separator */}
+        <View style={{ height: 8, backgroundColor: "#F5F5F5" }} />
+
+        {/* Order recap */}
+        <View style={{ paddingHorizontal: 20, paddingVertical: 20 }}>
+          <Text
+            style={{
+              fontFamily: font.bodyBold,
+              fontSize: 11,
+              letterSpacing: 2,
+              color: colors.inkMuted,
+              textTransform: "uppercase",
+              marginBottom: 14,
+            }}
+          >
+            Récapitulatif · {itemCount} article{itemCount > 1 ? "s" : ""}
           </Text>
+
+          {items.map((item) => {
+            const product = PRODUCTS_BY_ID[item.productId];
+            if (!product) return null;
+            const variant = item.variantId
+              ? product.variants?.find((v) => v.id === item.variantId)
+              : undefined;
+            const unitPrice = getLineUnitPrice(item);
+            const lineTotal = unitPrice * item.quantity;
+            const supNames = item.supplements
+              .map((sid) => SUPPLEMENTS_BY_ID[sid]?.name)
+              .filter(Boolean)
+              .join(", ");
+
+            return (
+              <View
+                key={item.id}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  paddingVertical: 8,
+                  borderBottomWidth: 1,
+                  borderBottomColor: "#F5F5F5",
+                }}
+              >
+                <View style={{ flex: 1, paddingRight: 12 }}>
+                  <Text style={{ fontFamily: font.bodySemi, fontSize: 14, color: colors.ink }}>
+                    {item.quantity}× {product.name}
+                    {variant ? ` · ${variant.label}` : ""}
+                  </Text>
+                  {supNames ? (
+                    <Text
+                      numberOfLines={1}
+                      style={{ fontFamily: font.body, fontSize: 11, color: colors.inkMuted, marginTop: 2 }}
+                    >
+                      {supNames}
+                    </Text>
+                  ) : null}
+                </View>
+                <Text style={{ fontFamily: font.bodyBold, fontSize: 14, color: colors.ink }}>
+                  {formatPriceEUR(lineTotal)}
+                </Text>
+              </View>
+            );
+          })}
+
+          {/* Total */}
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "baseline",
+              marginTop: 16,
+              paddingTop: 14,
+              borderTopWidth: 2,
+              borderTopColor: colors.ink,
+            }}
+          >
+            <Text style={{ fontFamily: font.bodyBold, fontSize: 16, color: colors.ink }}>
+              Total
+            </Text>
+            <Text style={{ fontFamily: font.display, fontSize: 32, color: colors.ink }}>
+              {formatPriceEUR(total)}
+            </Text>
+          </View>
         </View>
       </ScrollView>
 
@@ -269,61 +447,58 @@ export default function CheckoutScreen(): React.ReactElement {
           bottom: 0,
           left: 0,
           right: 0,
-          paddingHorizontal: 24,
-          paddingTop: 16,
+          backgroundColor: colors.white,
+          paddingHorizontal: 20,
+          paddingTop: 12,
           paddingBottom: Math.max(insets.bottom, 16) + 8,
-          backgroundColor: colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: "#F0F0F0",
         }}
       >
         <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={
-            canConfirm
-              ? `Confirmer la commande pour ${formatPriceEUR(total)}`
-              : "Complétez les champs pour confirmer"
-          }
-          accessibilityState={{ disabled: !canConfirm }}
           onPress={handleConfirm}
-          className={`flex-row items-center justify-between rounded-full ${
-            canConfirm ? "bg-primary" : "bg-surface-container-high"
-          }`}
           style={{
+            backgroundColor: canConfirm ? colors.primary : "#E8E8E8",
+            borderRadius: radius.lg,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
             paddingHorizontal: 24,
-            paddingVertical: 18,
-            opacity: canConfirm ? 1 : 0.7,
+            paddingVertical: 16,
             ...(canConfirm
               ? {
                   shadowColor: colors.ink,
-                  shadowOffset: { width: 0, height: 12 },
-                  shadowOpacity: 0.08,
-                  shadowRadius: 24,
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 16,
                   elevation: 8,
                 }
               : {}),
           }}
         >
           <Text
-            className="uppercase"
             style={{
-              fontFamily: "Poppins_700Bold",
-              fontSize: 13,
-              letterSpacing: 2,
-              color: canConfirm ? colors.surface : colors.inkMuted,
+              fontFamily: font.bodyBold,
+              fontSize: 15,
+              color: canConfirm ? colors.ink : colors.inkMuted,
+              letterSpacing: 0.5,
             }}
           >
-            {canConfirm ? "Je confirme" : "Complétez les champs"}
+            {canConfirm ? "CONFIRMER LA COMMANDE" : "COMPLÉTEZ LES CHAMPS"}
           </Text>
           <View
-            className={`flex-row items-center rounded-full ${
-              canConfirm ? "bg-surface" : "bg-surface-container"
-            }`}
-            style={{ paddingHorizontal: 14, paddingVertical: 6, gap: 4 }}
+            style={{
+              backgroundColor: canConfirm ? colors.ink : "#D0D0D0",
+              borderRadius: radius.sm,
+              paddingHorizontal: 14,
+              paddingVertical: 6,
+            }}
           >
             <Text
-              className={canConfirm ? "text-primary" : "text-on-surface-variant"}
               style={{
-                fontFamily: "BebasNeue_400Regular",
-                fontSize: 18,
+                fontFamily: font.display,
+                fontSize: 20,
+                color: canConfirm ? colors.primary : colors.inkMuted,
               }}
             >
               {formatPriceEUR(total)}
