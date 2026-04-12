@@ -128,8 +128,11 @@ export default function OnboardingFlow({
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
       {/* Warning tape strips — diagonal grey bands with POP'S */}
-      <WarningTape top={320} rotate="-6deg" />
-      <WarningTape top={370} rotate="-6deg" />
+      <WarningTape top={140} rotate="-6deg" />
+      <WarningTape top={190} rotate="-6deg" />
+      <WarningTape top={240} rotate="-6deg" />
+      <WarningTape top={290} rotate="-6deg" />
+      <WarningTape top={340} rotate="-6deg" />
 
       {/* Big burger image — top-right, rotated, overflowing */}
       {currentIndex === 0 ? (
