@@ -8,9 +8,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
 import AuthFlow from "@/components/auth/AuthFlow";
+import SignupForm from "@/components/auth/SignupForm";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import AnimatedSplash from "@/components/splash/AnimatedSplash";
 import { useAppFonts } from "@/constants/fonts";
+
+const KNOWN_PHONE = "0642799884";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -19,6 +22,8 @@ export default function RootLayout(): React.ReactNode {
   const [splashDone, setSplashDone] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(false);
   const [authed, setAuthed] = useState(false);
+  const [signupDone, setSignupDone] = useState(false);
+  const [phone, setPhone] = useState("");
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -50,7 +55,24 @@ export default function RootLayout(): React.ReactNode {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
-        <AuthFlow onComplete={() => setAuthed(true)} />
+        <AuthFlow
+          onComplete={(p) => {
+            setPhone(p);
+            if (p === KNOWN_PHONE) {
+              setSignupDone(true);
+            }
+            setAuthed(true);
+          }}
+        />
+      </GestureHandlerRootView>
+    );
+  }
+
+  if (!signupDone) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar style="dark" />
+        <SignupForm phone={phone} onComplete={() => setSignupDone(true)} />
       </GestureHandlerRootView>
     );
   }
