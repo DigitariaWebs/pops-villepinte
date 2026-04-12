@@ -240,7 +240,7 @@ export default function OnboardingFlow({
               style={{
                 width: SCREEN_WIDTH,
                 flex: 1,
-                backgroundColor: slideIndex === 1 ? "transparent" : item.bg,
+                backgroundColor: "transparent",
                 paddingHorizontal: 32,
                 paddingTop: insets.top + 60,
                 paddingBottom: insets.bottom + 120,
