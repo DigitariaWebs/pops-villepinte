@@ -16,10 +16,6 @@ import { useProfileStore } from "@/store/profile.store";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logoImage = require("../../../assets/images/logo.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const burgerImage = require("../../../assets/images/burger.png") as number;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const tendersImage = require("../../../assets/images/tenders.png") as number;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const tacosImage = require("../../../assets/images/tacos.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const wingsImage = require("../../../assets/images/wings.png") as number;
@@ -341,12 +337,12 @@ export default function AuthFlow({
         style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%" }}
       >
         <Image
-          source={burgerImage}
+          source={wingsImage}
           contentFit="contain"
           style={{
             position: "absolute",
-            width: 140,
-            height: 140,
+            width: 130,
+            height: 130,
             top: 0,
             left: -10,
             transform: [{ rotate: "-12deg" }],
@@ -354,7 +350,7 @@ export default function AuthFlow({
           }}
         />
         <Image
-          source={tendersImage}
+          source={friesImage}
           contentFit="contain"
           style={{
             position: "absolute",
@@ -376,32 +372,6 @@ export default function AuthFlow({
             top: 10,
             right: -20,
             transform: [{ rotate: "18deg" }],
-            opacity: 0.12,
-          }}
-        />
-        <Image
-          source={wingsImage}
-          contentFit="contain"
-          style={{
-            position: "absolute",
-            width: 120,
-            height: 120,
-            top: 110,
-            left: "15%",
-            transform: [{ rotate: "-6deg" }],
-            opacity: 0.12,
-          }}
-        />
-        <Image
-          source={friesImage}
-          contentFit="contain"
-          style={{
-            position: "absolute",
-            width: 110,
-            height: 110,
-            top: 100,
-            right: 30,
-            transform: [{ rotate: "14deg" }],
             opacity: 0.12,
           }}
         />
