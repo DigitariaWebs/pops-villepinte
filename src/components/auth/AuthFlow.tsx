@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import { Image } from "expo-image";
-import { ArrowLeft, Coffee, Drumstick, IceCream, Pizza, Sandwich } from "lucide-react-native";
+import { ArrowLeft } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -15,6 +15,12 @@ import { useProfileStore } from "@/store/profile.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logoImage = require("../../../assets/images/logo.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const burgerImage = require("../../../assets/images/burger.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tendersImage = require("../../../assets/images/tenders.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tacosImage = require("../../../assets/images/tacos.png") as number;
 
 const MOCK_OTP = "1234";
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
@@ -325,26 +331,50 @@ export default function AuthFlow({
         </Pressable>
       </View>
 
-      {/* Food icon illustrations — diagonal scatter in bottom 30% */}
+      {/* Food illustrations — diagonal scatter in bottom 30%, low opacity */}
       <View
         pointerEvents="none"
         style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%" }}
       >
-        <View style={{ position: "absolute", top: 0, left: 20, transform: [{ rotate: "-12deg" }] }}>
-          <Sandwich size={64} color="#c4c4c4" strokeWidth={1.25} />
-        </View>
-        <View style={{ position: "absolute", top: 50, left: "38%", transform: [{ rotate: "8deg" }] }}>
-          <Drumstick size={56} color="#c4c4c4" strokeWidth={1.25} />
-        </View>
-        <View style={{ position: "absolute", top: 10, right: 20, transform: [{ rotate: "18deg" }] }}>
-          <Pizza size={60} color="#c4c4c4" strokeWidth={1.25} />
-        </View>
-        <View style={{ position: "absolute", top: 100, left: 60, transform: [{ rotate: "5deg" }] }}>
-          <Coffee size={48} color="#c4c4c4" strokeWidth={1.25} />
-        </View>
-        <View style={{ position: "absolute", top: 90, right: 50, transform: [{ rotate: "-8deg" }] }}>
-          <IceCream size={52} color="#c4c4c4" strokeWidth={1.25} />
-        </View>
+        <Image
+          source={burgerImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 140,
+            height: 140,
+            top: 0,
+            left: -10,
+            transform: [{ rotate: "-12deg" }],
+            opacity: 0.12,
+          }}
+        />
+        <Image
+          source={tendersImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 120,
+            height: 120,
+            top: 55,
+            left: "36%",
+            transform: [{ rotate: "8deg" }],
+            opacity: 0.12,
+          }}
+        />
+        <Image
+          source={tacosImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 140,
+            height: 140,
+            top: 10,
+            right: -20,
+            transform: [{ rotate: "18deg" }],
+            opacity: 0.12,
+          }}
+        />
       </View>
 
       {/* Logo centered at very bottom */}
