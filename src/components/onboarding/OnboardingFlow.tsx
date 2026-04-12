@@ -7,11 +7,15 @@ import {
   View,
   type ViewToken,
 } from "react-native";
+import { Image } from "expo-image";
 import { ChevronRight, MapPin, ShoppingBag, UtensilsCrossed } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "@/constants/theme";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const burgerImage = require("../../../assets/images/burger.png") as number;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -88,7 +92,29 @@ export default function OnboardingFlow({
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.primary }}>
+    <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
+      {/* Big burger image — top-right, rotated, overflowing */}
+      {currentIndex === 0 ? (
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: insets.top - 20,
+            right: -80,
+            zIndex: 10,
+            width: 300,
+            height: 300,
+            transform: [{ rotate: "30deg" }],
+          }}
+        >
+          <Image
+            source={burgerImage}
+            contentFit="contain"
+            style={{ width: "100%", height: "100%" }}
+          />
+        </View>
+      ) : null}
+
       <FlatList
         ref={flatListRef}
         data={SLIDES}
