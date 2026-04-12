@@ -118,19 +118,20 @@ export default function AuthFlow({
           paddingBottom: insets.bottom + 24,
         }}
       >
-        <Pressable
-          onPress={() => { setStep("phone"); setOtp(["", "", "", ""]); setOtpError(undefined); }}
-          hitSlop={16}
-          style={{ alignSelf: "flex-start", marginBottom: 32 }}
-        >
-          <ArrowLeft size={28} color={colors.ink} strokeWidth={2.5} />
-        </Pressable>
-
-        <Image
-          source={logoImage}
-          contentFit="contain"
-          style={{ width: 60, height: 60, marginBottom: 24 }}
-        />
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+          <Pressable
+            onPress={() => { setStep("phone"); setOtp(["", "", "", ""]); setOtpError(undefined); }}
+            hitSlop={16}
+          >
+            <ArrowLeft size={28} color={colors.ink} strokeWidth={2.5} />
+          </Pressable>
+          <Image
+            source={logoImage}
+            contentFit="contain"
+            style={{ width: 60, height: 60 }}
+          />
+          <View style={{ width: 28 }} />
+        </View>
 
         <Text
           style={{
