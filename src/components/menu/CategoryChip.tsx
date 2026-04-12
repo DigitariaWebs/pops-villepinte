@@ -4,6 +4,7 @@ import {
   CupSoda,
   Drumstick,
   Flame,
+  Grid3x3,
   type LucideIcon,
   Package,
   Pizza,
@@ -23,6 +24,7 @@ import type { Category } from "@/types";
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  all: Grid3x3,
   "smash-burgers": Beef,
   wraps: Wheat,
   tacos: Flame,
