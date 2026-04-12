@@ -29,8 +29,8 @@ const ICONS = [burgerIll, friesIll, tacosIll];
 const ROTATIONS = [-10, 14, -6, 18, -12, 8, -16, 10, -4, 20, -8, 12, -14, 6, -18, 16];
 
 function FoodPatternBg(): React.ReactElement {
-  const rows = 12;
-  const cols = Math.ceil(SW / 38);
+  const rows = 14;
+  const cols = Math.ceil(SW / 55);
   const items: React.ReactElement[] = [];
   let idx = 0;
   for (let r = 0; r < rows; r++) {
@@ -38,20 +38,25 @@ function FoodPatternBg(): React.ReactElement {
       const src = ICONS[idx % ICONS.length]!;
       const rot = ROTATIONS[idx % ROTATIONS.length]!;
       items.push(
-        <Image
+        <View
           key={`${r}-${c}`}
-          source={src}
-          contentFit="contain"
           style={{
             position: "absolute",
-            width: 28,
-            height: 28,
-            top: r * 60 + (c % 2 === 0 ? 0 : 30),
-            left: c * 38 + (r % 2 === 0 ? 0 : 18),
+            width: 40,
+            height: 40,
+            top: r * 70 + (c % 2 === 0 ? 0 : 35),
+            left: c * 55 + (r % 2 === 0 ? 0 : 26),
             transform: [{ rotate: `${rot}deg` }],
-            opacity: 0.2,
+            opacity: 0.12,
           }}
-        />,
+        >
+          <Image
+            source={src}
+            contentFit="contain"
+            tintColor="#999999"
+            style={{ width: 40, height: 40 }}
+          />
+        </View>,
       );
       idx++;
     }
@@ -64,7 +69,7 @@ function FoodPatternBg(): React.ReactElement {
         top: 0,
         left: 0,
         right: 0,
-        height: rows * 60 + 40,
+        height: rows * 70 + 50,
       }}
     >
       {items}
