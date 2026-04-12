@@ -1,22 +1,22 @@
 import { useMemo, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ArrowLeft, X } from "lucide-react-native";
+import { ArrowLeft, Heart, Star, Timer, X } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import IconButton from "@/components/common/IconButton";
 import Toast from "@/components/common/Toast";
 import NotesField from "@/components/menu/NotesField";
 import QuantityStepper from "@/components/menu/QuantityStepper";
 import SupplementSelector from "@/components/menu/SupplementSelector";
 import VariantSelector from "@/components/menu/VariantSelector";
-import { colors } from "@/constants/theme";
+import { colors, font, radius, shadow } from "@/constants/theme";
 import { PRODUCTS, SUPPLEMENTS } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
 
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ROUTE_BACK_DELAY_MS = 900;
 
 function resolveVariantLabel(categoryId: string): string {
@@ -43,19 +43,12 @@ export default function ProductDetailScreen(): React.ReactElement {
 
   if (!product) {
     return (
-      <View className="flex-1 bg-surface items-center justify-center" style={{ paddingHorizontal: 32 }}>
-        <Text
-          className="text-on-surface"
-          style={{
-            fontFamily: "BebasNeue_400Regular",
-            fontSize: 28,
-            letterSpacing: -1,
-          }}
-        >
+      <View style={{ flex: 1, backgroundColor: colors.white, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
+        <Text style={{ fontFamily: font.display, fontSize: 28, color: colors.ink }}>
           Produit introuvable
         </Text>
         <Pressable onPress={() => router.back()} style={{ marginTop: 24 }}>
-          <Text className="font-sans-semibold text-primary" style={{ fontSize: 14 }}>
+          <Text style={{ fontFamily: font.bodySemi, fontSize: 14, color: colors.primary }}>
             Retour au menu
           </Text>
         </Pressable>
@@ -75,6 +68,7 @@ export default function ProductDetailScreen(): React.ReactElement {
     return acc + (s?.priceEUR ?? 0);
   }, 0);
   const lineTotal = (basePrice + supplementsTotal) * quantity;
+  const hasVariants = product.variants !== undefined && product.variants.length > 0;
 
   const handleToggleSupplement = (sid: string): void => {
     setSelectedSupplements((prev) =>
@@ -92,217 +86,331 @@ export default function ProductDetailScreen(): React.ReactElement {
       notes: notes.trim().length > 0 ? notes.trim() : undefined,
     });
     setToastVisible(true);
-    setTimeout(() => {
-      router.back();
-    }, ROUTE_BACK_DELAY_MS);
+    setTimeout(() => { router.back(); }, ROUTE_BACK_DELAY_MS);
   };
 
   return (
-    <View className="flex-1 bg-surface">
+    <View style={{ flex: 1, backgroundColor: colors.white }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 160 }}
+        contentContainerStyle={{ paddingBottom: 140 }}
       >
-        {/* HERO — flat red backdrop with floating image */}
-        <View
-          className="bg-primary-container"
-          style={{ paddingTop: insets.top + 12, paddingBottom: 48 }}
-        >
+        {/* ── HERO IMAGE — full width, dark backdrop ── */}
+        <View style={{ backgroundColor: colors.cardDark, position: "relative" }}>
+          {/* Nav bar */}
           <View
-            className="flex-row items-center justify-between"
-            style={{ paddingHorizontal: 24, marginBottom: 16 }}
+            style={{
+              position: "absolute",
+              top: insets.top + 8,
+              left: 16,
+              right: 16,
+              zIndex: 20,
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
           >
-            <IconButton
-              icon={ArrowLeft}
-              variant="light"
+            <Pressable
               onPress={() => router.back()}
-              accessibilityLabel="Retour"
-            />
-            <View
               style={{
                 width: 40,
-                height: 4,
-                borderRadius: 2,
-                backgroundColor: "rgba(253,249,238,0.35)",
-              }}
-            />
-            <IconButton
-              icon={X}
-              variant="light"
-              onPress={() => router.back()}
-              accessibilityLabel="Fermer"
-            />
-          </View>
-
-          <View
-            className="items-center"
-            style={{ paddingHorizontal: 24, marginTop: 16, height: 240 }}
-          >
-            <Image
-              source={{ uri: product.imageUrl }}
-              style={{ width: "85%", height: "100%" }}
-              contentFit="contain"
-              transition={300}
-              accessibilityIgnoresInvertColors
-            />
-          </View>
-        </View>
-
-        {/* CONTENT SHEET — bleeds over hero by 32px */}
-        <View
-          className="bg-surface"
-          style={{
-            marginTop: -32,
-            borderTopLeftRadius: 48,
-            borderTopRightRadius: 48,
-            paddingTop: 32,
-          }}
-        >
-          <View style={{ paddingHorizontal: 24 }}>
-            {product.tags.length > 0 ? (
-              <View
-                className="flex-row"
-                style={{ gap: 8, marginBottom: 12 }}
-              >
-                {product.tags.slice(0, 2).map((t) => (
-                  <View
-                    key={t}
-                    className="bg-primary rounded-full"
-                    style={{ paddingHorizontal: 10, paddingVertical: 4 }}
-                  >
-                    <Text
-                      className="font-sans-bold uppercase"
-                      style={{
-                        fontSize: 9,
-                        letterSpacing: 2,
-                        color: colors.surface,
-                      }}
-                    >
-                      {t}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-            ) : null}
-
-            <Text
-              className="text-on-surface"
-              style={{
-                fontFamily: "BebasNeue_400Regular",
-                fontSize: 38,
-                lineHeight: 42,
-                letterSpacing: -1.5,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: "rgba(255,255,255,0.9)",
+                alignItems: "center",
+                justifyContent: "center",
+                ...shadow.card,
               }}
             >
-              {product.name}
-            </Text>
-
-            <Text
-              className="font-sans text-on-surface-variant"
-              style={{
-                fontSize: 14,
-                lineHeight: 22,
-                marginTop: 12,
-              }}
-            >
-              {product.description}
-            </Text>
-
-            <View
-              className="flex-row items-baseline"
-              style={{ marginTop: 16 }}
-            >
-              <Text
-                className="text-primary"
+              <ArrowLeft size={20} color={colors.ink} strokeWidth={2.5} />
+            </Pressable>
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <Pressable
                 style={{
-                  fontFamily: "BebasNeue_400Regular",
-                  fontSize: 40,
-                  letterSpacing: -1,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: "rgba(255,255,255,0.9)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ...shadow.card,
                 }}
               >
-                {formatPriceEUR(basePrice)}
-              </Text>
-              {product.variants !== undefined && product.variants.length > 0 ? (
-                <Text
-                  className="font-sans text-on-surface-variant"
-                  style={{ fontSize: 12, marginLeft: 8 }}
-                >
-                  · pour la taille sélectionnée
-                </Text>
-              ) : null}
+                <Heart size={20} color={colors.ink} strokeWidth={2} />
+              </Pressable>
+              <Pressable
+                onPress={() => router.back()}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: "rgba(255,255,255,0.9)",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  ...shadow.card,
+                }}
+              >
+                <X size={20} color={colors.ink} strokeWidth={2.5} />
+              </Pressable>
             </View>
           </View>
 
-          {product.variants !== undefined && product.variants.length > 0 ? (
+          {/* Product image */}
+          <Image
+            source={{ uri: product.imageUrl }}
+            contentFit="cover"
+            style={{
+              width: SCREEN_WIDTH,
+              height: SCREEN_WIDTH * 0.85,
+            }}
+            transition={300}
+            accessibilityIgnoresInvertColors
+          />
+
+          {/* Price badge overlay */}
+          <View
+            style={{
+              position: "absolute",
+              bottom: 16,
+              left: 20,
+              backgroundColor: colors.primary,
+              borderRadius: radius.sm,
+              paddingHorizontal: 14,
+              paddingVertical: 6,
+              ...shadow.card,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: font.display,
+                fontSize: 28,
+                color: colors.ink,
+              }}
+            >
+              {hasVariants ? "dès " : ""}{formatPriceEUR(basePrice)}
+            </Text>
+          </View>
+
+          {/* Prep time badge */}
+          <View
+            style={{
+              position: "absolute",
+              bottom: 16,
+              right: 20,
+              backgroundColor: "rgba(0,0,0,0.7)",
+              borderRadius: radius.pill,
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 5,
+            }}
+          >
+            <Timer size={14} color={colors.white} strokeWidth={2} />
+            <Text
+              style={{
+                fontFamily: font.bodySemi,
+                fontSize: 12,
+                color: colors.white,
+              }}
+            >
+              {product.prepTimeMinutes} min
+            </Text>
+          </View>
+        </View>
+
+        {/* ── CONTENT ── */}
+        <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
+          {/* Tags */}
+          {product.tags.length > 0 ? (
+            <View style={{ flexDirection: "row", gap: 8, marginBottom: 10 }}>
+              {product.tags.slice(0, 2).map((t) => (
+                <View
+                  key={t}
+                  style={{
+                    backgroundColor: t === "SPICY" ? colors.accent : colors.primary,
+                    borderRadius: radius.pill,
+                    paddingHorizontal: 10,
+                    paddingVertical: 4,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: font.bodyBold,
+                      fontSize: 10,
+                      letterSpacing: 2,
+                      color: t === "SPICY" ? colors.white : colors.ink,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    {t}
+                  </Text>
+                </View>
+              ))}
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 3,
+                  marginLeft: 4,
+                }}
+              >
+                <Star size={14} color={colors.primary} strokeWidth={2.5} fill={colors.primary} />
+                <Text style={{ fontFamily: font.bodySemi, fontSize: 12, color: colors.ink }}>
+                  4.8
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
+          {/* Name */}
+          <Text
+            style={{
+              fontFamily: font.display,
+              fontSize: 42,
+              lineHeight: 44,
+              letterSpacing: 1,
+              color: colors.ink,
+            }}
+          >
+            {product.name.toUpperCase()}
+          </Text>
+
+          {/* Description */}
+          <Text
+            style={{
+              fontFamily: font.body,
+              fontSize: 14,
+              lineHeight: 22,
+              color: colors.inkMuted,
+              marginTop: 8,
+            }}
+          >
+            {product.description}
+          </Text>
+
+          {/* Info pills */}
+          <View style={{ flexDirection: "row", gap: 10, marginTop: 14 }}>
+            <View
+              style={{
+                backgroundColor: "#F5F5F5",
+                borderRadius: radius.pill,
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <Timer size={14} color={colors.inkMuted} strokeWidth={2} />
+              <Text style={{ fontFamily: font.bodySemi, fontSize: 12, color: colors.ink }}>
+                {product.prepTimeMinutes} min
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "#F5F5F5",
+                borderRadius: radius.pill,
+                paddingHorizontal: 14,
+                paddingVertical: 8,
+              }}
+            >
+              <Text style={{ fontFamily: font.bodySemi, fontSize: 12, color: colors.ink }}>
+                Retrait sur place
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Separator */}
+        <View style={{ height: 8, backgroundColor: "#F5F5F5", marginTop: 20 }} />
+
+        {/* ── VARIANTS ── */}
+        {hasVariants ? (
+          <>
             <VariantSelector
-              variants={product.variants}
+              variants={product.variants!}
               selectedId={variantId}
               onSelect={setVariantId}
               label={resolveVariantLabel(product.categoryId)}
             />
-          ) : null}
+            <View style={{ height: 8, backgroundColor: "#F5F5F5" }} />
+          </>
+        ) : null}
 
-          {applicableSupplements.length > 0 ? (
+        {/* ── SUPPLEMENTS ── */}
+        {applicableSupplements.length > 0 ? (
+          <>
             <SupplementSelector
               supplements={applicableSupplements}
               selectedIds={selectedSupplements}
               onToggle={handleToggleSupplement}
             />
-          ) : null}
+            <View style={{ height: 8, backgroundColor: "#F5F5F5" }} />
+          </>
+        ) : null}
 
-          <QuantityStepper value={quantity} onChange={setQuantity} />
-          <NotesField value={notes} onChange={setNotes} />
-        </View>
+        {/* ── QUANTITY ── */}
+        <QuantityStepper value={quantity} onChange={setQuantity} />
+
+        <View style={{ height: 8, backgroundColor: "#F5F5F5", marginTop: 20 }} />
+
+        {/* ── NOTES ── */}
+        <NotesField value={notes} onChange={setNotes} />
       </ScrollView>
 
-      {/* STICKY CTA BAR */}
+      {/* ── STICKY CTA ── */}
       <View
-        className="bg-surface"
         style={{
           position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
-          paddingHorizontal: 24,
-          paddingTop: 16,
+          backgroundColor: colors.white,
+          paddingHorizontal: 20,
+          paddingTop: 12,
           paddingBottom: Math.max(insets.bottom, 16) + 8,
+          borderTopWidth: 1,
+          borderTopColor: "#F0F0F0",
         }}
       >
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel={`Ajouter ${product.name} au panier pour ${formatPriceEUR(lineTotal)}`}
+          accessibilityLabel={`Ajouter au panier pour ${formatPriceEUR(lineTotal)}`}
           onPress={handleAddToCart}
-          className="bg-primary rounded-full flex-row items-center justify-between"
           style={{
+            backgroundColor: colors.primary,
+            borderRadius: radius.lg,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
             paddingHorizontal: 24,
-            paddingVertical: 18,
-            shadowColor: colors.ink,
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: 0.08,
-            shadowRadius: 24,
-            elevation: 8,
+            paddingVertical: 16,
+            ...shadow.hero,
           }}
         >
           <Text
-            className="uppercase"
             style={{
-              fontFamily: "Poppins_700Bold",
-              fontSize: 13,
-              letterSpacing: 2,
-              color: colors.surface,
+              fontFamily: font.bodyBold,
+              fontSize: 15,
+              color: colors.ink,
+              letterSpacing: 0.5,
             }}
           >
-            Ajouter au panier
+            AJOUTER AU PANIER
           </Text>
           <View
-            className="bg-surface rounded-full"
-            style={{ paddingHorizontal: 14, paddingVertical: 6 }}
+            style={{
+              backgroundColor: colors.ink,
+              borderRadius: radius.sm,
+              paddingHorizontal: 14,
+              paddingVertical: 6,
+            }}
           >
             <Text
-              className="text-primary"
               style={{
-                fontFamily: "BebasNeue_400Regular",
-                fontSize: 18,
+                fontFamily: font.display,
+                fontSize: 20,
+                color: colors.primary,
               }}
             >
               {formatPriceEUR(lineTotal)}
