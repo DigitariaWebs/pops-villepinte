@@ -99,11 +99,11 @@ export default function OnboardingFlow({
           pointerEvents="none"
           style={{
             position: "absolute",
-            top: insets.top - 20,
-            right: -80,
+            top: insets.top - 40,
+            right: -100,
             zIndex: 10,
-            width: 300,
-            height: 300,
+            width: 380,
+            height: 380,
             transform: [{ rotate: "30deg" }],
           }}
         >
