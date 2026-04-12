@@ -135,7 +135,7 @@ export default function OnboardingFlow({
                 paddingHorizontal: 32,
                 paddingTop: insets.top + 60,
                 paddingBottom: insets.bottom + 120,
-                justifyContent: "center",
+                justifyContent: "flex-end",
               }}
             >
               <View
