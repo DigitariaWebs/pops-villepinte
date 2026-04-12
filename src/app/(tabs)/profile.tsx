@@ -6,6 +6,7 @@ import {
   CheckCircle,
   FileText,
   Heart,
+  LogOut,
   MessageCircle,
   User,
 } from "lucide-react-native";
@@ -16,6 +17,7 @@ import TextField from "@/components/form/TextField";
 import StatsCard from "@/components/profile/StatsCard";
 import SettingsRow from "@/components/profile/SettingsRow";
 import { colors, font, radius, shadow } from "@/constants/theme";
+import { useAuthStore } from "@/store/auth.store";
 import { useProfileStore } from "@/store/profile.store";
 
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
@@ -87,8 +89,28 @@ export default function ProfileScreen(): React.ReactElement {
     setTimeout(() => setSaved(false), 2500);
   };
 
+  const logout = useAuthStore((s) => s.logout);
+
   const handleStubPress = (): void => {
-    Alert.alert("Bientot", "Cette fonctionnalite arrive dans une prochaine version.");
+    Alert.alert("Bientôt", "Cette fonctionnalité arrive dans une prochaine version.");
+  };
+
+  const handleLogout = (): void => {
+    Alert.alert(
+      "Déconnexion",
+      "Tu veux vraiment te déconnecter ?",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Se déconnecter",
+          style: "destructive",
+          onPress: () => {
+            void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            logout();
+          },
+        },
+      ],
+    );
   };
 
   return (
@@ -390,6 +412,14 @@ export default function ProfileScreen(): React.ReactElement {
             }}
           />
           <SettingsRow icon={MessageCircle} label="Nous contacter" onPress={handleStubPress} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.border,
+              marginLeft: 56,
+            }}
+          />
+          <SettingsRow icon={LogOut} label="Se déconnecter" onPress={handleLogout} />
         </View>
       </View>
 

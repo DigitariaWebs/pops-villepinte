@@ -4,39 +4,47 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { asyncStorageAdapter } from "./_storage";
 
 type AuthState = {
-  hasSeenOnboarding: boolean;
-  isAuthenticated: boolean;
+  onboardingDone: boolean;
+  authed: boolean;
+  signupDone: boolean;
   phone: string;
-  markOnboardingSeen: () => void;
-  login: (phone: string) => void;
+  completeOnboarding: () => void;
+  login: (phone: string, skipSignup: boolean) => void;
+  completeSignup: () => void;
   logout: () => void;
 };
 
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      hasSeenOnboarding: false,
-      isAuthenticated: false,
+      onboardingDone: false,
+      authed: false,
+      signupDone: false,
       phone: "",
 
-      markOnboardingSeen: () => {
-        set({ hasSeenOnboarding: true });
+      completeOnboarding: () => {
+        set({ onboardingDone: true });
       },
 
-      login: (phone) => {
-        set({ isAuthenticated: true, phone });
+      login: (phone, skipSignup) => {
+        set({ authed: true, phone, signupDone: skipSignup });
+      },
+
+      completeSignup: () => {
+        set({ signupDone: true });
       },
 
       logout: () => {
-        set({ isAuthenticated: false, phone: "" });
+        set({ onboardingDone: false, authed: false, signupDone: false, phone: "" });
       },
     }),
     {
       name: "pops.auth.v1",
       storage: createJSONStorage(() => asyncStorageAdapter),
       partialize: (state) => ({
-        hasSeenOnboarding: state.hasSeenOnboarding,
-        isAuthenticated: state.isAuthenticated,
+        onboardingDone: state.onboardingDone,
+        authed: state.authed,
+        signupDone: state.signupDone,
         phone: state.phone,
       }),
     },

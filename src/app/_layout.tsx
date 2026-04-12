@@ -12,6 +12,7 @@ import SignupForm from "@/components/auth/SignupForm";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import AnimatedSplash from "@/components/splash/AnimatedSplash";
 import { useAppFonts } from "@/constants/fonts";
+import { useAuthStore } from "@/store/auth.store";
 
 const KNOWN_PHONE = "0642799884";
 
@@ -20,10 +21,14 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 export default function RootLayout(): React.ReactNode {
   const fontsLoaded = useAppFonts();
   const [splashDone, setSplashDone] = useState(false);
-  const [onboardingDone, setOnboardingDone] = useState(false);
-  const [authed, setAuthed] = useState(false);
-  const [signupDone, setSignupDone] = useState(false);
-  const [phone, setPhone] = useState("");
+
+  const onboardingDone = useAuthStore((s) => s.onboardingDone);
+  const authed = useAuthStore((s) => s.authed);
+  const signupDone = useAuthStore((s) => s.signupDone);
+  const phone = useAuthStore((s) => s.phone);
+  const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
+  const login = useAuthStore((s) => s.login);
+  const completeSignup = useAuthStore((s) => s.completeSignup);
 
   useEffect(() => {
     if (fontsLoaded) {
@@ -46,7 +51,7 @@ export default function RootLayout(): React.ReactNode {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
-        <OnboardingFlow onComplete={() => setOnboardingDone(true)} />
+        <OnboardingFlow onComplete={completeOnboarding} />
       </GestureHandlerRootView>
     );
   }
@@ -57,11 +62,7 @@ export default function RootLayout(): React.ReactNode {
         <StatusBar style="dark" />
         <AuthFlow
           onComplete={(p) => {
-            setPhone(p);
-            if (p === KNOWN_PHONE) {
-              setSignupDone(true);
-            }
-            setAuthed(true);
+            login(p, p === KNOWN_PHONE);
           }}
         />
       </GestureHandlerRootView>
@@ -72,7 +73,7 @@ export default function RootLayout(): React.ReactNode {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
-        <SignupForm phone={phone} onComplete={() => setSignupDone(true)} />
+        <SignupForm phone={phone} onComplete={completeSignup} />
       </GestureHandlerRootView>
     );
   }
