@@ -208,7 +208,7 @@ export default function OnboardingFlow({
             top: 0,
             left: 0,
             right: 0,
-            zIndex: 10,
+            zIndex: 5,
             alignItems: "center",
           }}
         >
@@ -226,17 +226,18 @@ export default function OnboardingFlow({
         horizontal
         pagingEnabled
         showsHorizontalScrollIndicator={false}
+        style={{ zIndex: 10 }}
         keyExtractor={(item) => item.id}
         onViewableItemsChanged={handleViewableItemsChanged}
         viewabilityConfig={viewabilityConfig}
-        renderItem={({ item }) => {
+        renderItem={({ item, index: slideIndex }) => {
           const Icon = item.icon;
           return (
             <View
               style={{
                 width: SCREEN_WIDTH,
                 flex: 1,
-                backgroundColor: item.bg,
+                backgroundColor: slideIndex === 1 ? "transparent" : item.bg,
                 paddingHorizontal: 32,
                 paddingTop: insets.top + 60,
                 paddingBottom: insets.bottom + 120,
