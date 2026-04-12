@@ -7,7 +7,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
-import AuthFlow from "@/components/auth/AuthFlow";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import AnimatedSplash from "@/components/splash/AnimatedSplash";
 import { useAppFonts } from "@/constants/fonts";
@@ -17,12 +16,8 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout(): React.ReactNode {
   const fontsLoaded = useAppFonts();
-
   const hasSeenOnboarding = useAuthStore((s) => s.hasSeenOnboarding);
-  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const markOnboardingSeen = useAuthStore((s) => s.markOnboardingSeen);
-  const login = useAuthStore((s) => s.login);
-
   const [splashDone, setSplashDone] = useState(false);
 
   useEffect(() => {
@@ -33,7 +28,6 @@ export default function RootLayout(): React.ReactNode {
 
   if (!fontsLoaded) return null;
 
-  // Step 1: Animated splash
   if (!splashDone) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -43,27 +37,15 @@ export default function RootLayout(): React.ReactNode {
     );
   }
 
-  // Step 2: Onboarding (first time only)
   if (!hasSeenOnboarding) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <OnboardingFlow onComplete={markOnboardingSeen} />
       </GestureHandlerRootView>
     );
   }
 
-  // Step 3: Phone OTP auth
-  if (!isAuthenticated) {
-    return (
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar style="dark" />
-        <AuthFlow onComplete={(phone) => login(phone)} />
-      </GestureHandlerRootView>
-    );
-  }
-
-  // Step 4: Main app
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>

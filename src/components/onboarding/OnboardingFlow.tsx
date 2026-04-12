@@ -36,14 +36,14 @@ const SLIDES: Slide[] = [
     icon: ShoppingBag,
     title: "COMMANDE\nEN 30 SEC",
     body: "Choisis ton plat, personnalise-le avec tes suppléments, et valide. C'est tout.",
-    bg: colors.accent,
+    bg: colors.primary,
   },
   {
     id: "3",
     icon: MapPin,
     title: "VIENS\nRÉCUPÉRER",
     body: "Ta commande est prête quand tu arrives. Pas de file, pas d'attente. Cash ou CB.",
-    bg: colors.ink,
+    bg: colors.primary,
   },
 ];
 
@@ -88,7 +88,7 @@ export default function OnboardingFlow({
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.ink }}>
+    <View style={{ flex: 1, backgroundColor: colors.primary }}>
       <FlatList
         ref={flatListRef}
         data={SLIDES}
@@ -125,7 +125,7 @@ export default function OnboardingFlow({
               >
                 <Icon
                   size={40}
-                  color={item.bg === colors.ink ? colors.primary : colors.ink}
+                  color={colors.ink}
                   strokeWidth={2.5}
                 />
               </View>
@@ -136,7 +136,7 @@ export default function OnboardingFlow({
                   fontSize: 56,
                   lineHeight: 58,
                   letterSpacing: 2,
-                  color: item.bg === colors.ink ? colors.primary : colors.ink,
+                  color: colors.ink,
                 }}
               >
                 {item.title}
@@ -147,10 +147,7 @@ export default function OnboardingFlow({
                   fontFamily: "Poppins_500Medium",
                   fontSize: 16,
                   lineHeight: 24,
-                  color:
-                    item.bg === colors.ink
-                      ? "rgba(255,255,255,0.75)"
-                      : "rgba(0,0,0,0.65)",
+                  color: "rgba(0,0,0,0.65)",
                   marginTop: 20,
                   maxWidth: 300,
                 }}
@@ -181,7 +178,7 @@ export default function OnboardingFlow({
             style={{
               fontFamily: "Poppins_600SemiBold",
               fontSize: 14,
-              color: "rgba(255,255,255,0.5)",
+              color: "rgba(0,0,0,0.4)",
             }}
           >
             Passer
@@ -198,7 +195,7 @@ export default function OnboardingFlow({
                 height: 8,
                 borderRadius: 4,
                 backgroundColor:
-                  i === currentIndex ? colors.primary : "rgba(255,255,255,0.25)",
+                  i === currentIndex ? colors.ink : "rgba(0,0,0,0.2)",
               }}
             />
           ))}
@@ -210,12 +207,12 @@ export default function OnboardingFlow({
             width: 56,
             height: 56,
             borderRadius: 28,
-            backgroundColor: colors.primary,
+            backgroundColor: colors.ink,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <ChevronRight size={28} color={colors.ink} strokeWidth={3} />
+          <ChevronRight size={28} color={colors.primary} strokeWidth={3} />
         </Pressable>
       </View>
     </View>
