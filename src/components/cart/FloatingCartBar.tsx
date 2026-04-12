@@ -78,7 +78,7 @@ export default function FloatingCartBar(): React.ReactElement | null {
           {
             paddingHorizontal: 24,
             paddingVertical: 16,
-            shadowColor: colors.onSurface,
+            shadowColor: colors.ink,
             shadowOffset: { width: 0, height: 12 },
             shadowOpacity: 0.18,
             shadowRadius: 24,
@@ -101,7 +101,7 @@ export default function FloatingCartBar(): React.ReactElement | null {
           <Text
             className="text-primary"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 18,
             }}
           >

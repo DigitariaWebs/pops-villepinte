@@ -54,7 +54,7 @@ export default function CategoryChip({
   }));
 
   const Icon = CATEGORY_ICONS[category.id] ?? UtensilsCrossed;
-  const iconColor = selected ? colors.onSecondaryContainer : colors.onSurface;
+  const iconColor = selected ? colors.ink : colors.ink;
 
   return (
     <AnimatedPressable

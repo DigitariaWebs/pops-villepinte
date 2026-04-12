@@ -37,7 +37,7 @@ export default function CartEmpty(): React.ReactElement {
       >
         <ShoppingBag
           size={56}
-          color={colors.onSurfaceVariant}
+          color={colors.inkMuted}
           strokeWidth={1.5}
         />
       </View>
@@ -45,7 +45,7 @@ export default function CartEmpty(): React.ReactElement {
       <Text
         className="text-on-surface"
         style={{
-          fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+          fontFamily: "BebasNeue_400Regular",
           fontSize: 32,
           lineHeight: 36,
           letterSpacing: -1,
@@ -92,7 +92,7 @@ export default function CartEmpty(): React.ReactElement {
         <Text
           className="uppercase"
           style={{
-            fontFamily: "PlusJakartaSans_700Bold",
+            fontFamily: "Poppins_700Bold",
             fontSize: 12,
             letterSpacing: 2,
             color: colors.surface,

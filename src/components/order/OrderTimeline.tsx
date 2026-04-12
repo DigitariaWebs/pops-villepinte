@@ -52,12 +52,12 @@ export default function OrderTimeline({
           ? colors.error
           : isCompleted || isActive
             ? colors.primary
-            : colors.surfaceContainerHigh;
+            : colors.border;
 
         const lineColor =
           isCompleted && !isCancelled
             ? colors.primary
-            : colors.surfaceContainerHigh;
+            : colors.border;
 
         return (
           <View key={step.key} className="flex-row" style={{ minHeight: isLast ? 36 : 56 }}>

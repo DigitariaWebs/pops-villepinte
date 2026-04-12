@@ -46,7 +46,7 @@ export default function PastOrderRow({
           <Text
             className="text-on-surface"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 18,
               letterSpacing: -0.5,
               marginTop: 4,

@@ -64,7 +64,7 @@ export default function CommitToggle({
           justifyContent: "center",
           backgroundColor: value ? colors.primary : colors.surface,
           borderWidth: value ? 0 : 2,
-          borderColor: colors.outlineVariant,
+          borderColor: colors.border,
         }}
       >
         <Animated.View style={dotStyle}>

@@ -59,7 +59,7 @@ export default function NotesField({
           value={value}
           onChangeText={onChange}
           placeholder="Bien cuit, sans oignons, pas trop de sauce..."
-          placeholderTextColor={colors.onSurfaceVariant}
+          placeholderTextColor={colors.inkMuted}
           multiline
           maxLength={MAX_LENGTH}
           textAlignVertical="top"
@@ -104,7 +104,7 @@ export default function NotesField({
             height: 28,
           }}
         >
-          <X size={14} color={colors.onSurfaceVariant} strokeWidth={2.5} />
+          <X size={14} color={colors.inkMuted} strokeWidth={2.5} />
         </Pressable>
       </View>
     </Animated.View>

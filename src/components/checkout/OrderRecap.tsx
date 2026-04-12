@@ -98,7 +98,7 @@ export default function OrderRecap({
         <Text
           className="text-on-surface"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold",
+            fontFamily: "Poppins_700Bold",
             fontSize: 14,
           }}
         >
@@ -107,7 +107,7 @@ export default function OrderRecap({
         <Text
           className="text-primary"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 28,
             letterSpacing: -1,
           }}

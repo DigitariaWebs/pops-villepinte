@@ -48,7 +48,7 @@ export default function PickupInstructions({
         <Text
           className="text-primary"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 28,
             letterSpacing: -0.5,
           }}

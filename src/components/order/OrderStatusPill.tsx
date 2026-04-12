@@ -19,13 +19,13 @@ type PillConfig = {
 const CONFIG: Record<OrderStatus, PillConfig> = {
   received: {
     label: "Reçue",
-    bg: colors.surfaceContainerHigh,
-    text: colors.onSurfaceVariant,
+    bg: colors.border,
+    text: colors.inkMuted,
   },
   preparing: {
     label: "En préparation",
-    bg: colors.secondaryContainer,
-    text: colors.onSecondaryContainer,
+    bg: colors.primary,
+    text: colors.ink,
   },
   ready: { label: "Prête !", bg: colors.success, text: colors.surface },
   picked_up: { label: "Récupérée", bg: colors.success, text: colors.surface },

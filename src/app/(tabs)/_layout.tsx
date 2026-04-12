@@ -8,17 +8,17 @@ export default function TabLayout(): React.ReactNode {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.onSurface,
-        tabBarInactiveTintColor: colors.onSurfaceVariant,
+        tabBarActiveTintColor: colors.ink,
+        tabBarInactiveTintColor: colors.inkMuted,
         tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopWidth: 1,
-          borderTopColor: colors.outline,
-          height: 84,
+          backgroundColor: colors.primary,
+          borderTopWidth: 3,
+          borderTopColor: colors.ink,
+          height: 88,
           paddingTop: 8,
         },
         tabBarLabelStyle: {
-          fontFamily: font.semibold,
+          fontFamily: font.bodySemi,
           fontSize: 11,
           letterSpacing: 0.5,
           textTransform: "uppercase",
@@ -29,7 +29,7 @@ export default function TabLayout(): React.ReactNode {
         name="index"
         options={{
           title: "Accueil",
-          tabBarIcon: ({ color }) => <Home size={22} color={color} strokeWidth={1.75} />,
+          tabBarIcon: ({ color }) => <Home size={22} color={color} strokeWidth={2.5} />,
         }}
       />
       <Tabs.Screen
@@ -37,7 +37,7 @@ export default function TabLayout(): React.ReactNode {
         options={{
           title: "Menu",
           tabBarIcon: ({ color }) => (
-            <UtensilsCrossed size={22} color={color} strokeWidth={1.75} />
+            <UtensilsCrossed size={22} color={color} strokeWidth={2.5} />
           ),
         }}
       />
@@ -45,14 +45,14 @@ export default function TabLayout(): React.ReactNode {
         name="orders"
         options={{
           title: "Commandes",
-          tabBarIcon: ({ color }) => <Receipt size={22} color={color} strokeWidth={1.75} />,
+          tabBarIcon: ({ color }) => <Receipt size={22} color={color} strokeWidth={2.5} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profil",
-          tabBarIcon: ({ color }) => <User size={22} color={color} strokeWidth={1.75} />,
+          tabBarIcon: ({ color }) => <User size={22} color={color} strokeWidth={2.5} />,
         }}
       />
     </Tabs>

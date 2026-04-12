@@ -87,7 +87,7 @@ export default function CountdownRing({
     ? colors.error
     : isReady
       ? colors.success
-      : colors.onSurface;
+      : colors.ink;
 
   return (
     <View style={{ width: SIZE, height: SIZE, alignItems: "center", justifyContent: "center" }}>
@@ -100,7 +100,7 @@ export default function CountdownRing({
           cx={SIZE / 2}
           cy={SIZE / 2}
           r={RADIUS}
-          stroke={colors.editorialRule}
+          stroke={colors.border}
           strokeWidth={STROKE_WIDTH}
           fill="none"
         />
@@ -133,7 +133,7 @@ export default function CountdownRing({
       >
         <Text
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 52,
             letterSpacing: -2,
             color: timerColor,
@@ -150,7 +150,7 @@ export default function CountdownRing({
               ? colors.success
               : isCancelled
                 ? colors.error
-                : colors.onSurfaceVariant,
+                : colors.inkMuted,
           }}
         >
           {STATUS_LABELS[status]}

@@ -72,7 +72,7 @@ function CompactStepper({ value, onChange }: CompactStepperProps): React.ReactEl
         className="bg-surface-container-high items-center justify-center rounded-full"
         style={[{ width: 36, height: 36 }, minusStyle]}
       >
-        <Minus size={16} color={colors.onSurface} strokeWidth={2.5} />
+        <Minus size={16} color={colors.ink} strokeWidth={2.5} />
       </AnimatedPressable>
 
       <View
@@ -85,7 +85,7 @@ function CompactStepper({ value, onChange }: CompactStepperProps): React.ReactEl
         <Text
           className="text-on-surface"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 20,
             lineHeight: 22,
             textAlign: "center",
@@ -226,7 +226,7 @@ export default function CartItemRow({
               className="flex-row items-center"
               style={{ marginTop: 4, gap: 4 }}
             >
-              <Pencil size={11} color={colors.onSurfaceVariant} strokeWidth={2} />
+              <Pencil size={11} color={colors.inkMuted} strokeWidth={2} />
               <Text
                 numberOfLines={1}
                 className="font-sans text-on-surface-variant"
@@ -248,7 +248,7 @@ export default function CartItemRow({
             <Text
               className="text-primary"
               style={{
-                fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                fontFamily: "BebasNeue_400Regular",
                 fontSize: 22,
               }}
             >

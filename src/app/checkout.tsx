@@ -173,7 +173,7 @@ export default function CheckoutScreen(): React.ReactElement {
           <Text
             className="text-on-surface"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 44,
               lineHeight: 48,
               letterSpacing: -1.5,
@@ -238,7 +238,7 @@ export default function CheckoutScreen(): React.ReactElement {
             style={{
               width: 32,
               height: 2,
-              backgroundColor: colors.editorialRule,
+              backgroundColor: colors.border,
               marginBottom: 16,
             }}
           />
@@ -282,7 +282,7 @@ export default function CheckoutScreen(): React.ReactElement {
             opacity: canConfirm ? 1 : 0.7,
             ...(canConfirm
               ? {
-                  shadowColor: colors.onSurface,
+                  shadowColor: colors.ink,
                   shadowOffset: { width: 0, height: 12 },
                   shadowOpacity: 0.08,
                   shadowRadius: 24,
@@ -294,10 +294,10 @@ export default function CheckoutScreen(): React.ReactElement {
           <Text
             className="uppercase"
             style={{
-              fontFamily: "PlusJakartaSans_700Bold",
+              fontFamily: "Poppins_700Bold",
               fontSize: 13,
               letterSpacing: 2,
-              color: canConfirm ? colors.surface : colors.onSurfaceVariant,
+              color: canConfirm ? colors.surface : colors.inkMuted,
             }}
           >
             {canConfirm ? "Je confirme" : "Complétez les champs"}
@@ -311,7 +311,7 @@ export default function CheckoutScreen(): React.ReactElement {
             <Text
               className={canConfirm ? "text-primary" : "text-on-surface-variant"}
               style={{
-                fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                fontFamily: "BebasNeue_400Regular",
                 fontSize: 18,
               }}
             >

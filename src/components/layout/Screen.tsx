@@ -3,6 +3,7 @@ import { type Edge, SafeAreaView } from "react-native-safe-area-context";
 
 import { colors } from "@/constants/theme";
 
+// Street food brand: warm off-white base
 export type ScreenProps = {
   children: React.ReactNode;
   scroll?: boolean;
@@ -23,7 +24,7 @@ const DEFAULT_EDGES: readonly Edge[] = ["top"];
 // here and the view collapses to 0 height. We pass an explicit inline style
 // instead. First-party components below (View, ScrollView, Pressable) still
 // use className normally.
-const SAFE_AREA_STYLE = { flex: 1, backgroundColor: colors.surface } as const;
+const SAFE_AREA_STYLE = { flex: 1, backgroundColor: colors.background } as const;
 
 export default function Screen({
   children,

@@ -43,7 +43,7 @@ export default function StatsCard({
       <Text
         className="text-primary"
         style={{
-          fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+          fontFamily: "BebasNeue_400Regular",
           fontSize: 56,
           letterSpacing: -2,
           marginTop: 4,

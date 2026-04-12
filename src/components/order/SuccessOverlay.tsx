@@ -114,7 +114,7 @@ export default function SuccessOverlay({
         <Text
           className="text-on-surface"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 38,
             lineHeight: 42,
             letterSpacing: -1.5,

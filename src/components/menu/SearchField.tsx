@@ -61,7 +61,7 @@ export default function SearchField({
         className="bg-surface-container-high items-center justify-center rounded-full"
         style={{ width: COLLAPSED_SIZE, height: COLLAPSED_SIZE }}
       >
-        <Search size={20} color={colors.onSurface} strokeWidth={2} />
+        <Search size={20} color={colors.ink} strokeWidth={2} />
       </Pressable>
     );
   }
@@ -78,13 +78,13 @@ export default function SearchField({
         animatedStyle,
       ]}
     >
-      <Search size={20} color={colors.onSurface} strokeWidth={2} />
+      <Search size={20} color={colors.ink} strokeWidth={2} />
       <TextInput
         autoFocus
         value={value}
         onChangeText={onChangeText}
         placeholder="Cherchez votre envie..."
-        placeholderTextColor={colors.onSurfaceVariant}
+        placeholderTextColor={colors.inkMuted}
         returnKeyType="search"
         className="flex-1 font-sans text-on-surface"
         style={{ fontSize: 15, paddingVertical: 0 }}
@@ -95,7 +95,7 @@ export default function SearchField({
         onPress={onToggle}
         hitSlop={12}
       >
-        <X size={20} color={colors.onSurface} strokeWidth={2.5} />
+        <X size={20} color={colors.ink} strokeWidth={2.5} />
       </Pressable>
     </Animated.View>
   );

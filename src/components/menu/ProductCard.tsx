@@ -143,7 +143,7 @@ export default function ProductCard({
             right: 12,
             width: 36,
             height: 36,
-            shadowColor: colors.onSurface,
+            shadowColor: colors.ink,
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.08,
             shadowRadius: 8,

@@ -47,7 +47,7 @@ export default function ProductDetailScreen(): React.ReactElement {
         <Text
           className="text-on-surface"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 28,
             letterSpacing: -1,
           }}
@@ -188,7 +188,7 @@ export default function ProductDetailScreen(): React.ReactElement {
             <Text
               className="text-on-surface"
               style={{
-                fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                fontFamily: "BebasNeue_400Regular",
                 fontSize: 38,
                 lineHeight: 42,
                 letterSpacing: -1.5,
@@ -215,7 +215,7 @@ export default function ProductDetailScreen(): React.ReactElement {
               <Text
                 className="text-primary"
                 style={{
-                  fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                  fontFamily: "BebasNeue_400Regular",
                   fontSize: 40,
                   letterSpacing: -1,
                 }}
@@ -276,7 +276,7 @@ export default function ProductDetailScreen(): React.ReactElement {
           style={{
             paddingHorizontal: 24,
             paddingVertical: 18,
-            shadowColor: colors.onSurface,
+            shadowColor: colors.ink,
             shadowOffset: { width: 0, height: 12 },
             shadowOpacity: 0.08,
             shadowRadius: 24,
@@ -286,7 +286,7 @@ export default function ProductDetailScreen(): React.ReactElement {
           <Text
             className="uppercase"
             style={{
-              fontFamily: "PlusJakartaSans_700Bold",
+              fontFamily: "Poppins_700Bold",
               fontSize: 13,
               letterSpacing: 2,
               color: colors.surface,
@@ -301,7 +301,7 @@ export default function ProductDetailScreen(): React.ReactElement {
             <Text
               className="text-primary"
               style={{
-                fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                fontFamily: "BebasNeue_400Regular",
                 fontSize: 18,
               }}
             >

@@ -75,7 +75,7 @@ function SupplementRow({
           className="bg-on-secondary-container items-center justify-center rounded-full"
           style={{ width: 28, height: 28 }}
         >
-          <Check size={16} color={colors.secondaryContainer} strokeWidth={3} />
+          <Check size={16} color={colors.primary} strokeWidth={3} />
         </View>
       ) : isFreeSpicy ? (
         <View

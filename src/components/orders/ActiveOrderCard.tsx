@@ -72,7 +72,7 @@ export default function ActiveOrderCard({
 
       <Text
         style={{
-          fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+          fontFamily: "BebasNeue_400Regular",
           fontSize: 24,
           letterSpacing: -0.5,
           color: colors.surface,

@@ -62,7 +62,7 @@ export default function TextField({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={colors.onSurfaceVariant}
+          placeholderTextColor={colors.inkMuted}
           keyboardType={keyboardType}
           autoComplete={autoComplete as TextInput["props"]["autoComplete"]}
           maxLength={maxLength}

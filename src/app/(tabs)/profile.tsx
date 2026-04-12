@@ -101,7 +101,7 @@ export default function ProfileScreen(): React.ReactElement {
         <Text
           className="text-on-surface"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 44,
             lineHeight: 48,
             letterSpacing: -1.5,
@@ -174,7 +174,7 @@ export default function ProfileScreen(): React.ReactElement {
             <Text
               className="uppercase"
               style={{
-                fontFamily: "PlusJakartaSans_700Bold",
+                fontFamily: "Poppins_700Bold",
                 fontSize: 12,
                 letterSpacing: 2,
                 color: colors.surface,
@@ -217,7 +217,7 @@ export default function ProfileScreen(): React.ReactElement {
           style={{
             width: 32,
             height: 2,
-            backgroundColor: colors.editorialRule,
+            backgroundColor: colors.border,
             marginBottom: 16,
           }}
         />

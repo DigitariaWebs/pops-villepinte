@@ -34,7 +34,7 @@ export default function IconButton({
   }));
 
   const isLight = variant === "light";
-  const iconColor = isLight ? colors.onSurface : colors.surface;
+  const iconColor = isLight ? colors.ink : colors.surface;
 
   return (
     <AnimatedPressable

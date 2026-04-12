@@ -29,7 +29,7 @@ export default function SettingsRow({
         className="bg-surface-container-high items-center justify-center rounded-full"
         style={{ width: 40, height: 40 }}
       >
-        <Icon size={20} color={colors.onSurface} strokeWidth={1.75} />
+        <Icon size={20} color={colors.ink} strokeWidth={1.75} />
       </View>
 
       <Text
@@ -39,7 +39,7 @@ export default function SettingsRow({
         {label}
       </Text>
 
-      <ChevronRight size={18} color={colors.onSurfaceVariant} strokeWidth={2} />
+      <ChevronRight size={18} color={colors.inkMuted} strokeWidth={2} />
     </Pressable>
   );
 }

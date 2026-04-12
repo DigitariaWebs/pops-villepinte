@@ -106,7 +106,7 @@ export default function CartScreen(): React.ReactElement {
           <Text
             className="text-on-surface"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 44,
               lineHeight: 48,
               letterSpacing: -1.5,
@@ -155,7 +155,7 @@ export default function CartScreen(): React.ReactElement {
               <Text
                 className="text-on-surface"
                 style={{
-                  fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                  fontFamily: "BebasNeue_400Regular",
                   fontSize: 22,
                   letterSpacing: -0.5,
                   marginTop: 4,
@@ -186,7 +186,7 @@ export default function CartScreen(): React.ReactElement {
             style={{
               width: 32,
               height: 2,
-              backgroundColor: colors.editorialRule,
+              backgroundColor: colors.border,
               marginBottom: 16,
             }}
           />
@@ -220,7 +220,7 @@ export default function CartScreen(): React.ReactElement {
           style={{
             paddingHorizontal: 24,
             paddingVertical: 18,
-            shadowColor: colors.onSurface,
+            shadowColor: colors.ink,
             shadowOffset: { width: 0, height: 12 },
             shadowOpacity: 0.08,
             shadowRadius: 24,
@@ -231,7 +231,7 @@ export default function CartScreen(): React.ReactElement {
             <Text
               className="uppercase"
               style={{
-                fontFamily: "PlusJakartaSans_700Bold",
+                fontFamily: "Poppins_700Bold",
                 fontSize: 10,
                 letterSpacing: 2,
                 color: "rgba(253,249,238,0.7)",
@@ -241,7 +241,7 @@ export default function CartScreen(): React.ReactElement {
             </Text>
             <Text
               style={{
-                fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+                fontFamily: "BebasNeue_400Regular",
                 fontSize: 22,
                 color: colors.surface,
                 marginTop: 2,
@@ -257,7 +257,7 @@ export default function CartScreen(): React.ReactElement {
             <Text
               className="text-primary uppercase"
               style={{
-                fontFamily: "PlusJakartaSans_700Bold",
+                fontFamily: "Poppins_700Bold",
                 fontSize: 12,
                 letterSpacing: 2,
               }}

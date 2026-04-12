@@ -144,7 +144,7 @@ export default function MenuScreen(): React.ReactElement {
             >
               <SearchIcon
                 size={48}
-                color={colors.onSurfaceVariant}
+                color={colors.inkMuted}
                 strokeWidth={1.5}
               />
               <Text

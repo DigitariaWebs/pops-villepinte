@@ -14,7 +14,7 @@
     "android": {
       "package": "com.progix.popsvillepinte",
       "adaptiveIcon": {
-        "backgroundColor": "#fdf9ee",
+        "backgroundColor": "#FFCE00",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -31,7 +31,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#fdf9ee",
+          "backgroundColor": "#FFCE00",
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
           "imageWidth": 200

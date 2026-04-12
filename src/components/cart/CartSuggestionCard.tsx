@@ -94,7 +94,7 @@ export default function CartSuggestionCard({
           <Text
             className="text-primary"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 14,
             }}
           >

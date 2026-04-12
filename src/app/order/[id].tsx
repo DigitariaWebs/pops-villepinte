@@ -119,7 +119,7 @@ export default function OrderDetailScreen(): React.ReactElement {
         <Text
           className="text-on-surface"
           style={{
-            fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+            fontFamily: "BebasNeue_400Regular",
             fontSize: 28,
             letterSpacing: -1,
           }}
@@ -178,7 +178,7 @@ export default function OrderDetailScreen(): React.ReactElement {
           <Text
             className="text-on-surface"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 32,
               lineHeight: 36,
               letterSpacing: -1,
@@ -216,7 +216,7 @@ export default function OrderDetailScreen(): React.ReactElement {
             style={{
               width: 32,
               height: 2,
-              backgroundColor: colors.editorialRule,
+              backgroundColor: colors.border,
               marginBottom: 16,
             }}
           />
@@ -262,7 +262,7 @@ export default function OrderDetailScreen(): React.ReactElement {
                 paddingVertical: 18,
                 backgroundColor: isReady
                   ? colors.success
-                  : colors.surfaceContainerHigh,
+                  : colors.border,
                 ...(isReady
                   ? {
                       shadowColor: colors.success,
@@ -279,10 +279,10 @@ export default function OrderDetailScreen(): React.ReactElement {
             <Text
               className="uppercase"
               style={{
-                fontFamily: "PlusJakartaSans_700Bold",
+                fontFamily: "Poppins_700Bold",
                 fontSize: 13,
                 letterSpacing: 2,
-                color: isReady ? colors.surface : colors.onSurface,
+                color: isReady ? colors.surface : colors.ink,
                 textAlign: "center",
               }}
             >

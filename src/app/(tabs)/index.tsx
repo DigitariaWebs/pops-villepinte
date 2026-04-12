@@ -100,7 +100,7 @@ export default function AccueilScreen(): React.ReactElement {
           style={{
             width: 32,
             height: 2,
-            backgroundColor: colors.editorialRule,
+            backgroundColor: colors.border,
             marginBottom: 16,
           }}
         />

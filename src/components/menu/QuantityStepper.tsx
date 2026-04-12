@@ -43,7 +43,7 @@ function StepButton({
   }));
 
   const isPlus = variant === "plus";
-  const iconColor = isPlus ? colors.surface : colors.onSurface;
+  const iconColor = isPlus ? colors.surface : colors.ink;
 
   return (
     <AnimatedPressable
@@ -130,7 +130,7 @@ export default function QuantityStepper({
           <Text
             className="text-on-surface"
             style={{
-              fontFamily: "PlusJakartaSans_800ExtraBold_Italic",
+              fontFamily: "BebasNeue_400Regular",
               fontSize: 32,
               lineHeight: 36,
               textAlign: "center",
