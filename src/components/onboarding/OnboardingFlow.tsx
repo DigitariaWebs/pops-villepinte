@@ -274,28 +274,30 @@ export default function OnboardingFlow({
                 flex: 1,
                 backgroundColor: "transparent",
                 paddingHorizontal: 32,
-                paddingTop: isSlide3 ? insets.top + 80 : insets.top + 60,
+                paddingTop: isSlide3 ? insets.top + 56 : insets.top + 60,
                 paddingBottom: insets.bottom + 120,
                 justifyContent: isSlide3 ? "flex-start" : "flex-end",
               }}
             >
-              <View
-                style={{
-                  width: 80,
-                  height: 80,
-                  borderRadius: 40,
-                  backgroundColor: "rgba(255,255,255,0.2)",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 32,
-                }}
-              >
-                <Icon
-                  size={40}
-                  color={colors.ink}
-                  strokeWidth={2.5}
-                />
-              </View>
+              {!isSlide3 ? (
+                <View
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: "rgba(255,255,255,0.2)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 32,
+                  }}
+                >
+                  <Icon
+                    size={40}
+                    color={colors.ink}
+                    strokeWidth={2.5}
+                  />
+                </View>
+              ) : null}
 
               <Text
                 style={{
