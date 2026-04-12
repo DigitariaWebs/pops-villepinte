@@ -1,10 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Pressable, View } from "react-native";
-import { Image } from "expo-image";
 import { useVideoPlayer, VideoView } from "expo-video";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const logoImage = require("../../../assets/images/logo.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logoVideo = require("../../../assets/video/logo.mp4") as number;
 
@@ -62,21 +59,6 @@ export default function AnimatedSplash({
       onPress={handleSkip}
       style={{ flex: 1, backgroundColor: "#FFFFFF" }}
     >
-      {/* Logo at top */}
-      <View
-        style={{
-          alignItems: "center",
-          paddingTop: 60,
-        }}
-      >
-        <Image
-          source={logoImage}
-          contentFit="contain"
-          style={{ width: 120, height: 120 }}
-        />
-      </View>
-
-      {/* Video centered */}
       <View
         style={{
           flex: 1,
