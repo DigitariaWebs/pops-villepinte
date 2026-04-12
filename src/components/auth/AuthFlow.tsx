@@ -21,6 +21,8 @@ const burgerImage = require("../../../assets/images/burger.png") as number;
 const tendersImage = require("../../../assets/images/tenders.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const tacosImage = require("../../../assets/images/tacos.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const wingsImage = require("../../../assets/images/wings.png") as number;
 
 const MOCK_OTP = "1234";
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
@@ -372,6 +374,19 @@ export default function AuthFlow({
             top: 10,
             right: -20,
             transform: [{ rotate: "18deg" }],
+            opacity: 0.12,
+          }}
+        />
+        <Image
+          source={wingsImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 120,
+            height: 120,
+            top: 110,
+            left: "15%",
+            transform: [{ rotate: "-6deg" }],
             opacity: 0.12,
           }}
         />
