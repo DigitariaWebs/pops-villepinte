@@ -201,40 +201,46 @@ export default function CartScreen(): React.ReactElement {
 
       {/* STICKY CTA */}
       <View
-        className="bg-surface"
         style={{
           position: "absolute",
           bottom: 0,
           left: 0,
           right: 0,
-          paddingHorizontal: 24,
-          paddingTop: 16,
+          backgroundColor: colors.white,
+          paddingHorizontal: 20,
+          paddingTop: 12,
           paddingBottom: Math.max(insets.bottom, 16) + 8,
+          borderTopWidth: 1,
+          borderTopColor: "#F0F0F0",
         }}
       >
         <Pressable
           accessibilityRole="button"
           accessibilityLabel={`Valider la commande pour ${formatPriceEUR(total)}`}
           onPress={handleValidate}
-          className="bg-primary flex-row items-center justify-between rounded-full"
           style={{
+            backgroundColor: colors.primary,
+            borderRadius: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
             paddingHorizontal: 24,
-            paddingVertical: 18,
+            paddingVertical: 16,
             shadowColor: colors.ink,
-            shadowOffset: { width: 0, height: 12 },
-            shadowOpacity: 0.08,
-            shadowRadius: 24,
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.15,
+            shadowRadius: 16,
             elevation: 8,
           }}
         >
           <View>
             <Text
-              className="uppercase"
               style={{
-                fontFamily: "Poppins_700Bold",
+                fontFamily: "Poppins_600SemiBold",
                 fontSize: 10,
                 letterSpacing: 2,
-                color: "rgba(253,249,238,0.7)",
+                color: "rgba(0,0,0,0.5)",
+                textTransform: "uppercase",
               }}
             >
               Total
@@ -242,8 +248,8 @@ export default function CartScreen(): React.ReactElement {
             <Text
               style={{
                 fontFamily: "BebasNeue_400Regular",
-                fontSize: 22,
-                color: colors.surface,
+                fontSize: 24,
+                color: colors.ink,
                 marginTop: 2,
               }}
             >
@@ -251,15 +257,20 @@ export default function CartScreen(): React.ReactElement {
             </Text>
           </View>
           <View
-            className="bg-surface flex-row items-center rounded-full"
-            style={{ paddingHorizontal: 18, paddingVertical: 10, gap: 8 }}
+            style={{
+              backgroundColor: colors.ink,
+              borderRadius: 12,
+              paddingHorizontal: 20,
+              paddingVertical: 12,
+            }}
           >
             <Text
-              className="text-primary uppercase"
               style={{
                 fontFamily: "Poppins_700Bold",
-                fontSize: 12,
+                fontSize: 14,
                 letterSpacing: 2,
+                color: colors.primary,
+                textTransform: "uppercase",
               }}
             >
               Valider
