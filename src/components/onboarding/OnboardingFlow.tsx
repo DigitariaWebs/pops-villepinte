@@ -215,7 +215,7 @@ export default function OnboardingFlow({
           <Image
             source={tendersImage}
             contentFit="contain"
-            style={{ width: 1020, height: 1020 }}
+            style={{ width: 700, height: 700 }}
           />
         </View>
       ) : null}
