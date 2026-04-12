@@ -48,7 +48,7 @@ function buildPatternItems(): React.ReactElement[] {
             top: r * 70 + (c % 2 === 0 ? 0 : 35),
             left: c * 55 + (r % 2 === 0 ? 0 : 26),
             transform: [{ rotate: `${rot}deg` }],
-            opacity: 0.12,
+            opacity: 0.6,
           }}
         >
           <Image
