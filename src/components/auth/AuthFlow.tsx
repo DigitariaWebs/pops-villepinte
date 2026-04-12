@@ -15,6 +15,12 @@ import { useProfileStore } from "@/store/profile.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const logoImage = require("../../../assets/images/logo.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const burgerImage = require("../../../assets/images/burger.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tendersImage = require("../../../assets/images/tenders.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tacosImage = require("../../../assets/images/tacos.png") as number;
 
 const MOCK_OTP = "1234";
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
@@ -214,115 +220,181 @@ export default function AuthFlow({
       style={{
         flex: 1,
         backgroundColor: colors.primary,
-        paddingHorizontal: 32,
-        paddingTop: insets.top + 60,
-        paddingBottom: insets.bottom + 24,
+        overflow: "hidden",
       }}
     >
-      <Image
-        source={logoImage}
-        contentFit="contain"
-        style={{ width: 60, height: 60, marginBottom: 32 }}
-      />
-
-      <Text
-        style={{
-          fontFamily: "BebasNeue_400Regular",
-          fontSize: 44,
-          lineHeight: 46,
-          letterSpacing: 2,
-          color: colors.ink,
-        }}
-      >
-        CONNEXION
-      </Text>
-
-      <Text
-        style={{
-          fontFamily: "Poppins_500Medium",
-          fontSize: 14,
-          color: "rgba(0,0,0,0.55)",
-          marginTop: 8,
-          maxWidth: 280,
-        }}
-      >
-        Entre ton numéro pour commander. Pas de spam, promis.
-      </Text>
-
+      {/* Form content */}
       <View
         style={{
-          backgroundColor: colors.ink,
-          borderRadius: 16,
-          paddingHorizontal: 20,
-          paddingVertical: 18,
-          marginTop: 36,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 12,
+          paddingHorizontal: 32,
+          paddingTop: insets.top + 60,
+          zIndex: 10,
         }}
       >
         <Text
           style={{
-            fontFamily: "Poppins_600SemiBold",
-            fontSize: 16,
-            color: colors.primary,
+            fontFamily: "BebasNeue_400Regular",
+            fontSize: 44,
+            lineHeight: 46,
+            letterSpacing: 2,
+            color: colors.ink,
           }}
         >
-          🇫🇷
+          CONNEXION
         </Text>
-        <TextInput
-          value={phone}
-          onChangeText={handlePhoneChange}
-          placeholder="06 12 34 56 78"
-          placeholderTextColor="rgba(255,206,0,0.35)"
-          keyboardType="phone-pad"
-          maxLength={14}
-          autoFocus
+
+        <Text
           style={{
-            flex: 1,
-            fontFamily: "Poppins_600SemiBold",
-            fontSize: 18,
-            color: colors.primary,
-            paddingVertical: 0,
+            fontFamily: "Poppins_500Medium",
+            fontSize: 14,
+            color: "rgba(0,0,0,0.55)",
+            marginTop: 8,
+            maxWidth: 280,
+          }}
+        >
+          Entre ton numéro pour commander. Pas de spam, promis.
+        </Text>
+
+        <View
+          style={{
+            backgroundColor: colors.ink,
+            borderRadius: 16,
+            paddingHorizontal: 20,
+            paddingVertical: 18,
+            marginTop: 36,
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "Poppins_600SemiBold",
+              fontSize: 16,
+              color: colors.primary,
+            }}
+          >
+            🇫🇷
+          </Text>
+          <TextInput
+            value={phone}
+            onChangeText={handlePhoneChange}
+            placeholder="06 12 34 56 78"
+            placeholderTextColor="rgba(255,206,0,0.35)"
+            keyboardType="phone-pad"
+            maxLength={14}
+            autoFocus
+            style={{
+              flex: 1,
+              fontFamily: "Poppins_600SemiBold",
+              fontSize: 18,
+              color: colors.primary,
+              paddingVertical: 0,
+            }}
+          />
+        </View>
+
+        {phoneError !== undefined ? (
+          <Text
+            style={{
+              fontFamily: "Poppins_600SemiBold",
+              fontSize: 13,
+              color: colors.accent,
+              marginTop: 12,
+            }}
+          >
+            {phoneError}
+          </Text>
+        ) : null}
+
+        <Pressable
+          onPress={handleSendCode}
+          style={{
+            backgroundColor: colors.ink,
+            borderRadius: 999,
+            paddingVertical: 18,
+            alignItems: "center",
+            marginTop: 28,
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "Poppins_700Bold",
+              fontSize: 14,
+              letterSpacing: 1,
+              color: colors.primary,
+              textTransform: "uppercase",
+            }}
+          >
+            Recevoir le code
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Food illustrations — diagonal scatter in bottom 30% */}
+      <View
+        pointerEvents="none"
+        style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "30%" }}
+      >
+        <Image
+          source={burgerImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 140,
+            height: 140,
+            top: 10,
+            left: -20,
+            transform: [{ rotate: "-15deg" }],
+            opacity: 0.25,
+          }}
+        />
+        <Image
+          source={tendersImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 130,
+            height: 130,
+            top: 60,
+            left: "35%",
+            transform: [{ rotate: "10deg" }],
+            opacity: 0.25,
+          }}
+        />
+        <Image
+          source={tacosImage}
+          contentFit="contain"
+          style={{
+            position: "absolute",
+            width: 150,
+            height: 150,
+            top: 20,
+            right: -30,
+            transform: [{ rotate: "20deg" }],
+            opacity: 0.25,
           }}
         />
       </View>
 
-      {phoneError !== undefined ? (
-        <Text
-          style={{
-            fontFamily: "Poppins_600SemiBold",
-            fontSize: 13,
-            color: colors.accent,
-            marginTop: 12,
-          }}
-        >
-          {phoneError}
-        </Text>
-      ) : null}
-
-      <Pressable
-        onPress={handleSendCode}
+      {/* Logo centered at very bottom */}
+      <View
         style={{
-          backgroundColor: colors.ink,
-          borderRadius: 999,
-          paddingVertical: 18,
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
           alignItems: "center",
-          marginTop: 28,
+          paddingBottom: 0,
+          zIndex: 15,
         }}
       >
-        <Text
-          style={{
-            fontFamily: "Poppins_700Bold",
-            fontSize: 14,
-            letterSpacing: 1,
-            color: colors.primary,
-            textTransform: "uppercase",
-          }}
-        >
-          Recevoir le code
-        </Text>
-      </Pressable>
+        <Image
+          source={logoImage}
+          contentFit="contain"
+          style={{ width: 80, height: 80 }}
+        />
+      </View>
     </View>
   );
 }
