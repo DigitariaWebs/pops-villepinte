@@ -25,6 +25,8 @@ import { colors } from "@/constants/theme";
 const burgerImage = require("../../../assets/images/burger.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const tendersImage = require("../../../assets/images/tenders.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tacosImage = require("../../../assets/images/tacos.png") as number;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -170,16 +172,12 @@ export default function OnboardingFlow({
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
-      {/* Warning tapes on slides 1 & 2 */}
-      {currentIndex <= 1 ? (
-        <>
-          <WarningTape top={140} rotate="-6deg" index={0} direction="left" />
-          <WarningTape top={190} rotate="-6deg" index={1} direction="right" />
-          <WarningTape top={240} rotate="-6deg" index={2} direction="left" />
-          <WarningTape top={290} rotate="-6deg" index={3} direction="right" />
-          <WarningTape top={340} rotate="-6deg" index={4} direction="left" />
-        </>
-      ) : null}
+      {/* Warning tapes on all slides */}
+      <WarningTape top={140} rotate="-6deg" index={0} direction="left" />
+      <WarningTape top={190} rotate="-6deg" index={1} direction="right" />
+      <WarningTape top={240} rotate="-6deg" index={2} direction="left" />
+      <WarningTape top={290} rotate="-6deg" index={3} direction="right" />
+      <WarningTape top={340} rotate="-6deg" index={4} direction="left" />
 
       {currentIndex === 0 ? (
         <View
@@ -223,6 +221,29 @@ export default function OnboardingFlow({
         </View>
       ) : null}
 
+      {/* Tacos image — slide 3, centered */}
+      {currentIndex === 2 ? (
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 5,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Image
+            source={tacosImage}
+            contentFit="contain"
+            style={{ width: 420, height: 420 }}
+          />
+        </View>
+      ) : null}
+
       <FlatList
         ref={flatListRef}
         data={SLIDES}
@@ -235,6 +256,7 @@ export default function OnboardingFlow({
         viewabilityConfig={viewabilityConfig}
         renderItem={({ item, index: slideIndex }) => {
           const Icon = item.icon;
+          const isSlide3 = slideIndex === 2;
           return (
             <View
               style={{
@@ -242,9 +264,9 @@ export default function OnboardingFlow({
                 flex: 1,
                 backgroundColor: "transparent",
                 paddingHorizontal: 32,
-                paddingTop: insets.top + 60,
+                paddingTop: isSlide3 ? insets.top + 24 : insets.top + 60,
                 paddingBottom: insets.bottom + 120,
-                justifyContent: "flex-end",
+                justifyContent: isSlide3 ? "flex-start" : "flex-end",
               }}
             >
               <View
