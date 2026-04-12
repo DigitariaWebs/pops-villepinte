@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
+import { useEffect, useMemo, useRef } from "react";
+import { Animated as RNAnimated, Dimensions, Pressable, ScrollView, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { ArrowRight, Heart } from "lucide-react-native";
@@ -17,6 +17,56 @@ const logoImage = require("../../../assets/images/logo.png") as number;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = (SCREEN_WIDTH - 20 * 2 - 12) / 2;
+
+const MARQUEE_TEXT =
+  "   FAIT MAISON 🔥   SMASH BURGERS   TACOS   BOWLS   WRAPS   DU PEUPLE POUR LE PEUPLE 💛   VILLEPINTE 93   VIENS RÉCUPÉRER   CASH OU CB   ";
+const MARQUEE_DOUBLE = MARQUEE_TEXT + MARQUEE_TEXT;
+
+function MarqueeTape(): React.ReactElement {
+  const translateX = useRef(new RNAnimated.Value(0)).current;
+
+  useEffect(() => {
+    const anim = RNAnimated.loop(
+      RNAnimated.timing(translateX, {
+        toValue: -SCREEN_WIDTH * 2,
+        duration: 18000,
+        useNativeDriver: true,
+      }),
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [translateX]);
+
+  return (
+    <View
+      style={{
+        overflow: "hidden",
+        backgroundColor: colors.accent,
+        paddingVertical: 10,
+        marginTop: 20,
+      }}
+    >
+      <RNAnimated.View
+        style={{
+          flexDirection: "row",
+          transform: [{ translateX }],
+        }}
+      >
+        <Text
+          style={{
+            fontFamily: font.display,
+            fontSize: 15,
+            letterSpacing: 3,
+            color: colors.primary,
+            width: SCREEN_WIDTH * 4,
+          }}
+        >
+          {MARQUEE_DOUBLE}
+        </Text>
+      </RNAnimated.View>
+    </View>
+  );
+}
 
 export default function AccueilScreen(): React.ReactElement {
   const router = useRouter();
@@ -69,6 +119,9 @@ export default function AccueilScreen(): React.ReactElement {
           Qu'est-ce qui te fait envie ?
         </Text>
       </View>
+
+      {/* ── MARQUEE TAPE ── */}
+      <MarqueeTape />
 
       {/* ── HERO BANNER ── */}
       <View style={{ paddingHorizontal: 20, marginTop: 16 }}>
@@ -146,39 +199,54 @@ export default function AccueilScreen(): React.ReactElement {
 
               <View
                 style={{
+                  backgroundColor: colors.ink,
+                  alignSelf: "flex-start",
+                  borderRadius: radius.pill,
+                  paddingHorizontal: 16,
+                  paddingVertical: 10,
                   flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "space-between",
+                  gap: 6,
                   marginTop: 8,
                 }}
               >
-                <View
+                <Text
                   style={{
-                    backgroundColor: colors.ink,
-                    borderRadius: radius.pill,
-                    paddingHorizontal: 16,
-                    paddingVertical: 10,
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 6,
+                    fontFamily: font.bodyBold,
+                    fontSize: 12,
+                    color: colors.white,
+                    letterSpacing: 0.5,
                   }}
                 >
-                  <Text
-                    style={{
-                      fontFamily: font.bodyBold,
-                      fontSize: 12,
-                      color: colors.white,
-                      letterSpacing: 0.5,
-                    }}
-                  >
-                    COMMANDER
-                  </Text>
-                  <ArrowRight size={14} color={colors.white} strokeWidth={2.5} />
-                </View>
+                  COMMANDER
+                </Text>
+                <ArrowRight size={14} color={colors.white} strokeWidth={2.5} />
+              </View>
+            </View>
+
+            {/* Right image with price overlay */}
+            <View style={{ width: "42%", position: "relative" }}>
+              <Image
+                source={{ uri: featured.imageUrl }}
+                contentFit="cover"
+                style={{ width: "100%", height: "100%" }}
+                accessibilityIgnoresInvertColors
+              />
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: 12,
+                  right: 12,
+                  backgroundColor: colors.primary,
+                  borderRadius: radius.sm,
+                  paddingHorizontal: 10,
+                  paddingVertical: 4,
+                }}
+              >
                 <Text
                   style={{
                     fontFamily: font.display,
-                    fontSize: 28,
+                    fontSize: 22,
                     color: colors.ink,
                   }}
                 >
@@ -186,14 +254,6 @@ export default function AccueilScreen(): React.ReactElement {
                 </Text>
               </View>
             </View>
-
-            {/* Right image */}
-            <Image
-              source={{ uri: featured.imageUrl }}
-              contentFit="cover"
-              style={{ width: "42%", height: "100%" }}
-              accessibilityIgnoresInvertColors
-            />
           </View>
         </Pressable>
       </View>
