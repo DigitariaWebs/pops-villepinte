@@ -331,36 +331,53 @@ export default function AuthFlow({
         </Pressable>
       </View>
 
-      {/* Food illustrations — fill bottom 35% with repeating pattern */}
+      {/* Food illustrations — fill bottom 45% with dense repeating pattern */}
       <View
         pointerEvents="none"
-        style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "35%" }}
+        style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "45%" }}
       >
         {/* Row 1 */}
         <Image source={burgerIcon} contentFit="contain"
-          style={{ position: "absolute", width: 90, height: 90, top: 0, left: 10, transform: [{ rotate: "-10deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 80, height: 80, top: 0, left: -10, transform: [{ rotate: "-10deg" }], opacity: 0.12 }} />
         <Image source={wingsImage} contentFit="contain"
-          style={{ position: "absolute", width: 85, height: 85, top: 10, left: "30%", transform: [{ rotate: "12deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 75, height: 75, top: 5, left: "20%", transform: [{ rotate: "14deg" }], opacity: 0.12 }} />
         <Image source={friesImage} contentFit="contain"
-          style={{ position: "absolute", width: 80, height: 80, top: 0, left: "58%", transform: [{ rotate: "-5deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 70, height: 70, top: 0, left: "42%", transform: [{ rotate: "-5deg" }], opacity: 0.12 }} />
         <Image source={burgerIcon} contentFit="contain"
-          style={{ position: "absolute", width: 90, height: 90, top: 15, right: -10, transform: [{ rotate: "18deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 80, height: 80, top: 10, left: "62%", transform: [{ rotate: "18deg" }], opacity: 0.12 }} />
+        <Image source={wingsImage} contentFit="contain"
+          style={{ position: "absolute", width: 75, height: 75, top: 0, right: -15, transform: [{ rotate: "-8deg" }], opacity: 0.12 }} />
         {/* Row 2 */}
         <Image source={friesImage} contentFit="contain"
-          style={{ position: "absolute", width: 75, height: 75, top: 80, left: -5, transform: [{ rotate: "15deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 70, height: 70, top: 70, left: 5, transform: [{ rotate: "12deg" }], opacity: 0.12 }} />
         <Image source={burgerIcon} contentFit="contain"
-          style={{ position: "absolute", width: 85, height: 85, top: 75, left: "22%", transform: [{ rotate: "-8deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 80, height: 80, top: 65, left: "18%", transform: [{ rotate: "-6deg" }], opacity: 0.12 }} />
         <Image source={wingsImage} contentFit="contain"
-          style={{ position: "absolute", width: 80, height: 80, top: 85, left: "48%", transform: [{ rotate: "6deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 75, height: 75, top: 75, left: "38%", transform: [{ rotate: "10deg" }], opacity: 0.12 }} />
         <Image source={friesImage} contentFit="contain"
-          style={{ position: "absolute", width: 85, height: 85, top: 70, right: 10, transform: [{ rotate: "-14deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 70, height: 70, top: 68, left: "58%", transform: [{ rotate: "-14deg" }], opacity: 0.12 }} />
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 72, right: -5, transform: [{ rotate: "7deg" }], opacity: 0.12 }} />
         {/* Row 3 */}
         <Image source={wingsImage} contentFit="contain"
-          style={{ position: "absolute", width: 80, height: 80, top: 155, left: 15, transform: [{ rotate: "10deg" }], opacity: 0.12 }} />
-        <Image source={burgerIcon} contentFit="contain"
-          style={{ position: "absolute", width: 90, height: 90, top: 150, left: "35%", transform: [{ rotate: "-12deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 75, height: 75, top: 140, left: -15, transform: [{ rotate: "-12deg" }], opacity: 0.12 }} />
         <Image source={friesImage} contentFit="contain"
-          style={{ position: "absolute", width: 80, height: 80, top: 160, right: 20, transform: [{ rotate: "8deg" }], opacity: 0.12 }} />
+          style={{ position: "absolute", width: 70, height: 70, top: 145, left: "22%", transform: [{ rotate: "8deg" }], opacity: 0.12 }} />
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 135, left: "42%", transform: [{ rotate: "-10deg" }], opacity: 0.12 }} />
+        <Image source={wingsImage} contentFit="contain"
+          style={{ position: "absolute", width: 75, height: 75, top: 142, left: "62%", transform: [{ rotate: "15deg" }], opacity: 0.12 }} />
+        <Image source={friesImage} contentFit="contain"
+          style={{ position: "absolute", width: 70, height: 70, top: 138, right: -10, transform: [{ rotate: "-6deg" }], opacity: 0.12 }} />
+        {/* Row 4 */}
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 210, left: 10, transform: [{ rotate: "16deg" }], opacity: 0.12 }} />
+        <Image source={wingsImage} contentFit="contain"
+          style={{ position: "absolute", width: 75, height: 75, top: 215, left: "28%", transform: [{ rotate: "-9deg" }], opacity: 0.12 }} />
+        <Image source={friesImage} contentFit="contain"
+          style={{ position: "absolute", width: 70, height: 70, top: 208, left: "50%", transform: [{ rotate: "11deg" }], opacity: 0.12 }} />
+        <Image source={burgerIcon} contentFit="contain"
+          style={{ position: "absolute", width: 80, height: 80, top: 218, right: 5, transform: [{ rotate: "-13deg" }], opacity: 0.12 }} />
       </View>
 
       {/* Logo centered at very bottom */}
