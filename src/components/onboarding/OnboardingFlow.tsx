@@ -23,6 +23,8 @@ import { colors } from "@/constants/theme";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const burgerImage = require("../../../assets/images/burger.png") as number;
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const tendersImage = require("../../../assets/images/tenders.png") as number;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -193,6 +195,27 @@ export default function OnboardingFlow({
             source={burgerImage}
             contentFit="contain"
             style={{ width: "100%", height: "100%" }}
+          />
+        </View>
+      ) : null}
+
+      {/* Tenders image — slide 2, top center, flush to top */}
+      {currentIndex === 1 ? (
+        <View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            alignItems: "center",
+          }}
+        >
+          <Image
+            source={tendersImage}
+            contentFit="contain"
+            style={{ width: 340, height: 340 }}
           />
         </View>
       ) : null}
