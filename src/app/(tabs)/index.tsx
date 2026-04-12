@@ -1,17 +1,22 @@
 import { useMemo } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Dimensions, Pressable, ScrollView, Text, View } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { ArrowRight, Clock, MapPin } from "lucide-react-native";
+import { ArrowRight, Heart } from "lucide-react-native";
 
 import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
 import CategoryChip from "@/components/menu/CategoryChip";
-import ProductCard from "@/components/menu/ProductCard";
-import { colors, font, radius, shadow, spacing } from "@/constants/theme";
+import { colors, font, radius, shadow } from "@/constants/theme";
 import { CATEGORIES, getFeaturedProduct, PRODUCTS } from "@/data/menu";
-import { useProfileStore } from "@/store/profile.store";
 import { formatPriceEUR } from "@/lib/format";
+import { useProfileStore } from "@/store/profile.store";
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const logoImage = require("../../../assets/images/logo.png") as number;
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const CARD_WIDTH = (SCREEN_WIDTH - 20 * 2 - 12) / 2;
 
 export default function AccueilScreen(): React.ReactElement {
   const router = useRouter();
@@ -31,60 +36,22 @@ export default function AccueilScreen(): React.ReactElement {
 
   return (
     <Screen floatingBottom={<FloatingCartBar />}>
-      {/* ── GREETING ── */}
-      <View
-        style={{
-          backgroundColor: colors.white,
-          paddingHorizontal: 20,
-          paddingTop: 12,
-          paddingBottom: 8,
-        }}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 6,
-            marginBottom: 4,
-          }}
-        >
-          <MapPin size={14} color={colors.accent} strokeWidth={2.5} />
-          <Text
-            style={{
-              fontFamily: font.bodySemi,
-              fontSize: 13,
-              color: colors.accent,
-              letterSpacing: 0.5,
-            }}
-          >
-            POP'S VILLEPINTE
-          </Text>
-          <View
-            style={{
-              width: 4,
-              height: 4,
-              borderRadius: 2,
-              backgroundColor: colors.inkMuted,
-              marginHorizontal: 4,
-            }}
-          />
-          <Clock size={13} color={colors.inkMuted} strokeWidth={2} />
-          <Text
-            style={{
-              fontFamily: font.body,
-              fontSize: 12,
-              color: colors.inkMuted,
-            }}
-          >
-            11h - 00h
-          </Text>
-        </View>
+      {/* ── LOGO ── */}
+      <View style={{ alignItems: "center", paddingTop: 8, paddingBottom: 4 }}>
+        <Image
+          source={logoImage}
+          contentFit="contain"
+          style={{ width: 50, height: 50 }}
+        />
+      </View>
 
+      {/* ── GREETING ── */}
+      <View style={{ paddingHorizontal: 20, paddingBottom: 4 }}>
         <Text
           style={{
             fontFamily: font.display,
-            fontSize: 48,
-            lineHeight: 50,
+            fontSize: 42,
+            lineHeight: 44,
             color: colors.ink,
             letterSpacing: 1,
           }}
@@ -93,8 +60,8 @@ export default function AccueilScreen(): React.ReactElement {
         </Text>
         <Text
           style={{
-            fontFamily: font.bodyMedium,
-            fontSize: 16,
+            fontFamily: font.body,
+            fontSize: 14,
             color: colors.inkMuted,
             marginTop: 2,
           }}
@@ -109,97 +76,87 @@ export default function AccueilScreen(): React.ReactElement {
           accessibilityRole="button"
           accessibilityLabel={`Commander ${featured.name}`}
           onPress={() =>
-            router.push({
-              pathname: "/product/[id]",
-              params: { id: featured.id },
-            })
+            router.push({ pathname: "/product/[id]", params: { id: featured.id } })
           }
           style={{
             backgroundColor: colors.primary,
-            borderRadius: radius.lg,
+            borderRadius: radius.xl,
             overflow: "hidden",
             ...shadow.hero,
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              minHeight: 180,
-            }}
-          >
-            {/* Left text */}
+          <View style={{ flexDirection: "row", height: 200 }}>
+            {/* Left content */}
             <View
               style={{
                 flex: 1,
                 padding: 20,
-                paddingRight: 8,
                 justifyContent: "space-between",
               }}
             >
-              <View
-                style={{
-                  backgroundColor: colors.ink,
-                  alignSelf: "flex-start",
-                  borderRadius: radius.pill,
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  marginBottom: 10,
-                }}
-              >
-                <Text
+              <View>
+                <View
                   style={{
-                    fontFamily: font.bodyBold,
-                    fontSize: 10,
-                    letterSpacing: 2,
-                    color: colors.primary,
-                    textTransform: "uppercase",
+                    backgroundColor: colors.ink,
+                    alignSelf: "flex-start",
+                    borderRadius: radius.pill,
+                    paddingHorizontal: 10,
+                    paddingVertical: 3,
+                    marginBottom: 8,
                   }}
                 >
-                  SIGNATURE
+                  <Text
+                    style={{
+                      fontFamily: font.bodyBold,
+                      fontSize: 9,
+                      letterSpacing: 2,
+                      color: colors.primary,
+                    }}
+                  >
+                    SIGNATURE
+                  </Text>
+                </View>
+
+                <Text
+                  numberOfLines={2}
+                  style={{
+                    fontFamily: font.display,
+                    fontSize: 36,
+                    lineHeight: 38,
+                    color: colors.ink,
+                    letterSpacing: 1,
+                  }}
+                >
+                  {featured.name.toUpperCase()}
+                </Text>
+
+                <Text
+                  numberOfLines={2}
+                  style={{
+                    fontFamily: font.body,
+                    fontSize: 12,
+                    lineHeight: 16,
+                    color: "rgba(0,0,0,0.55)",
+                    marginTop: 4,
+                  }}
+                >
+                  {featured.description}
                 </Text>
               </View>
-
-              <Text
-                numberOfLines={2}
-                style={{
-                  fontFamily: font.display,
-                  fontSize: 32,
-                  lineHeight: 34,
-                  color: colors.ink,
-                  letterSpacing: 0.5,
-                }}
-              >
-                {featured.name}
-              </Text>
-
-              <Text
-                numberOfLines={2}
-                style={{
-                  fontFamily: font.body,
-                  fontSize: 13,
-                  lineHeight: 18,
-                  color: colors.cardDark,
-                  marginTop: 6,
-                  opacity: 0.7,
-                }}
-              >
-                {featured.description}
-              </Text>
 
               <View
                 style={{
                   flexDirection: "row",
                   alignItems: "center",
-                  marginTop: 14,
-                  gap: 12,
+                  justifyContent: "space-between",
+                  marginTop: 8,
                 }}
               >
                 <View
                   style={{
                     backgroundColor: colors.ink,
                     borderRadius: radius.pill,
-                    paddingHorizontal: 18,
+                    paddingHorizontal: 16,
                     paddingVertical: 10,
                     flexDirection: "row",
                     alignItems: "center",
@@ -209,19 +166,19 @@ export default function AccueilScreen(): React.ReactElement {
                   <Text
                     style={{
                       fontFamily: font.bodyBold,
-                      fontSize: 13,
+                      fontSize: 12,
                       color: colors.white,
                       letterSpacing: 0.5,
                     }}
                   >
                     COMMANDER
                   </Text>
-                  <ArrowRight size={16} color={colors.white} strokeWidth={2.5} />
+                  <ArrowRight size={14} color={colors.white} strokeWidth={2.5} />
                 </View>
                 <Text
                   style={{
                     fontFamily: font.display,
-                    fontSize: 26,
+                    fontSize: 28,
                     color: colors.ink,
                   }}
                 >
@@ -234,12 +191,7 @@ export default function AccueilScreen(): React.ReactElement {
             <Image
               source={{ uri: featured.imageUrl }}
               contentFit="cover"
-              style={{
-                width: 150,
-                height: "100%",
-                borderTopRightRadius: radius.lg,
-                borderBottomRightRadius: radius.lg,
-              }}
+              style={{ width: "42%", height: "100%" }}
               accessibilityIgnoresInvertColors
             />
           </View>
@@ -247,20 +199,20 @@ export default function AccueilScreen(): React.ReactElement {
       </View>
 
       {/* ── CATEGORIES ── */}
-      <View style={{ marginTop: 28 }}>
+      <View style={{ marginTop: 24 }}>
         <View
           style={{
             flexDirection: "row",
-            alignItems: "center",
+            alignItems: "baseline",
             justifyContent: "space-between",
             paddingHorizontal: 20,
-            marginBottom: 14,
+            marginBottom: 10,
           }}
         >
           <Text
             style={{
               fontFamily: font.display,
-              fontSize: 28,
+              fontSize: 24,
               color: colors.ink,
               letterSpacing: 0.5,
             }}
@@ -270,7 +222,7 @@ export default function AccueilScreen(): React.ReactElement {
           <Text
             style={{
               fontFamily: font.bodySemi,
-              fontSize: 13,
+              fontSize: 12,
               color: colors.inkMuted,
             }}
           >
@@ -280,7 +232,7 @@ export default function AccueilScreen(): React.ReactElement {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, gap: 10 }}
+          contentContainerStyle={{ paddingHorizontal: 20, gap: 8 }}
         >
           {CATEGORIES.map((cat) => (
             <CategoryChip
@@ -295,21 +247,21 @@ export default function AccueilScreen(): React.ReactElement {
       </View>
 
       {/* ── TOP PICKS ── */}
-      <View style={{ marginTop: 28 }}>
+      <View style={{ marginTop: 24 }}>
         <View
           style={{
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
             paddingHorizontal: 20,
-            marginBottom: 14,
+            marginBottom: 12,
           }}
         >
           <View>
             <Text
               style={{
                 fontFamily: font.display,
-                fontSize: 28,
+                fontSize: 24,
                 color: colors.ink,
                 letterSpacing: 0.5,
               }}
@@ -319,12 +271,12 @@ export default function AccueilScreen(): React.ReactElement {
             <Text
               style={{
                 fontFamily: font.body,
-                fontSize: 13,
+                fontSize: 12,
                 color: colors.inkMuted,
-                marginTop: 2,
+                marginTop: 1,
               }}
             >
-              Notre selection de la semaine
+              Notre sélection de la semaine
             </Text>
           </View>
           <Pressable
@@ -332,18 +284,18 @@ export default function AccueilScreen(): React.ReactElement {
             accessibilityLabel="Voir tout le menu"
             onPress={() => router.push("/menu")}
             style={{
-              backgroundColor: colors.ink,
               borderRadius: radius.pill,
+              borderWidth: 1.5,
+              borderColor: colors.ink,
               paddingHorizontal: 14,
-              paddingVertical: 8,
+              paddingVertical: 7,
             }}
           >
             <Text
               style={{
                 fontFamily: font.bodySemi,
                 fontSize: 12,
-                color: colors.white,
-                letterSpacing: 0.5,
+                color: colors.ink,
               }}
             >
               Voir tout
@@ -353,88 +305,165 @@ export default function AccueilScreen(): React.ReactElement {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 20, gap: 14 }}
+          contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
         >
           {topPicks.map((p) => (
-            <ProductCard key={p.id} product={p} size="md" />
+            <Pressable
+              key={p.id}
+              accessibilityRole="button"
+              onPress={() =>
+                router.push({ pathname: "/product/[id]", params: { id: p.id } })
+              }
+              style={{
+                width: CARD_WIDTH,
+                borderRadius: radius.lg,
+                overflow: "hidden",
+                backgroundColor: colors.white,
+                ...shadow.card,
+              }}
+            >
+              <View style={{ position: "relative" }}>
+                <Image
+                  source={{ uri: p.imageUrl }}
+                  contentFit="cover"
+                  style={{
+                    width: "100%",
+                    height: CARD_WIDTH * 0.85,
+                    borderTopLeftRadius: radius.lg,
+                    borderTopRightRadius: radius.lg,
+                  }}
+                  accessibilityIgnoresInvertColors
+                />
+                <View
+                  style={{
+                    position: "absolute",
+                    top: 10,
+                    right: 10,
+                    width: 32,
+                    height: 32,
+                    borderRadius: 16,
+                    backgroundColor: "rgba(255,255,255,0.9)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Heart size={16} color={colors.ink} strokeWidth={2} />
+                </View>
+              </View>
+              <View style={{ padding: 12 }}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontFamily: font.bodySemi,
+                    fontSize: 15,
+                    color: colors.ink,
+                  }}
+                >
+                  {p.name}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: font.bodyBold,
+                    fontSize: 16,
+                    color: colors.ink,
+                    marginTop: 4,
+                  }}
+                >
+                  {formatPriceEUR(p.priceEUR)}
+                </Text>
+              </View>
+            </Pressable>
           ))}
         </ScrollView>
       </View>
 
       {/* ── NOUVEAUTES ── */}
-      <View style={{ marginTop: 28 }}>
-        <View style={{ paddingHorizontal: 20, marginBottom: 14 }}>
-          <View
-            style={{
-              backgroundColor: colors.accent,
-              alignSelf: "flex-start",
-              borderRadius: radius.pill,
-              paddingHorizontal: 10,
-              paddingVertical: 3,
-              marginBottom: 8,
-            }}
-          >
+      {newItems.length > 0 ? (
+        <View style={{ marginTop: 24 }}>
+          <View style={{ paddingHorizontal: 20, marginBottom: 12 }}>
             <Text
               style={{
-                fontFamily: font.bodyBold,
-                fontSize: 10,
-                letterSpacing: 2,
-                color: colors.white,
+                fontFamily: font.display,
+                fontSize: 24,
+                color: colors.ink,
+                letterSpacing: 0.5,
               }}
             >
-              NOUVEAU
+              NOUVEAUTÉS
             </Text>
           </View>
-          <Text
-            style={{
-              fontFamily: font.display,
-              fontSize: 28,
-              color: colors.ink,
-              letterSpacing: 0.5,
-            }}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 20, gap: 12 }}
           >
-            NOUVEAUTES
-          </Text>
-          <Text
-            style={{
-              fontFamily: font.body,
-              fontSize: 13,
-              color: colors.inkMuted,
-              marginTop: 2,
-            }}
-          >
-            Fraichement arrives au comptoir
-          </Text>
+            {newItems.map((p) => (
+              <Pressable
+                key={p.id}
+                accessibilityRole="button"
+                onPress={() =>
+                  router.push({ pathname: "/product/[id]", params: { id: p.id } })
+                }
+                style={{
+                  width: CARD_WIDTH,
+                  borderRadius: radius.lg,
+                  overflow: "hidden",
+                  backgroundColor: colors.white,
+                  ...shadow.card,
+                }}
+              >
+                <Image
+                  source={{ uri: p.imageUrl }}
+                  contentFit="cover"
+                  style={{
+                    width: "100%",
+                    height: CARD_WIDTH * 0.85,
+                    borderTopLeftRadius: radius.lg,
+                    borderTopRightRadius: radius.lg,
+                  }}
+                  accessibilityIgnoresInvertColors
+                />
+                <View style={{ padding: 12 }}>
+                  <Text
+                    numberOfLines={1}
+                    style={{
+                      fontFamily: font.bodySemi,
+                      fontSize: 15,
+                      color: colors.ink,
+                    }}
+                  >
+                    {p.name}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: font.bodyBold,
+                      fontSize: 16,
+                      color: colors.ink,
+                      marginTop: 4,
+                    }}
+                  >
+                    {formatPriceEUR(p.priceEUR)}
+                  </Text>
+                </View>
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
-        <View
-          style={{
-            flexDirection: "row",
-            flexWrap: "wrap",
-            paddingHorizontal: 20,
-            gap: 14,
-          }}
-        >
-          {newItems.map((p) => (
-            <View key={p.id} style={{ width: "47%" }}>
-              <ProductCard product={p} size="sm" />
-            </View>
-          ))}
-        </View>
-      </View>
+      ) : null}
 
-      {/* ── STORY / ABOUT ── */}
-      <View style={{ paddingHorizontal: 20, marginTop: 32 }}>
+      {/* ── STORY ── */}
+      <View style={{ paddingHorizontal: 20, marginTop: 28 }}>
         <View
           style={{
             backgroundColor: colors.cardDark,
             borderRadius: radius.lg,
-            padding: 24,
+            padding: 22,
           }}
         >
           <Text
             style={{
               fontFamily: font.display,
-              fontSize: 32,
+              fontSize: 28,
               color: colors.primary,
               letterSpacing: 0.5,
             }}
@@ -443,37 +472,23 @@ export default function AccueilScreen(): React.ReactElement {
           </Text>
           <View
             style={{
-              width: 40,
+              width: 36,
               height: 3,
               backgroundColor: colors.primary,
-              marginVertical: 12,
+              marginVertical: 10,
               borderRadius: 2,
             }}
           />
           <Text
             style={{
               fontFamily: font.body,
-              fontSize: 14,
-              lineHeight: 22,
-              color: colors.white,
-              opacity: 0.85,
+              fontSize: 13,
+              lineHeight: 20,
+              color: "rgba(255,255,255,0.8)",
             }}
           >
-            Abdoullah en cuisine, une cuisine de quartier faite main. Smash
-            burgers, bowls, tacos — tout est pense pour que vous repartiez le
-            coeur content.
-          </Text>
-          <Text
-            style={{
-              fontFamily: font.bodySemi,
-              fontSize: 12,
-              color: colors.primary,
-              marginTop: 14,
-              letterSpacing: 1,
-              textTransform: "uppercase",
-            }}
-          >
-            Depuis 2024 - Fait maison
+            Abdoullah en cuisine, fait maison chaque jour. Smash burgers, bowls,
+            tacos — du peuple, pour le peuple.
           </Text>
         </View>
       </View>
@@ -483,16 +498,16 @@ export default function AccueilScreen(): React.ReactElement {
         style={{
           alignItems: "center",
           paddingHorizontal: 20,
-          marginTop: 32,
+          marginTop: 28,
           marginBottom: 16,
         }}
       >
         <View
           style={{
-            width: 40,
+            width: 36,
             height: 3,
             backgroundColor: colors.primary,
-            marginBottom: 12,
+            marginBottom: 10,
             borderRadius: 2,
           }}
         />
@@ -506,7 +521,7 @@ export default function AccueilScreen(): React.ReactElement {
             textTransform: "uppercase",
           }}
         >
-          Ouvert 11h - 00h  |  06 51 30 XX XX
+          Ouvert 11h – 00h · 06 51 30 XX XX
         </Text>
       </View>
     </Screen>
