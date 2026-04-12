@@ -42,8 +42,8 @@ function MarqueeTape(): React.ReactElement {
       style={{
         overflow: "hidden",
         backgroundColor: colors.accent,
-        paddingVertical: 10,
-        marginTop: 20,
+        paddingVertical: 5,
+        marginTop: 14,
       }}
     >
       <RNAnimated.View
@@ -55,8 +55,8 @@ function MarqueeTape(): React.ReactElement {
         <Text
           style={{
             fontFamily: font.display,
-            fontSize: 15,
-            letterSpacing: 3,
+            fontSize: 12,
+            letterSpacing: 2,
             color: colors.primary,
             width: SCREEN_WIDTH * 4,
           }}
