@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -10,6 +10,13 @@ import {
 import { Image } from "expo-image";
 import { ChevronRight, MapPin, ShoppingBag, UtensilsCrossed } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
+import Animated, {
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withDelay,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "@/constants/theme";
@@ -20,36 +27,70 @@ const burgerImage = require("../../../assets/images/burger.png") as number;
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const TAPE_TEXT = "POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · POP'S · ";
+const TAPE_WIDTH = SCREEN_WIDTH + 80;
 
-function WarningTape({ top, rotate }: { top: number; rotate: string }): React.ReactElement {
+type WarningTapeProps = {
+  top: number;
+  rotate: string;
+  index: number;
+  direction: "left" | "right";
+};
+
+function WarningTape({ top, rotate, index, direction }: WarningTapeProps): React.ReactElement {
+  const reducedMotion = useReducedMotion();
+  const startX = direction === "left" ? -TAPE_WIDTH : TAPE_WIDTH;
+  const translateX = useSharedValue(reducedMotion ? 0 : startX);
+  const textOpacity = useSharedValue(reducedMotion ? 1 : 0);
+
+  useEffect(() => {
+    if (reducedMotion) return;
+    const slideDelay = index * 100;
+    translateX.value = withDelay(slideDelay, withTiming(0, { duration: 500 }));
+    textOpacity.value = withDelay(slideDelay + 350, withTiming(1, { duration: 300 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const tapeStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }, { rotate }],
+  }));
+
+  const textStyle = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
+  }));
+
   return (
-    <View
+    <Animated.View
       pointerEvents="none"
-      style={{
-        position: "absolute",
-        top,
-        left: -40,
-        right: -40,
-        zIndex: 5,
-        transform: [{ rotate }],
-        backgroundColor: "rgba(0,0,0,0.08)",
-        paddingVertical: 10,
-        overflow: "hidden",
-      }}
+      style={[
+        {
+          position: "absolute",
+          top,
+          left: -40,
+          right: -40,
+          zIndex: 5,
+          backgroundColor: "rgba(0,0,0,0.08)",
+          paddingVertical: 10,
+          overflow: "hidden",
+        },
+        tapeStyle,
+      ]}
     >
-      <Text
+      <Animated.Text
         numberOfLines={1}
-        style={{
-          fontFamily: "BebasNeue_400Regular",
-          fontSize: 16,
-          letterSpacing: 6,
-          color: "rgba(0,0,0,0.15)",
-          textAlign: "center",
-        }}
+        style={[
+          {
+            fontFamily: "BebasNeue_400Regular",
+            fontSize: 16,
+            letterSpacing: 6,
+            color: "rgba(0,0,0,0.15)",
+            textAlign: "center",
+          },
+          textStyle,
+        ]}
       >
         {TAPE_TEXT}
-      </Text>
-    </View>
+      </Animated.Text>
+    </Animated.View>
   );
 }
 
@@ -128,11 +169,11 @@ export default function OnboardingFlow({
   return (
     <View style={{ flex: 1, backgroundColor: colors.primary, overflow: "hidden" }}>
       {/* Warning tape strips — diagonal grey bands with POP'S */}
-      <WarningTape top={140} rotate="-6deg" />
-      <WarningTape top={190} rotate="-6deg" />
-      <WarningTape top={240} rotate="-6deg" />
-      <WarningTape top={290} rotate="-6deg" />
-      <WarningTape top={340} rotate="-6deg" />
+      <WarningTape top={140} rotate="-6deg" index={0} direction="left" />
+      <WarningTape top={190} rotate="-6deg" index={1} direction="right" />
+      <WarningTape top={240} rotate="-6deg" index={2} direction="left" />
+      <WarningTape top={290} rotate="-6deg" index={3} direction="right" />
+      <WarningTape top={340} rotate="-6deg" index={4} direction="left" />
 
       {/* Big burger image — top-right, rotated, overflowing */}
       {currentIndex === 0 ? (
