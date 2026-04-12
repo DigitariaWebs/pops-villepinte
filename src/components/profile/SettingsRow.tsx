@@ -1,17 +1,17 @@
 import { Pressable, Text, View } from "react-native";
 import { ChevronRight, type LucideIcon } from "lucide-react-native";
 
-import { colors } from "@/constants/theme";
-
 export type SettingsRowProps = {
   icon: LucideIcon;
   label: string;
+  labelColor?: string;
   onPress: () => void;
 };
 
 export default function SettingsRow({
   icon: Icon,
   label,
+  labelColor,
   onPress,
 }: SettingsRowProps): React.ReactElement {
   return (
@@ -19,27 +19,39 @@ export default function SettingsRow({
       accessibilityRole="button"
       accessibilityLabel={label}
       onPress={onPress}
-      className="flex-row items-center"
       style={({ pressed }) => ({
+        flexDirection: "row",
+        alignItems: "center",
         paddingVertical: 14,
         opacity: pressed ? 0.7 : 1,
       })}
     >
       <View
-        className="bg-surface-container-high items-center justify-center rounded-full"
-        style={{ width: 40, height: 40 }}
+        style={{
+          backgroundColor: "#F5F5F5",
+          width: 40,
+          height: 40,
+          borderRadius: 20,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <Icon size={20} color={colors.ink} strokeWidth={1.75} />
+        <Icon size={20} color={labelColor ?? "#111111"} strokeWidth={1.5} />
       </View>
 
       <Text
-        className="font-sans-semibold text-on-surface"
-        style={{ fontSize: 15, flex: 1, marginLeft: 16 }}
+        style={{
+          fontFamily: "Poppins_600SemiBold",
+          fontSize: 15,
+          color: labelColor ?? "#111111",
+          flex: 1,
+          marginLeft: 16,
+        }}
       >
         {label}
       </Text>
 
-      <ChevronRight size={18} color={colors.inkMuted} strokeWidth={2} />
+      <ChevronRight size={18} color="#6B6B6B" strokeWidth={2} />
     </Pressable>
   );
 }

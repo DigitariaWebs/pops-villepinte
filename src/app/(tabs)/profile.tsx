@@ -419,7 +419,7 @@ export default function ProfileScreen(): React.ReactElement {
               marginLeft: 56,
             }}
           />
-          <SettingsRow icon={LogOut} label="Se déconnecter" onPress={handleLogout} />
+          <SettingsRow icon={LogOut} label="Se déconnecter" labelColor="#E3000F" onPress={handleLogout} />
         </View>
       </View>
 
