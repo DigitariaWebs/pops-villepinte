@@ -186,7 +186,7 @@ export default function CartItemRow({
           style={{ width: 84, height: 84 }}
         >
           <Image
-            source={{ uri: product.imageUrl }}
+            source={product.imageUrl}
             contentFit="cover"
             style={{ width: "100%", height: "100%" }}
             accessibilityIgnoresInvertColors

@@ -57,7 +57,7 @@ export default function AnimatedSplash({
       accessibilityRole="button"
       accessibilityLabel="Passer l'introduction"
       onPress={handleSkip}
-      style={{ flex: 1, backgroundColor: "#f2f2f2" }}
+      style={{ flex: 1, backgroundColor: "#f2b40a" }}
     >
       <View
         style={{

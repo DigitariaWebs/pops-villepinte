@@ -71,7 +71,7 @@ export default function CartSuggestionCard({
     >
       <View style={{ height: 100 }}>
         <Image
-          source={{ uri: product.imageUrl }}
+          source={product.imageUrl}
           contentFit="cover"
           style={{ width: "100%", height: "100%" }}
           accessibilityIgnoresInvertColors

@@ -4,6 +4,7 @@ import { Image } from "expo-image";
 import { useLocalSearchParams } from "expo-router";
 import { Search as SearchIcon } from "lucide-react-native";
 import Animated, { LinearTransition } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
@@ -77,6 +78,7 @@ function FoodPatternBg({ height }: { height: number }): React.ReactElement {
 }
 
 export default function MenuScreen(): React.ReactElement {
+  const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ cat?: string }>();
   const [selectedId, setSelectedId] = useState<CategoryRailSelection>(
     params.cat ?? "all",
@@ -144,13 +146,14 @@ export default function MenuScreen(): React.ReactElement {
     <Screen
       stickyHeaderIndices={[1]}
       floatingBottom={<FloatingCartBar />}
+      edges={[]}
     >
       {/* [0] Header */}
       <View
         style={{
           backgroundColor: colors.white,
           paddingHorizontal: 20,
-          paddingTop: 12,
+          paddingTop: insets.top + 12,
           paddingBottom: 8,
           flexDirection: "row",
           alignItems: "flex-start",

@@ -13,13 +13,7 @@ import { formatPriceEUR } from "@/lib/format";
 import { useProfileStore } from "@/store/profile.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const logoImage = require("../../../assets/images/logo.png") as number;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const burgerIll = require("../../../assets/images/burgerillustartion.png") as number;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const friesIll = require("../../../assets/images/friesillustartion.png") as number;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const tacosIll = require("../../../assets/images/tacosillustartion.png") as number;
+const logoImage = require("../../../assets/images/pops-logo.png") as number;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = (SCREEN_WIDTH - 20 * 2 - 12) / 2;
@@ -93,61 +87,20 @@ export default function AccueilScreen(): React.ReactElement {
 
   return (
     <Screen floatingBottom={<FloatingCartBar />}>
-      {/* ── LOGO + FOOD PATTERN ── */}
-      <View style={{ height: 90, overflow: "hidden", position: "relative" }}>
-        {/* Dense tiny food illustration pattern */}
-        <View pointerEvents="none" style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}>
-          {/* Row 1 */}
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 4, left: 8, transform: [{ rotate: "-10deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 10, left: 38, transform: [{ rotate: "15deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 2, left: 66, transform: [{ rotate: "-5deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 8, left: 94, transform: [{ rotate: "20deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 4, left: 126, transform: [{ rotate: "-12deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 12, left: 152, transform: [{ rotate: "8deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 2, left: 182, transform: [{ rotate: "-18deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 10, left: 210, transform: [{ rotate: "12deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 4, left: 240, transform: [{ rotate: "-8deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 8, left: 268, transform: [{ rotate: "14deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 2, left: 298, transform: [{ rotate: "-6deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 10, left: 326, transform: [{ rotate: "18deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 4, left: 356, transform: [{ rotate: "-14deg" }], opacity: 0.25 }} />
-          {/* Row 2 */}
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 30, left: 2, transform: [{ rotate: "12deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 34, left: 30, transform: [{ rotate: "-8deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 28, left: 60, transform: [{ rotate: "16deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 36, left: 86, transform: [{ rotate: "-12deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 28, left: 118, transform: [{ rotate: "6deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 34, left: 146, transform: [{ rotate: "-15deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 30, left: 176, transform: [{ rotate: "10deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 36, left: 202, transform: [{ rotate: "-6deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 28, left: 234, transform: [{ rotate: "18deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 32, left: 262, transform: [{ rotate: "-10deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 28, left: 292, transform: [{ rotate: "8deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 34, left: 318, transform: [{ rotate: "-16deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 30, left: 350, transform: [{ rotate: "14deg" }], opacity: 0.25 }} />
-          {/* Row 3 */}
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 56, left: 12, transform: [{ rotate: "-14deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 60, left: 42, transform: [{ rotate: "10deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 54, left: 70, transform: [{ rotate: "-6deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 62, left: 102, transform: [{ rotate: "18deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 56, left: 130, transform: [{ rotate: "-8deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 60, left: 160, transform: [{ rotate: "12deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 54, left: 186, transform: [{ rotate: "-16deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 62, left: 218, transform: [{ rotate: "6deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 56, left: 246, transform: [{ rotate: "-12deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 18, height: 18, top: 60, left: 276, transform: [{ rotate: "14deg" }], opacity: 0.25 }} />
-          <Image source={tacosIll} contentFit="contain" style={{ position: "absolute", width: 24, height: 24, top: 54, left: 304, transform: [{ rotate: "-10deg" }], opacity: 0.25 }} />
-          <Image source={burgerIll} contentFit="contain" style={{ position: "absolute", width: 20, height: 20, top: 58, left: 336, transform: [{ rotate: "8deg" }], opacity: 0.25 }} />
-          <Image source={friesIll} contentFit="contain" style={{ position: "absolute", width: 22, height: 22, top: 56, left: 364, transform: [{ rotate: "-18deg" }], opacity: 0.25 }} />
-        </View>
-        {/* Logo centered below notch */}
-        <View style={{ flex: 1, alignItems: "center", justifyContent: "flex-end", paddingBottom: 8, zIndex: 10 }}>
-          <Image
-            source={logoImage}
-            contentFit="contain"
-            style={{ width: 50, height: 50 }}
-          />
-        </View>
+      {/* ── LOGO ── */}
+      <View
+        style={{
+          paddingTop: 8,
+          paddingBottom: 8,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Image
+          source={logoImage}
+          contentFit="contain"
+          style={{ width: 50, height: 50 }}
+        />
       </View>
 
       {/* ── GREETING ── */}
@@ -282,7 +235,7 @@ export default function AccueilScreen(): React.ReactElement {
             {/* Right image with price overlay */}
             <View style={{ width: "42%", position: "relative" }}>
               <Image
-                source={{ uri: featured.imageUrl }}
+                source={featured.imageUrl}
                 contentFit="cover"
                 style={{ width: "100%", height: "100%" }}
                 accessibilityIgnoresInvertColors
@@ -439,7 +392,7 @@ export default function AccueilScreen(): React.ReactElement {
             >
               <View style={{ position: "relative" }}>
                 <Image
-                  source={{ uri: p.imageUrl }}
+                  source={p.imageUrl}
                   contentFit="cover"
                   style={{
                     width: "100%",
@@ -528,7 +481,7 @@ export default function AccueilScreen(): React.ReactElement {
                 }}
               >
                 <Image
-                  source={{ uri: p.imageUrl }}
+                  source={p.imageUrl}
                   contentFit="cover"
                   style={{
                     width: "100%",

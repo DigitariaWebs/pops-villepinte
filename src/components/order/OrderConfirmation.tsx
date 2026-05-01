@@ -25,7 +25,7 @@ const friesIll = require("../../../assets/images/friesillustartion.png") as numb
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const tacosIll = require("../../../assets/images/tacosillustartion.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const logoImage = require("../../../assets/images/logo.png") as number;
+const logoImage = require("../../../assets/images/pops-logo.png") as number;
 
 const { width: SW, height: SH } = Dimensions.get("window");
 

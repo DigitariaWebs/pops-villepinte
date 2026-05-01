@@ -107,7 +107,7 @@ export default function ProductCard({
       {/* Image region — top 65% */}
       <View style={{ flex: 0.65, position: "relative" }}>
         <Image
-          source={{ uri: product.imageUrl }}
+          source={product.imageUrl}
           contentFit="cover"
           style={{ width: "100%", height: "100%" }}
           accessibilityIgnoresInvertColors

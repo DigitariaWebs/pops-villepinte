@@ -15,7 +15,7 @@ import { colors } from "@/constants/theme";
 import { useProfileStore } from "@/store/profile.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const logoImage = require("../../../assets/images/logo.png") as number;
+const logoImage = require("../../../assets/images/pops-logo.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const burgerIll = require("../../../assets/images/burgerillustartion.png") as number;
 // eslint-disable-next-line @typescript-eslint/no-var-requires

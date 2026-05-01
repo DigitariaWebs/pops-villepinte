@@ -114,8 +114,11 @@ export default function ProductRow({
         style={{ width: 112, height: 112 }}
       >
         <Image
-          source={{ uri: product.imageUrl }}
+          source={product.imageUrl}
           contentFit="cover"
+          cachePolicy="memory-disk"
+          recyclingKey={product.id}
+          transition={150}
           style={{ width: "100%", height: "100%" }}
           accessibilityIgnoresInvertColors
         />

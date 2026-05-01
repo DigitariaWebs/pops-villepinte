@@ -156,8 +156,10 @@ export default function ProductDetailScreen(): React.ReactElement {
 
           {/* Product image */}
           <Image
-            source={{ uri: product.imageUrl }}
+            source={product.imageUrl}
             contentFit="cover"
+            cachePolicy="memory-disk"
+            priority="high"
             style={{
               width: SCREEN_WIDTH,
               height: SCREEN_WIDTH * 0.85,

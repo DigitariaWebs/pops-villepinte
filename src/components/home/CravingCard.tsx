@@ -159,7 +159,7 @@ export default function CravingCard({
 
       {/* Bleeding hero image */}
       <Image
-        source={{ uri: product.imageUrl }}
+        source={product.imageUrl}
         contentFit="contain"
         style={{
           position: "absolute",

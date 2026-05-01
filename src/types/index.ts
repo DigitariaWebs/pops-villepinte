@@ -26,7 +26,7 @@ export type Product = {
   description: string;
   priceEUR: number;
   variants?: ProductVariant[];
-  imageUrl: string;
+  imageUrl: string | number;
   tags: ProductTag[];
   availableSupplements: string[];
   prepTimeMinutes: number;
