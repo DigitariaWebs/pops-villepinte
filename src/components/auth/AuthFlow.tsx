@@ -312,15 +312,25 @@ export default function AuthFlow({
             gap: 12,
           }}
         >
-          <Text
+          <View
             style={{
-              fontFamily: "Poppins_600SemiBold",
-              fontSize: 16,
-              color: colors.primary,
+              paddingHorizontal: 10,
+              paddingVertical: 6,
+              borderRadius: 8,
+              backgroundColor: "rgba(255,206,0,0.12)",
             }}
           >
-            🇫🇷
-          </Text>
+            <Text
+              style={{
+                fontFamily: "Poppins_700Bold",
+                fontSize: 14,
+                letterSpacing: 0.5,
+                color: colors.primary,
+              }}
+            >
+              +33
+            </Text>
+          </View>
           <TextInput
             value={phone}
             onChangeText={handlePhoneChange}
