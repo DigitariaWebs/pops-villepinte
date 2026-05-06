@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Package, Receipt } from "lucide-react-native";
@@ -18,7 +18,12 @@ export default function OrdersScreen(): React.ReactElement {
   const router = useRouter();
   const active = useOrdersStore((s) => s.active);
   const history = useOrdersStore((s) => s.history);
+  const fetchOrders = useOrdersStore((s) => s.fetchOrders);
   const addItem = useCartStore((s) => s.addItem);
+
+  useEffect(() => {
+    void fetchOrders();
+  }, []);
 
   const hasContent = active !== null || history.length > 0;
 

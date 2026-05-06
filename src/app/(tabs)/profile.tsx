@@ -30,7 +30,7 @@ function formatFrenchMobile(raw: string): string {
 
 export default function ProfileScreen(): React.ReactElement {
   const profile = useProfileStore((s) => s.profile);
-  const setProfileName = useProfileStore((s) => s.setName);
+  const updateName = useProfileStore((s) => s.updateName);
   const setProfilePhone = useProfileStore((s) => s.setPhone);
 
   const [name, setName] = useState<string>(
@@ -79,7 +79,7 @@ export default function ProfileScreen(): React.ReactElement {
     }
 
     if (trimmedName.length >= 2) {
-      setProfileName(trimmedName);
+      void updateName(trimmedName);
     }
     if (phoneDigits.length > 0) {
       setProfilePhone(phoneDigits);
@@ -104,7 +104,7 @@ export default function ProfileScreen(): React.ReactElement {
           style: "destructive",
           onPress: () => {
             void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            logout();
+            void logout();
           },
         },
       ],

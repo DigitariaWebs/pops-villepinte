@@ -8,8 +8,8 @@ import FloatingCartBar from "@/components/cart/FloatingCartBar";
 import Screen from "@/components/layout/Screen";
 import CategoryChip from "@/components/menu/CategoryChip";
 import { colors, font, radius, shadow } from "@/constants/theme";
-import { CATEGORIES, getFeaturedProduct, PRODUCTS } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
+import { useMenuStore } from "@/store/menu.store";
 import { useProfileStore } from "@/store/profile.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -72,15 +72,17 @@ function MarqueeTape(): React.ReactElement {
 export default function AccueilScreen(): React.ReactElement {
   const router = useRouter();
   const name = useProfileStore((s) => s.profile.name);
+  const PRODUCTS = useMenuStore((s) => s.products);
+  const CATEGORIES = useMenuStore((s) => s.categories);
 
-  const featured = useMemo(() => getFeaturedProduct(), []);
+  const featured = useMemo(() => PRODUCTS.find((p) => p.tags.includes("TOP")) ?? PRODUCTS[0], [PRODUCTS]);
   const topPicks = useMemo(
     () => PRODUCTS.filter((p) => p.tags.includes("TOP")).slice(0, 6),
-    [],
+    [PRODUCTS],
   );
   const newItems = useMemo(
     () => PRODUCTS.filter((p) => p.tags.includes("NOUVEAU")).slice(0, 4),
-    [],
+    [PRODUCTS],
   );
 
   const greetingName = name === "Invité" ? "toi" : name;
@@ -235,7 +237,7 @@ export default function AccueilScreen(): React.ReactElement {
             {/* Right image with price overlay */}
             <View style={{ width: "42%", position: "relative" }}>
               <Image
-                source={featured.imageUrl}
+                source={featured?.image_url}
                 contentFit="cover"
                 style={{ width: "100%", height: "100%" }}
                 accessibilityIgnoresInvertColors
@@ -258,7 +260,7 @@ export default function AccueilScreen(): React.ReactElement {
                     color: colors.ink,
                   }}
                 >
-                  {formatPriceEUR(featured.priceEUR)}
+                  {formatPriceEUR(featured?.price_eur ?? 0)}
                 </Text>
               </View>
             </View>
@@ -392,7 +394,7 @@ export default function AccueilScreen(): React.ReactElement {
             >
               <View style={{ position: "relative" }}>
                 <Image
-                  source={p.imageUrl}
+                  source={p.image_url}
                   contentFit="cover"
                   style={{
                     width: "100%",
@@ -437,7 +439,7 @@ export default function AccueilScreen(): React.ReactElement {
                     marginTop: 4,
                   }}
                 >
-                  {formatPriceEUR(p.priceEUR)}
+                  {formatPriceEUR(p.price_eur)}
                 </Text>
               </View>
             </Pressable>
@@ -481,7 +483,7 @@ export default function AccueilScreen(): React.ReactElement {
                 }}
               >
                 <Image
-                  source={p.imageUrl}
+                  source={p.image_url}
                   contentFit="cover"
                   style={{
                     width: "100%",
@@ -510,7 +512,7 @@ export default function AccueilScreen(): React.ReactElement {
                       marginTop: 4,
                     }}
                   >
-                    {formatPriceEUR(p.priceEUR)}
+                    {formatPriceEUR(p.price_eur)}
                   </Text>
                 </View>
               </Pressable>

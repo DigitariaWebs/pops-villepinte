@@ -1,8 +1,18 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "allow": [
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Omen\\\\Desktop\\\\PROJIX\\\\mobile\\\\pops-villepinte\\\\src\\\\app\" -Recurse -File)",
-      "Bash(Select-Object -ExpandProperty FullName)"
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(claude mcp *)",
+      "mcp__claude_ai_Supabase__list_tables",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx nest:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { ScrollView, View } from "react-native";
 
 import CategoryChip from "@/components/menu/CategoryChip";
-import { CATEGORIES } from "@/data/menu";
+import { useMenuStore } from "@/store/menu.store";
 import type { Category } from "@/types";
 
 export type CategoryRailSelection = string | "all";
@@ -16,7 +16,7 @@ const ALL_CATEGORY: Category = {
   id: "all",
   name: "Tout",
   icon: "grid",
-  order: 0,
+  display_order: 0,
 };
 
 export default function CategoryRail({
@@ -26,13 +26,14 @@ export default function CategoryRail({
   const scrollRef = useRef<ScrollView | null>(null);
   // Per-chip x position. Index 0 is the synthetic "Tout" chip.
   const offsetsRef = useRef<number[]>([]);
+  const categories = useMenuStore((s) => s.categories);
 
   const items = useMemo<readonly Category[]>(
     () => [
       ALL_CATEGORY,
-      ...CATEGORIES.slice().sort((a, b) => a.order - b.order),
+      ...categories.slice().sort((a, b) => a.display_order - b.display_order),
     ],
-    [],
+    [categories],
   );
 
   const selectedIndex = useMemo(

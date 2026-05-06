@@ -1,87 +1,163 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { PRODUCTS_BY_ID } from "@/data/menu";
-import type { CartItem, Order, OrderStatus } from "@/types";
+import {
+  ordersApi,
+  type CreateOrderPayload,
+  type OrderData,
+} from "@/lib/api";
+import type { CartItem, Order } from "@/types";
 
 import { asyncStorageAdapter } from "./_storage";
+
+/** Map API order data to the UI Order type */
+function toOrder(data: OrderData): Order {
+  return {
+    id: data.id,
+    items: data.order_items.map((item) => ({
+      id: item.id,
+      productId: item.product_id,
+      variantId: item.variant_id ?? undefined,
+      quantity: item.quantity,
+      supplements: item.supplements.map((s) => s.id),
+      notes: item.notes ?? undefined,
+    })),
+    totalEUR: data.total_eur,
+    status: data.status as Order["status"],
+    createdAt: data.created_at,
+    estimatedReadyAt: data.estimated_ready_at,
+    pickedUpAt: data.picked_up_at ?? undefined,
+    customerName: data.customer_name,
+  };
+}
 
 type OrdersState = {
   active: Order | null;
   history: Order[];
-  placeOrder: (cartItems: CartItem[], total: number, customerName: string) => Order;
-  advanceStatus: (orderId: string, nextStatus: OrderStatus) => void;
-  markPickedUp: (orderId: string) => void;
+  loading: boolean;
+  error: string | null;
+  placeOrder: (
+    cartItems: CartItem[],
+    customerName: string,
+  ) => Promise<Order>;
+  fetchOrders: () => Promise<void>;
+  fetchOrderById: (id: string) => Promise<Order | null>;
+  cancelOrder: (id: string) => Promise<void>;
+  refreshActive: () => Promise<void>;
+  clearError: () => void;
 };
-
-function generateOrderId(): string {
-  const now = new Date();
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth() + 1).padStart(2, "0");
-  const dd = String(now.getDate()).padStart(2, "0");
-  const suffix = String(1000 + Math.floor(Math.random() * 9000));
-  return `POP-${yyyy}${mm}${dd}-${suffix}`;
-}
-
-function computeEstimatedReadyAt(items: CartItem[]): string {
-  // Longest prep-time across all items drives the whole order + a 2 min buffer.
-  const maxPrepMinutes = items.reduce((max, item) => {
-    const product = PRODUCTS_BY_ID[item.productId];
-    if (!product) return max;
-    return Math.max(max, product.prepTimeMinutes);
-  }, 0);
-  const ready = new Date(Date.now() + (maxPrepMinutes + 2) * 60 * 1000);
-  return ready.toISOString();
-}
 
 export const useOrdersStore = create<OrdersState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       active: null,
       history: [],
+      loading: false,
+      error: null,
 
-      placeOrder: (cartItems, total, customerName) => {
-        const order: Order = {
-          id: generateOrderId(),
-          items: cartItems.map((i) => ({ ...i })),
-          totalEUR: total,
-          status: "received",
-          createdAt: new Date().toISOString(),
-          estimatedReadyAt: computeEstimatedReadyAt(cartItems),
+      placeOrder: async (cartItems: CartItem[], customerName: string) => {
+        set({ loading: true, error: null });
+
+        const payload: CreateOrderPayload = {
           customerName,
+          items: cartItems.map((item) => ({
+            productId: item.productId,
+            variantId: item.variantId ?? undefined,
+            quantity: item.quantity,
+            supplements: item.supplements.length > 0 ? item.supplements : undefined,
+            notes: item.notes ?? undefined,
+          })),
         };
-        set({ active: order });
-        return order;
+
+        try {
+          const data = await ordersApi.create(payload);
+          const order = toOrder(data);
+          set({ active: order, loading: false });
+          return order;
+        } catch (e: unknown) {
+          const message =
+            e instanceof Error ? e.message : "Erreur lors de la commande";
+          set({ error: message, loading: false });
+          throw e;
+        }
       },
 
-      advanceStatus: (orderId, nextStatus) => {
-        set((state) => {
-          if (state.active && state.active.id === orderId) {
-            return { active: { ...state.active, status: nextStatus } };
+      fetchOrders: async () => {
+        set({ loading: true });
+        try {
+          const [activeData, pastData] = await Promise.all([
+            ordersApi.list("active"),
+            ordersApi.list("past"),
+          ]);
+
+          const currentActive = activeData.length > 0 ? toOrder(activeData[0]) : null;
+          const history = pastData.map(toOrder);
+          set({ active: currentActive, history, loading: false });
+        } catch {
+          set({ loading: false });
+        }
+      },
+
+      fetchOrderById: async (id: string) => {
+        try {
+          const data = await ordersApi.get(id);
+          const order = toOrder(data);
+          if (
+            order.status === "received" ||
+            order.status === "preparing" ||
+            order.status === "ready"
+          ) {
+            set({ active: order });
           }
-          return state;
-        });
+          return order;
+        } catch {
+          return null;
+        }
       },
 
-      markPickedUp: (orderId) => {
-        set((state) => {
-          if (!state.active || state.active.id !== orderId) return state;
-          const pickedUp: Order = {
-            ...state.active,
-            status: "picked_up",
-            pickedUpAt: new Date().toISOString(),
-          };
-          return {
-            active: null,
-            history: [pickedUp, ...state.history],
-          };
-        });
+      cancelOrder: async (id: string) => {
+        try {
+          const data = await ordersApi.cancel(id);
+          const order = toOrder(data);
+          set((state) => ({
+            active: state.active?.id === id ? null : state.active,
+            history: [order, ...state.history],
+          }));
+        } catch (e: unknown) {
+          const message = e instanceof Error ? e.message : "Annulation impossible";
+          set({ error: message });
+          throw e;
+        }
       },
+
+      refreshActive: async () => {
+        const { active } = get();
+        if (!active) return;
+        try {
+          const data = await ordersApi.get(active.id);
+          const order = toOrder(data);
+          if (order.status === "picked_up" || order.status === "cancelled") {
+            set((state) => ({
+              active: null,
+              history: [order, ...state.history],
+            }));
+          } else {
+            set({ active: order });
+          }
+        } catch {
+          // ignore
+        }
+      },
+
+      clearError: () => set({ error: null }),
     }),
     {
-      name: "pops.orders.v1",
+      name: "pops.orders.v2",
       storage: createJSONStorage(() => asyncStorageAdapter),
-      partialize: (state) => ({ active: state.active, history: state.history }),
+      partialize: (state) => ({
+        active: state.active,
+        history: state.history,
+      }),
     },
   ),
 );

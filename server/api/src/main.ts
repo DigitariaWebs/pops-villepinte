@@ -34,7 +34,7 @@ async function bootstrap() {
     credentials: true,
   });
   await app.register(rateLimit, {
-    max: cfg.get('RATE_LIMIT_MAX', { infer: true }),
+    max: cfg.get('RATE_LIMIT_MAX', { infer: true }) as number,
     timeWindow: '1 minute',
   });
 

@@ -2,10 +2,10 @@ import * as Crypto from "expo-crypto";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { PRODUCTS_BY_ID, SUPPLEMENTS_BY_ID } from "@/data/menu";
 import type { CartItem } from "@/types";
 
 import { asyncStorageAdapter } from "./_storage";
+import { useMenuStore } from "./menu.store";
 
 export type AddCartItemInput = {
   productId: string;
@@ -28,20 +28,22 @@ type CartState = {
 
 /**
  * Unit price for a single cart-line: product variant (or base) + supplements.
- * Exported so CartItemRow UI can call it without duplicating the price math.
+ * Uses the menu store for live product data.
  */
 export function getLineUnitPrice(item: CartItem): number {
-  const product = PRODUCTS_BY_ID[item.productId];
+  const menuState = useMenuStore.getState();
+  const product = menuState.getProductById(item.productId);
   if (!product) return 0;
 
   const basePrice =
-    item.variantId !== undefined && product.variants
-      ? (product.variants.find((v) => v.id === item.variantId)?.priceEUR ?? product.priceEUR)
-      : product.priceEUR;
+    item.variantId !== undefined && product.product_variants?.length > 0
+      ? (product.product_variants.find((v) => v.id === item.variantId)
+          ?.price_eur ?? product.price_eur)
+      : product.price_eur;
 
   const supplementsTotal = item.supplements.reduce((acc, id) => {
-    const supplement = SUPPLEMENTS_BY_ID[id];
-    return acc + (supplement?.priceEUR ?? 0);
+    const supplement = menuState.getSupplementById(id);
+    return acc + (supplement?.price_eur ?? 0);
   }, 0);
 
   return basePrice + supplementsTotal;

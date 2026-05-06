@@ -1,6 +1,7 @@
 import {
   CanActivate,
   ExecutionContext,
+  ForbiddenException,
   Inject,
   Injectable,
   UnauthorizedException,
@@ -55,12 +56,16 @@ export class SupabaseAuthGuard implements CanActivate {
 
     const { data, error } = await this.admin
       .from('profiles')
-      .select('id, name, phone, order_count, role')
+      .select('id, name, phone, order_count, role, is_blocked')
       .eq('id', payload.sub)
       .maybeSingle();
 
     if (error || !data) {
       throw new UnauthorizedException('Profile not found');
+    }
+
+    if (data.is_blocked === true) {
+      throw new ForbiddenException('Account suspended');
     }
 
     req.user = {

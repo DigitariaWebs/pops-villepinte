@@ -20,7 +20,7 @@ export default function SignupForm({
   onComplete,
 }: SignupFormProps): React.ReactElement {
   const insets = useSafeAreaInsets();
-  const setProfileName = useProfileStore((s) => s.setName);
+  const updateName = useProfileStore((s) => s.updateName);
   const setProfilePhone = useProfileStore((s) => s.setPhone);
 
   const [name, setName] = useState("");
@@ -33,7 +33,7 @@ export default function SignupForm({
       return;
     }
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setProfileName(name.trim());
+    void updateName(name.trim());
     setProfilePhone(phone);
     onComplete();
   };

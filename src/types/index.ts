@@ -2,34 +2,36 @@ export type Category = {
   id: string;
   name: string;
   icon: string;
-  order: number;
+  display_order: number;
 };
 
 export type Supplement = {
   id: string;
   name: string;
-  priceEUR: number;
+  price_eur: number;
 };
 
 export type ProductVariant = {
   id: string;
   label: string;
-  priceEUR: number;
+  price_eur: number;
 };
 
 export type ProductTag = "NOUVEAU" | "PROMO" | "TOP" | "SPICY";
 
 export type Product = {
   id: string;
-  categoryId: string;
+  category_id: string;
   name: string;
-  description: string;
-  priceEUR: number;
-  variants?: ProductVariant[];
-  imageUrl: string | number;
+  description: string | null;
+  price_eur: number;
+  product_variants: ProductVariant[];
+  product_supplements: { supplement_id: string; supplements: Supplement }[];
+  image_url: string | null;
   tags: ProductTag[];
-  availableSupplements: string[];
-  prepTimeMinutes: number;
+  prep_time_minutes: number;
+  is_available: boolean;
+  is_active: boolean;
 };
 
 export type CartItem = {

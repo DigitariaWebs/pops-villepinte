@@ -1,0 +1,214 @@
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { SupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_ADMIN } from '../../common/supabase/supabase.module';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto, ToggleAvailabilityDto } from './dto/update-product.dto';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { ReorderCategoriesDto } from './dto/reorder-categories.dto';
+import { CreateSupplementDto } from './dto/create-supplement.dto';
+import { UpdateSupplementDto } from './dto/update-supplement.dto';
+import { ManageProductSupplementsDto } from './dto/manage-product-supplements.dto';
+
+@Injectable()
+export class AdminCatalogueService {
+  constructor(
+    @Inject(SUPABASE_ADMIN) private readonly supabase: SupabaseClient,
+  ) {}
+
+  // Products
+  async createProduct(dto: CreateProductDto) {
+    const { data, error } = await this.supabase
+      .from('products')
+      .insert(dto)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  async updateProduct(id: string, dto: UpdateProductDto) {
+    const { data, error } = await this.supabase
+      .from('products')
+      .update({ ...dto, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new NotFoundException('Product not found');
+    return data;
+  }
+
+  async deleteProduct(id: string) {
+    // Check if product has orders
+    const { count } = await this.supabase
+      .from('order_items')
+      .select('*', { count: 'exact', head: true })
+      .eq('product_id', id);
+
+    if (count && count > 0) {
+      // Soft delete
+      const { data, error } = await this.supabase
+        .from('products')
+        .update({ is_active: false, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { deleted: false, deactivated: true, product: data };
+    }
+
+    const { error } = await this.supabase
+      .from('products')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { deleted: true, deactivated: false };
+  }
+
+  async toggleAvailability(id: string, dto: ToggleAvailabilityDto) {
+    const { data, error } = await this.supabase
+      .from('products')
+      .update({
+        is_available: dto.is_available,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new NotFoundException('Product not found');
+    return data;
+  }
+
+  async setProductSupplements(id: string, dto: ManageProductSupplementsDto) {
+    // Delete existing
+    await this.supabase
+      .from('product_supplements')
+      .delete()
+      .eq('product_id', id);
+
+    if (dto.supplement_ids.length === 0) return { product_id: id, supplements: [] };
+
+    // Insert new
+    const { data, error } = await this.supabase
+      .from('product_supplements')
+      .insert(
+        dto.supplement_ids.map((sid) => ({
+          product_id: id,
+          supplement_id: sid,
+        })),
+      )
+      .select('supplement_id, supplements(*)');
+
+    if (error) throw error;
+    return { product_id: id, supplements: data };
+  }
+
+  // Categories
+  async createCategory(dto: CreateCategoryDto) {
+    const { data, error } = await this.supabase
+      .from('categories')
+      .insert(dto)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  async updateCategory(id: string, dto: UpdateCategoryDto) {
+    const { data, error } = await this.supabase
+      .from('categories')
+      .update({ ...dto, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new NotFoundException('Category not found');
+    return data;
+  }
+
+  async deleteCategory(id: string) {
+    // Check if category has products
+    const { count } = await this.supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('category_id', id);
+
+    if (count && count > 0) {
+      throw new ConflictException(
+        'Cannot delete category with existing products',
+      );
+    }
+
+    const { error } = await this.supabase
+      .from('categories')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { deleted: true };
+  }
+
+  async reorderCategories(dto: ReorderCategoriesDto) {
+    const updates = dto.categories.map((cat) =>
+      this.supabase
+        .from('categories')
+        .update({ display_order: cat.display_order })
+        .eq('id', cat.id),
+    );
+
+    await Promise.all(updates);
+    return { reordered: true };
+  }
+
+  // Supplements
+  async createSupplement(dto: CreateSupplementDto) {
+    const { data, error } = await this.supabase
+      .from('supplements')
+      .insert(dto)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  async updateSupplement(id: string, dto: UpdateSupplementDto) {
+    const { data, error } = await this.supabase
+      .from('supplements')
+      .update({ ...dto, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw new NotFoundException('Supplement not found');
+    return data;
+  }
+
+  async deleteSupplement(id: string) {
+    // Remove from junction table first
+    await this.supabase
+      .from('product_supplements')
+      .delete()
+      .eq('supplement_id', id);
+
+    const { error } = await this.supabase
+      .from('supplements')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    return { deleted: true };
+  }
+}

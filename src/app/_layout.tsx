@@ -13,8 +13,8 @@ import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import AnimatedSplash from "@/components/splash/AnimatedSplash";
 import { useAppFonts } from "@/constants/fonts";
 import { useAuthStore } from "@/store/auth.store";
-
-const KNOWN_PHONE = "0642799884";
+import { useMenuStore } from "@/store/menu.store";
+import { useProfileStore } from "@/store/profile.store";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -27,14 +27,29 @@ export default function RootLayout(): React.ReactNode {
   const signupDone = useAuthStore((s) => s.signupDone);
   const phone = useAuthStore((s) => s.phone);
   const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
-  const login = useAuthStore((s) => s.login);
   const completeSignup = useAuthStore((s) => s.completeSignup);
+  const restoreSession = useAuthStore((s) => s.restoreSession);
+  const fetchMenu = useMenuStore((s) => s.fetchMenu);
+  const fetchProfile = useProfileStore((s) => s.fetchProfile);
 
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync().catch(() => {});
     }
   }, [fontsLoaded]);
+
+  // Restore session and fetch menu on app start
+  useEffect(() => {
+    void restoreSession();
+    void fetchMenu();
+  }, []);
+
+  // Fetch profile when user becomes authed
+  useEffect(() => {
+    if (authed) {
+      void fetchProfile();
+    }
+  }, [authed]);
 
   if (!fontsLoaded) return null;
 
@@ -61,8 +76,8 @@ export default function RootLayout(): React.ReactNode {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
         <AuthFlow
-          onComplete={(p) => {
-            login(p, p === KNOWN_PHONE);
+          onComplete={() => {
+            // Auth is handled by the store's verifyOtp
           }}
         />
       </GestureHandlerRootView>

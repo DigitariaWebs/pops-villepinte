@@ -77,7 +77,7 @@ export default function ProductCard({
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addItem({
       productId: product.id,
-      variantId: product.variants?.[0]?.id,
+      variantId: product.product_variants?.[0]?.id,
       quantity: 1,
       supplements: [],
     });
@@ -107,7 +107,7 @@ export default function ProductCard({
       {/* Image region — top 65% */}
       <View style={{ flex: 0.65, position: "relative" }}>
         <Image
-          source={product.imageUrl}
+          source={product.image_url}
           contentFit="cover"
           style={{ width: "100%", height: "100%" }}
           accessibilityIgnoresInvertColors
@@ -178,7 +178,7 @@ export default function ProductCard({
             className="font-sans-extrabold-italic text-primary"
             style={{ fontSize: sizing.priceFontSize }}
           >
-            {formatPriceEUR(product.priceEUR)}
+            {formatPriceEUR(product.price_eur)}
           </Text>
 
           <AnimatedPressable

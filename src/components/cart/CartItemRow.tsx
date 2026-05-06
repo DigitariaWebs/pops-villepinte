@@ -14,11 +14,11 @@ import Animated, {
 
 import { colors } from "@/constants/theme";
 import { formatPriceEUR } from "@/lib/format";
-import { PRODUCTS_BY_ID, SUPPLEMENTS_BY_ID } from "@/data/menu";
 import {
   getLineUnitPrice,
   useCartStore,
 } from "@/store/cart.store";
+import { useMenuStore } from "@/store/menu.store";
 import type { CartItem } from "@/types";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -142,11 +142,13 @@ export default function CartItemRow({
 }: CartItemRowProps): React.ReactElement | null {
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
+  const getProductById = useMenuStore((s) => s.getProductById);
+  const getSupplementById = useMenuStore((s) => s.getSupplementById);
 
-  const product = PRODUCTS_BY_ID[item.productId];
+  const product = getProductById(item.productId);
   const variant =
     item.variantId !== undefined
-      ? product?.variants?.find((v) => v.id === item.variantId)
+      ? product?.product_variants?.find((v) => v.id === item.variantId)
       : undefined;
   const unitPrice = getLineUnitPrice(item);
   const lineTotal = unitPrice * item.quantity;
@@ -154,10 +156,10 @@ export default function CartItemRow({
   const supplementsLabel = useMemo(() => {
     if (item.supplements.length === 0) return null;
     return item.supplements
-      .map((sid) => SUPPLEMENTS_BY_ID[sid]?.name)
+      .map((sid) => getSupplementById(sid)?.name)
       .filter((n): n is string => n !== undefined)
       .join(", ");
-  }, [item.supplements]);
+  }, [item.supplements, getSupplementById]);
 
   if (!product) {
     // Stale item — silently ignore. Cart store handles cleanup.
@@ -186,7 +188,7 @@ export default function CartItemRow({
           style={{ width: 84, height: 84 }}
         >
           <Image
-            source={product.imageUrl}
+            source={product.image_url}
             contentFit="cover"
             style={{ width: "100%", height: "100%" }}
             accessibilityIgnoresInvertColors

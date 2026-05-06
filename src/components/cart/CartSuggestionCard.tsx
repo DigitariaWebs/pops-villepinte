@@ -36,7 +36,7 @@ export default function CartSuggestionCard({
     transform: [{ scale: addScale.value }],
   }));
 
-  const hasVariants = product.variants !== undefined && product.variants.length > 0;
+  const hasVariants = product.product_variants !== undefined && product.product_variants.length > 0;
 
   const handleCardPress = (): void => {
     router.push({ pathname: "/product/[id]", params: { id: product.id } });
@@ -71,7 +71,7 @@ export default function CartSuggestionCard({
     >
       <View style={{ height: 100 }}>
         <Image
-          source={product.imageUrl}
+          source={product.image_url}
           contentFit="cover"
           style={{ width: "100%", height: "100%" }}
           accessibilityIgnoresInvertColors
@@ -99,7 +99,7 @@ export default function CartSuggestionCard({
             }}
           >
             {hasVariants ? "dès " : ""}
-            {formatPriceEUR(product.priceEUR)}
+            {formatPriceEUR(product.price_eur)}
           </Text>
 
           <AnimatedPressable

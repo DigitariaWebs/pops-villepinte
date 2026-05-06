@@ -15,7 +15,7 @@ import MenuSectionTitle from "@/components/menu/MenuSectionTitle";
 import ProductRow from "@/components/menu/ProductRow";
 import SearchField, { normalizeSearch } from "@/components/menu/SearchField";
 import { colors, font, radius } from "@/constants/theme";
-import { CATEGORIES, PRODUCTS } from "@/data/menu";
+import { useMenuStore } from "@/store/menu.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const burgerIll = require("../../../assets/images/burgerillustartion.png") as number;
@@ -80,11 +80,20 @@ function FoodPatternBg({ height }: { height: number }): React.ReactElement {
 export default function MenuScreen(): React.ReactElement {
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams<{ cat?: string }>();
+  const CATEGORIES = useMenuStore((s) => s.categories);
+  const PRODUCTS = useMenuStore((s) => s.products);
+  const fetchMenu = useMenuStore((s) => s.fetchMenu);
   const [selectedId, setSelectedId] = useState<CategoryRailSelection>(
     params.cat ?? "all",
   );
   const [searchExpanded, setSearchExpanded] = useState(false);
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (CATEGORIES.length === 0) {
+      void fetchMenu();
+    }
+  }, []);
 
   // Live updates from the home screen — tap a category chip there, land here pre-selected.
   useEffect(() => {
@@ -111,23 +120,23 @@ export default function MenuScreen(): React.ReactElement {
       return PRODUCTS.filter(
         (p) =>
           normalizeSearch(p.name).includes(normalizedQuery) ||
-          normalizeSearch(p.description).includes(normalizedQuery),
+          normalizeSearch(p.description ?? "").includes(normalizedQuery),
       );
     }
     if (selectedId === "all") return PRODUCTS;
-    return PRODUCTS.filter((p) => p.categoryId === selectedId);
-  }, [isSearching, normalizedQuery, selectedId]);
+    return PRODUCTS.filter((p) => p.category_id === selectedId);
+  }, [isSearching, normalizedQuery, selectedId, PRODUCTS]);
 
   const groupedByCategory = useMemo(
     () =>
       CATEGORIES.slice()
-        .sort((a, b) => a.order - b.order)
+        .sort((a, b) => a.display_order - b.display_order)
         .map((cat) => ({
           category: cat,
-          products: PRODUCTS.filter((p) => p.categoryId === cat.id),
+          products: PRODUCTS.filter((p) => p.category_id === cat.id),
         }))
         .filter((g) => g.products.length > 0),
-    [],
+    [CATEGORIES, PRODUCTS],
   );
 
   const handleToggleSearch = (): void => {

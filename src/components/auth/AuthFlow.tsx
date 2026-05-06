@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Dimensions,
   Pressable,
   Text,
@@ -12,6 +13,7 @@ import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { colors } from "@/constants/theme";
+import { useAuthStore } from "@/store/auth.store";
 import { useProfileStore } from "@/store/profile.store";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -66,8 +68,8 @@ function buildPatternItems(): React.ReactElement[] {
 
 const patternItems = buildPatternItems();
 
-const MOCK_OTP = "1234";
 const PHONE_REGEX = /^0[67](\d{2}){4}$/;
+const OTP_LENGTH = 6;
 
 function formatFrenchMobile(raw: string): string {
   const digits = raw.replace(/\D/g, "").slice(0, 10);
@@ -83,26 +85,27 @@ export default function AuthFlow({
 }: AuthFlowProps): React.ReactElement {
   const insets = useSafeAreaInsets();
   const setProfilePhone = useProfileStore((s) => s.setPhone);
+  const sendOtp = useAuthStore((s) => s.sendOtp);
+  const verifyOtp = useAuthStore((s) => s.verifyOtp);
+  const loading = useAuthStore((s) => s.loading);
 
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phone, setPhone] = useState("");
-  const [otp, setOtp] = useState(["", "", "", ""]);
+  const [otp, setOtp] = useState(Array(OTP_LENGTH).fill("") as string[]);
   const [phoneError, setPhoneError] = useState<string | undefined>();
   const [otpError, setOtpError] = useState<string | undefined>();
 
-  const otpRefs = [
+  const otpRefs = Array.from({ length: OTP_LENGTH }, () =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     useRef<TextInput>(null),
-    useRef<TextInput>(null),
-    useRef<TextInput>(null),
-    useRef<TextInput>(null),
-  ];
+  );
 
   const handlePhoneChange = (v: string): void => {
     setPhone(formatFrenchMobile(v));
     setPhoneError(undefined);
   };
 
-  const handleSendCode = (): void => {
+  const handleSendCode = async (): Promise<void> => {
     const digits = phone.replace(/\s/g, "");
     if (!PHONE_REGEX.test(digits)) {
       setPhoneError("Numéro invalide. Utilise un 06 ou 07.");
@@ -110,33 +113,43 @@ export default function AuthFlow({
       return;
     }
     void Haptics.selectionAsync();
+
+    const result = await sendOtp(digits);
+    if (result.error) {
+      setPhoneError(result.error);
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      return;
+    }
+
     setStep("otp");
     setTimeout(() => otpRefs[0].current?.focus(), 300);
   };
 
-  const handleOtpDigit = (digit: string, index: number): void => {
+  const handleOtpDigit = async (digit: string, index: number): Promise<void> => {
     if (digit.length > 1) return;
     const next = [...otp];
     next[index] = digit;
     setOtp(next);
     setOtpError(undefined);
 
-    if (digit !== "" && index < 3) {
+    if (digit !== "" && index < OTP_LENGTH - 1) {
       otpRefs[index + 1].current?.focus();
     }
 
-    if (index === 3 && digit !== "") {
+    if (index === OTP_LENGTH - 1 && digit !== "") {
       const code = next.join("");
-      if (code === MOCK_OTP) {
+      const digits = phone.replace(/\s/g, "");
+
+      const result = await verifyOtp(digits, code);
+      if (result.error) {
+        setOtpError(result.error);
+        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        setOtp(Array(OTP_LENGTH).fill(""));
+        setTimeout(() => otpRefs[0].current?.focus(), 200);
+      } else {
         void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        const digits = phone.replace(/\s/g, "");
         setProfilePhone(digits);
         onComplete(digits);
-      } else {
-        setOtpError("Code incorrect. Réessaye avec 1234.");
-        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        setOtp(["", "", "", ""]);
-        setTimeout(() => otpRefs[0].current?.focus(), 200);
       }
     }
   };
@@ -164,7 +177,7 @@ export default function AuthFlow({
       >
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
           <Pressable
-            onPress={() => { setStep("phone"); setOtp(["", "", "", ""]); setOtpError(undefined); }}
+            onPress={() => { setStep("phone"); setOtp(Array(OTP_LENGTH).fill("")); setOtpError(undefined); }}
             hitSlop={16}
           >
             <ArrowLeft size={28} color={colors.ink} strokeWidth={2.5} />
@@ -203,7 +216,7 @@ export default function AuthFlow({
         <View
           style={{
             flexDirection: "row",
-            gap: 12,
+            gap: 10,
             marginTop: 36,
           }}
         >
@@ -212,27 +225,33 @@ export default function AuthFlow({
               key={i}
               ref={otpRefs[i]}
               value={digit}
-              onChangeText={(v) => handleOtpDigit(v, i)}
+              onChangeText={(v) => void handleOtpDigit(v, i)}
               onKeyPress={({ nativeEvent }) => {
                 if (nativeEvent.key === "Backspace") handleOtpBackspace(i);
               }}
               keyboardType="number-pad"
               maxLength={1}
               style={{
-                width: 64,
-                height: 72,
-                borderRadius: 16,
+                width: 50,
+                height: 64,
+                borderRadius: 14,
                 backgroundColor: colors.ink,
                 textAlign: "center",
                 fontFamily: "BebasNeue_400Regular",
-                fontSize: 32,
+                fontSize: 28,
                 color: colors.primary,
               }}
             />
           ))}
         </View>
 
-        {otpError !== undefined ? (
+        {loading ? (
+          <ActivityIndicator
+            size="small"
+            color={colors.ink}
+            style={{ marginTop: 16 }}
+          />
+        ) : otpError !== undefined ? (
           <Text
             style={{
               fontFamily: "Poppins_600SemiBold",
@@ -252,7 +271,7 @@ export default function AuthFlow({
               marginTop: 16,
             }}
           >
-            Code de démo : 1234
+            Code à 6 chiffres envoyé par SMS
           </Text>
         )}
       </View>
@@ -363,26 +382,32 @@ export default function AuthFlow({
         ) : null}
 
         <Pressable
-          onPress={handleSendCode}
+          onPress={() => void handleSendCode()}
+          disabled={loading}
           style={{
             backgroundColor: colors.ink,
             borderRadius: 999,
             paddingVertical: 18,
             alignItems: "center",
             marginTop: 28,
+            opacity: loading ? 0.7 : 1,
           }}
         >
-          <Text
-            style={{
-              fontFamily: "Poppins_700Bold",
-              fontSize: 14,
-              letterSpacing: 1,
-              color: colors.primary,
-              textTransform: "uppercase",
-            }}
-          >
-            Recevoir le code
-          </Text>
+          {loading ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <Text
+              style={{
+                fontFamily: "Poppins_700Bold",
+                fontSize: 14,
+                letterSpacing: 1,
+                color: colors.primary,
+                textTransform: "uppercase",
+              }}
+            >
+              Recevoir le code
+            </Text>
+          )}
         </Pressable>
       </View>
 

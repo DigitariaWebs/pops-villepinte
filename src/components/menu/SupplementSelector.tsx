@@ -36,7 +36,7 @@ function SupplementRow({
     transform: [{ scale: pressScale.value }],
   }));
 
-  const isFreeSpicy = supplement.priceEUR === 0;
+  const isFreeSpicy = supplement.price_eur === 0;
 
   return (
     <AnimatedPressable
@@ -94,7 +94,7 @@ function SupplementRow({
           className="font-sans text-on-surface-variant"
           style={{ fontSize: 13 }}
         >
-          + {formatPriceEUR(supplement.priceEUR)}
+          + {formatPriceEUR(supplement.price_eur)}
         </Text>
       )}
     </AnimatedPressable>

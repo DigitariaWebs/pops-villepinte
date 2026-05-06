@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import { Text, View } from "react-native";
 
-import { PRODUCTS_BY_ID, SUPPLEMENTS_BY_ID } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
 import { getLineUnitPrice } from "@/store/cart.store";
+import { useMenuStore } from "@/store/menu.store";
 import type { CartItem } from "@/types";
 
 export type OrderRecapProps = {
@@ -12,12 +12,14 @@ export type OrderRecapProps = {
 };
 
 function RecapLine({ item }: { item: CartItem }): React.ReactElement | null {
-  const product = PRODUCTS_BY_ID[item.productId];
+  const getProductById = useMenuStore((s) => s.getProductById);
+  const getSupplementById = useMenuStore((s) => s.getSupplementById);
+  const product = getProductById(item.productId);
   if (!product) return null;
 
   const variant =
     item.variantId !== undefined
-      ? product.variants?.find((v) => v.id === item.variantId)
+      ? product.product_variants?.find((v) => v.id === item.variantId)
       : undefined;
 
   const unitPrice = getLineUnitPrice(item);
@@ -26,10 +28,10 @@ function RecapLine({ item }: { item: CartItem }): React.ReactElement | null {
   const supplementNames = useMemo(() => {
     if (item.supplements.length === 0) return null;
     return item.supplements
-      .map((sid) => SUPPLEMENTS_BY_ID[sid]?.name)
+      .map((sid) => getSupplementById(sid)?.name)
       .filter((n): n is string => n !== undefined)
       .join(", ");
-  }, [item.supplements]);
+  }, [item.supplements, getSupplementById]);
 
   const nameLabel = `${item.quantity}× ${product.name}${
     variant !== undefined ? ` · ${variant.label}` : ""

@@ -13,9 +13,9 @@ import CartItemRow from "@/components/cart/CartItemRow";
 import CartSuggestionCard from "@/components/cart/CartSuggestionCard";
 import CartTotals from "@/components/cart/CartTotals";
 import { colors } from "@/constants/theme";
-import { PRODUCTS } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
+import { useMenuStore } from "@/store/menu.store";
 
 const SUGGESTIONS_MAX = 6;
 
@@ -24,6 +24,7 @@ export default function CartScreen(): React.ReactElement {
   const insets = useSafeAreaInsets();
   const items = useCartStore((s) => s.items);
   const total = useCartStore((s) => s.totalEUR());
+  const PRODUCTS = useMenuStore((s) => s.products);
 
   const [toastVisible, setToastVisible] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -36,10 +37,8 @@ export default function CartScreen(): React.ReactElement {
   const suggestions = useMemo(() => {
     const inCart = new Set(items.map((i) => i.productId));
     const pool = PRODUCTS.filter((p) => !inCart.has(p.id));
-    const drinks = pool.filter((p) => p.categoryId === "boissons");
-    const rest = pool.filter((p) => p.categoryId !== "boissons");
-    return [...drinks, ...rest].slice(0, SUGGESTIONS_MAX);
-  }, [items]);
+    return pool.slice(0, SUGGESTIONS_MAX);
+  }, [items, PRODUCTS]);
 
   const handleItemDeleted = (productName: string): void => {
     setToastMessage(`${productName} retiré du panier`);

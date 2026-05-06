@@ -1,27 +1,35 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import type { Profile } from "@/types";
+import { profileApi, type ProfileData } from "@/lib/api";
 
 import { asyncStorageAdapter } from "./_storage";
 
 type ProfileState = {
-  profile: Profile;
+  profile: {
+    name: string;
+    phone: string;
+    orderCount: number;
+    loyaltyTier: string;
+  };
+  loading: boolean;
   setName: (name: string) => void;
   setPhone: (phone: string) => void;
   incrementOrderCount: () => void;
-};
-
-const DEFAULT_PROFILE: Profile = {
-  name: "Invité",
-  phone: "",
-  orderCount: 0,
+  fetchProfile: () => Promise<void>;
+  updateName: (name: string) => Promise<void>;
 };
 
 export const useProfileStore = create<ProfileState>()(
   persist(
-    (set) => ({
-      profile: DEFAULT_PROFILE,
+    (set, get) => ({
+      profile: {
+        name: "Invité",
+        phone: "",
+        orderCount: 0,
+        loyaltyTier: "BIENVENUE",
+      },
+      loading: false,
 
       setName: (name) => {
         set((state) => ({ profile: { ...state.profile, name } }));
@@ -33,12 +41,50 @@ export const useProfileStore = create<ProfileState>()(
 
       incrementOrderCount: () => {
         set((state) => ({
-          profile: { ...state.profile, orderCount: state.profile.orderCount + 1 },
+          profile: {
+            ...state.profile,
+            orderCount: state.profile.orderCount + 1,
+          },
         }));
+      },
+
+      fetchProfile: async () => {
+        set({ loading: true });
+        try {
+          const data: ProfileData = await profileApi.get();
+          set({
+            profile: {
+              name: data.name || "Invité",
+              phone: data.phone || "",
+              orderCount: data.order_count,
+              loyaltyTier: data.loyalty_tier,
+            },
+            loading: false,
+          });
+        } catch {
+          set({ loading: false });
+        }
+      },
+
+      updateName: async (name: string) => {
+        try {
+          const data: ProfileData = await profileApi.update({ name });
+          set({
+            profile: {
+              name: data.name || name,
+              phone: data.phone || get().profile.phone,
+              orderCount: data.order_count,
+              loyaltyTier: data.loyalty_tier,
+            },
+          });
+        } catch {
+          // Optimistic update even if API fails
+          set((state) => ({ profile: { ...state.profile, name } }));
+        }
       },
     }),
     {
-      name: "pops.profile.v1",
+      name: "pops.profile.v2",
       storage: createJSONStorage(() => asyncStorageAdapter),
       partialize: (state) => ({ profile: state.profile }),
     },

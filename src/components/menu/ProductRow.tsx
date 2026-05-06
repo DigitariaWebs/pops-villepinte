@@ -64,7 +64,7 @@ export default function ProductRow({
     transform: [{ scale: addPressScale.value }],
   }));
 
-  const hasVariants = product.variants !== undefined && product.variants.length > 0;
+  const hasVariants = product.product_variants !== undefined && product.product_variants.length > 0;
 
   const handlePress = (): void => {
     router.push({
@@ -89,7 +89,7 @@ export default function ProductRow({
     });
   };
 
-  const priceLabel = `${hasVariants ? "dès " : ""}${formatPriceEUR(product.priceEUR)}`;
+  const priceLabel = `${hasVariants ? "dès " : ""}${formatPriceEUR(product.price_eur)}`;
   const firstTag = product.tags[0];
 
   return (
@@ -114,7 +114,7 @@ export default function ProductRow({
         style={{ width: 112, height: 112 }}
       >
         <Image
-          source={product.imageUrl}
+          source={product.image_url}
           contentFit="cover"
           cachePolicy="memory-disk"
           recyclingKey={product.id}

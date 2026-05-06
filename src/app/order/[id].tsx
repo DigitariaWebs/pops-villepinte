@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
@@ -23,8 +23,6 @@ import { useOrdersStore } from "@/store/orders.store";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-const MOCK_TICK_MS = 3000;
-const MOCK_PREPARING_THRESHOLD = 0.15;
 
 export default function OrderDetailScreen(): React.ReactElement {
   const router = useRouter();
@@ -35,8 +33,8 @@ export default function OrderDetailScreen(): React.ReactElement {
     if (s.active?.id === id) return s.active;
     return s.history.find((o) => o.id === id) ?? null;
   });
-  const advanceStatus = useOrdersStore((s) => s.advanceStatus);
-  const markPickedUp = useOrdersStore((s) => s.markPickedUp);
+  const refreshActive = useOrdersStore((s) => s.refreshActive);
+  const fetchOrderById = useOrdersStore((s) => s.fetchOrderById);
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -52,39 +50,19 @@ export default function OrderDetailScreen(): React.ReactElement {
     transform: [{ scale: ctaScale.value }],
   }));
 
-  // Mock progression — auto-advance through statuses for demo purposes.
-  const hasAdvancedToPreparing = useRef(false);
-  const hasAdvancedToReady = useRef(false);
-
+  // Poll for status updates from the server
   useEffect(() => {
     if (!order || order.status === "cancelled" || order.status === "picked_up") return;
 
-    const tick = setInterval(() => {
-      const now = Date.now();
-      const created = new Date(order.createdAt).getTime();
-      const target = new Date(order.estimatedReadyAt).getTime();
-      const totalWindow = target - created;
-      if (totalWindow <= 0) return;
-      const elapsed = (now - created) / totalWindow;
+    // Initial fetch
+    void fetchOrderById(id);
 
-      if (
-        order.status === "received" &&
-        elapsed >= MOCK_PREPARING_THRESHOLD &&
-        !hasAdvancedToPreparing.current
-      ) {
-        hasAdvancedToPreparing.current = true;
-        advanceStatus(order.id, "preparing");
-      }
+    const poll = setInterval(() => {
+      void refreshActive();
+    }, 5000);
 
-      if (elapsed >= 1 && !hasAdvancedToReady.current) {
-        hasAdvancedToReady.current = true;
-        advanceStatus(order.id, "ready");
-        void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
-    }, MOCK_TICK_MS);
-
-    return () => clearInterval(tick);
-  }, [order, advanceStatus]);
+    return () => clearInterval(poll);
+  }, [order?.status, id, refreshActive, fetchOrderById]);
 
   const handleEnRoute = useCallback(() => {
     void Haptics.selectionAsync();
@@ -100,10 +78,9 @@ export default function OrderDetailScreen(): React.ReactElement {
 
   const handleSuccessFinish = useCallback(() => {
     if (!order) return;
-    markPickedUp(order.id);
     setShowSuccess(false);
     router.replace("/orders");
-  }, [order, markPickedUp, router]);
+  }, [order, router]);
 
   if (!order) {
     return (

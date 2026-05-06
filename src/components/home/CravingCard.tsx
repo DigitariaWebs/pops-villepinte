@@ -135,7 +135,7 @@ export default function CravingCard({
               color: colors.surface,
             }}
           >
-            {formatPriceEUR(product.priceEUR)}
+            {formatPriceEUR(product.price_eur)}
           </Text>
 
           <View
@@ -159,7 +159,7 @@ export default function CravingCard({
 
       {/* Bleeding hero image */}
       <Image
-        source={product.imageUrl}
+        source={product.image_url}
         contentFit="contain"
         style={{
           position: "absolute",

@@ -15,9 +15,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OrderConfirmation from "@/components/order/OrderConfirmation";
 import TextField from "@/components/form/TextField";
 import { colors, font, radius } from "@/constants/theme";
-import { PRODUCTS_BY_ID, SUPPLEMENTS_BY_ID } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
 import { getLineUnitPrice, useCartStore } from "@/store/cart.store";
+import { useMenuStore } from "@/store/menu.store";
 import { useOrdersStore } from "@/store/orders.store";
 import { useProfileStore } from "@/store/profile.store";
 
@@ -35,10 +35,11 @@ export default function CheckoutScreen(): React.ReactElement {
   const total = useCartStore((s) => s.totalEUR());
   const clearCart = useCartStore((s) => s.clearCart);
   const placeOrder = useOrdersStore((s) => s.placeOrder);
+  const orderLoading = useOrdersStore((s) => s.loading);
   const profile = useProfileStore((s) => s.profile);
-  const setProfileName = useProfileStore((s) => s.setName);
-  const setProfilePhone = useProfileStore((s) => s.setPhone);
-  const incrementOrderCount = useProfileStore((s) => s.incrementOrderCount);
+  const updateName = useProfileStore((s) => s.updateName);
+  const getProductById = useMenuStore((s) => s.getProductById);
+  const getSupplementById = useMenuStore((s) => s.getSupplementById);
 
   const [name, setName] = useState<string>(
     profile.name === "Invité" ? "" : profile.name,
@@ -63,12 +64,12 @@ export default function CheckoutScreen(): React.ReactElement {
     if (items.length === 0) return 0;
     const maxPrep = Math.max(
       ...items.map((i) => {
-        const p = PRODUCTS_BY_ID[i.productId];
-        return p?.prepTimeMinutes ?? 10;
+        const p = getProductById(i.productId);
+        return p?.prep_time_minutes ?? 10;
       }),
     );
     return maxPrep + 2;
-  }, [items]);
+  }, [items, getProductById]);
 
   const itemCount = useMemo(
     () => items.reduce((a, i) => a + i.quantity, 0),
@@ -100,7 +101,7 @@ export default function CheckoutScreen(): React.ReactElement {
     }
   };
 
-  const handleConfirm = (): void => {
+  const handleConfirm = async (): Promise<void> => {
     if (name.trim().length < 2) {
       setNameError("Ton prénom est requis.");
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
@@ -116,14 +117,16 @@ export default function CheckoutScreen(): React.ReactElement {
       return;
     }
 
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setProfileName(name.trim());
-    if (hasPhoneContent) setProfilePhone(phoneDigits);
-    incrementOrderCount();
-    const newOrder = placeOrder(items, total, name.trim());
-    clearCart();
-    setPendingOrderId(newOrder.id);
-    setShowConfirmation(true);
+    try {
+      const newOrder = await placeOrder(items, name.trim());
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      void updateName(name.trim());
+      clearCart();
+      setPendingOrderId(newOrder.id);
+      setShowConfirmation(true);
+    } catch {
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
   };
 
   const handleConfirmationDone = (): void => {
@@ -374,15 +377,15 @@ export default function CheckoutScreen(): React.ReactElement {
           </Text>
 
           {items.map((item) => {
-            const product = PRODUCTS_BY_ID[item.productId];
+            const product = getProductById(item.productId);
             if (!product) return null;
             const variant = item.variantId
-              ? product.variants?.find((v) => v.id === item.variantId)
+              ? product.product_variants?.find((v) => v.id === item.variantId)
               : undefined;
             const unitPrice = getLineUnitPrice(item);
             const lineTotal = unitPrice * item.quantity;
             const supNames = item.supplements
-              .map((sid) => SUPPLEMENTS_BY_ID[sid]?.name)
+              .map((sid) => getSupplementById(sid)?.name)
               .filter(Boolean)
               .join(", ");
 
@@ -456,7 +459,8 @@ export default function CheckoutScreen(): React.ReactElement {
         }}
       >
         <Pressable
-          onPress={handleConfirm}
+          onPress={() => void handleConfirm()}
+          disabled={orderLoading}
           style={{
             backgroundColor: canConfirm ? colors.primary : "#E8E8E8",
             borderRadius: radius.lg,

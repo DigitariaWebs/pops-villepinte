@@ -12,9 +12,9 @@ import QuantityStepper from "@/components/menu/QuantityStepper";
 import SupplementSelector from "@/components/menu/SupplementSelector";
 import VariantSelector from "@/components/menu/VariantSelector";
 import { colors, font, radius, shadow } from "@/constants/theme";
-import { PRODUCTS, SUPPLEMENTS } from "@/data/menu";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
+import { useMenuStore } from "@/store/menu.store";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ROUTE_BACK_DELAY_MS = 900;
@@ -30,11 +30,13 @@ export default function ProductDetailScreen(): React.ReactElement {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const product = useMemo(() => PRODUCTS.find((p) => p.id === id), [id]);
+  const getProductById = useMenuStore((s) => s.getProductById);
+  const supplements = useMenuStore((s) => s.supplements);
+  const product = useMemo(() => getProductById(id), [id, getProductById]);
   const addItem = useCartStore((s) => s.addItem);
 
   const [variantId, setVariantId] = useState<string | undefined>(
-    product?.variants?.[0]?.id,
+    product?.product_variants?.[0]?.id,
   );
   const [selectedSupplements, setSelectedSupplements] = useState<string[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
@@ -57,18 +59,21 @@ export default function ProductDetailScreen(): React.ReactElement {
   }
 
   const applicableSupplements = useMemo(
-    () => SUPPLEMENTS.filter((s) => product.availableSupplements.includes(s.id)),
-    [product],
+    () => {
+      const productSupIds = product.product_supplements?.map((ps) => ps.supplement_id) ?? [];
+      return supplements.filter((s) => productSupIds.includes(s.id));
+    },
+    [product, supplements],
   );
 
-  const selectedVariant = product.variants?.find((v) => v.id === variantId);
-  const basePrice = selectedVariant?.priceEUR ?? product.priceEUR;
+  const selectedVariant = product.product_variants?.find((v) => v.id === variantId);
+  const basePrice = selectedVariant?.price_eur ?? product.price_eur;
   const supplementsTotal = selectedSupplements.reduce((acc, sid) => {
-    const s = SUPPLEMENTS.find((x) => x.id === sid);
-    return acc + (s?.priceEUR ?? 0);
+    const s = supplements.find((x) => x.id === sid);
+    return acc + (s?.price_eur ?? 0);
   }, 0);
   const lineTotal = (basePrice + supplementsTotal) * quantity;
-  const hasVariants = product.variants !== undefined && product.variants.length > 0;
+  const hasVariants = product.product_variants !== undefined && product.product_variants.length > 0;
 
   const handleToggleSupplement = (sid: string): void => {
     setSelectedSupplements((prev) =>
@@ -156,7 +161,7 @@ export default function ProductDetailScreen(): React.ReactElement {
 
           {/* Product image */}
           <Image
-            source={product.imageUrl}
+            source={product.image_url}
             contentFit="cover"
             cachePolicy="memory-disk"
             priority="high"
@@ -215,7 +220,7 @@ export default function ProductDetailScreen(): React.ReactElement {
                 color: colors.white,
               }}
             >
-              {product.prepTimeMinutes} min
+              {product.prep_time_minutes} min
             </Text>
           </View>
         </View>
@@ -305,7 +310,7 @@ export default function ProductDetailScreen(): React.ReactElement {
             >
               <Timer size={14} color={colors.inkMuted} strokeWidth={2} />
               <Text style={{ fontFamily: font.bodySemi, fontSize: 12, color: colors.ink }}>
-                {product.prepTimeMinutes} min
+                {product.prep_time_minutes} min
               </Text>
             </View>
             <View
@@ -330,10 +335,10 @@ export default function ProductDetailScreen(): React.ReactElement {
         {hasVariants ? (
           <>
             <VariantSelector
-              variants={product.variants!}
+              variants={product.product_variants!}
               selectedId={variantId}
               onSelect={setVariantId}
-              label={resolveVariantLabel(product.categoryId)}
+              label={resolveVariantLabel(product.category_id)}
             />
             <View style={{ height: 8, backgroundColor: "#F5F5F5" }} />
           </>
