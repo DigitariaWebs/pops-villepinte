@@ -14,6 +14,11 @@ const envSchema = z.object({
   OTP_RATE_PER_HOUR: z.coerce.number().int().positive().default(5),
 
   PRODUCT_IMAGES_BUCKET: z.string().default('product-images'),
+
+  DEV_AUTH_ENABLED: z
+    .union([z.boolean(), z.string()])
+    .transform((v) => v === true || v === 'true' || v === '1')
+    .default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;
