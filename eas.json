@@ -37,6 +37,10 @@
         "ascApiKeyPath": "./pops_keys/AuthKey_8R6NTMF7YD.p8",
         "ascApiKeyId": "8R6NTMF7YD",
         "ascApiKeyIssuerId": "b94d9e9f-979c-4c21-b869-c45ddb50b429"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./pops_keys/play-service-account.json",
+        "track": "alpha"
       }
     }
   }

@@ -20,6 +20,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { FavoritesModule } from './modules/favorites/favorites.module';
 import { DriversModule } from './modules/drivers/drivers.module';
 import { DriversMeModule } from './modules/drivers-me/drivers-me.module';
+import { AccountDeletionModule } from './modules/account-deletion/account-deletion.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { DriversMeModule } from './modules/drivers-me/drivers-me.module';
     FavoritesModule,
     DriversModule,
     DriversMeModule,
+    AccountDeletionModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: SupabaseAuthGuard },
