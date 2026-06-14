@@ -8,7 +8,6 @@
     :root {
       --yellow: #ffce00;
       --yellow-dark: #e6b800;
-      --red: #e3000f;
       --ink: #111111;
       --ink-muted: #6b6b6b;
       --border: #ede7d3;
@@ -24,7 +23,7 @@
       line-height: 1.6;
       -webkit-font-smoothing: antialiased;
     }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 72px; }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 32px 20px 72px; }
     header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
     .logo {
       width: 52px; height: 52px; border-radius: 14px;
@@ -42,38 +41,25 @@
     .updated { color: var(--ink-muted); font-size: 13px; margin: 0 0 28px; }
     .intro {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 18px; padding: 20px 22px; margin-bottom: 28px; font-size: 15px;
+      border-radius: 18px; padding: 20px 22px; margin-bottom: 12px; font-size: 15px;
     }
-    h2 {
-      font-size: 19px; margin: 34px 0 10px; padding-top: 6px;
-      letter-spacing: -0.01em;
-    }
+    h2 { font-size: 19px; margin: 32px 0 10px; letter-spacing: -0.01em; }
     h2 .num { color: var(--yellow-dark); margin-right: 8px; }
-    h3 { font-size: 15px; margin: 20px 0 6px; }
     p { margin: 0 0 12px; font-size: 15px; }
     ul { margin: 0 0 12px; padding-left: 20px; }
     li { margin-bottom: 7px; font-size: 15px; }
     a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
     a:hover { color: var(--yellow-dark); }
     strong { font-weight: 700; }
-    table {
-      width: 100%; border-collapse: collapse; margin: 0 0 14px; font-size: 14px;
-      background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-      overflow: hidden;
-    }
-    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { background: #fbf6e6; font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); }
-    tr:last-child td { border-bottom: none; }
     .note {
       background: #fff8dc; border: 1px solid var(--yellow); border-radius: 12px;
-      padding: 12px 16px; font-size: 13px; color: #7a5d00; margin: 0 0 24px;
+      padding: 12px 16px; font-size: 13px; color: #7a5d00; margin: 16px 0 24px;
     }
     .contact-card {
       background: var(--card); border: 1px solid var(--border);
-      border-radius: 18px; padding: 20px 22px; margin-top: 20px;
+      border-radius: 18px; padding: 20px 22px; margin-top: 16px;
     }
     footer { text-align: center; font-size: 12px; color: var(--ink-muted); margin-top: 40px; }
-    footer a { color: var(--ink-muted); }
     hr { border: none; border-top: 1px solid var(--border); margin: 36px 0; }
   </style>
 </head>
@@ -90,222 +76,125 @@
     <h1>Politique de confidentialité</h1>
     <p class="updated">Dernière mise à jour&nbsp;: 14&nbsp;juin&nbsp;2026</p>
 
-    <div class="note">
-      À compléter avant publication&nbsp;: les éléments entre crochets
-      <strong>[…]</strong> (raison sociale, SIRET, adresse, coordonnées de
-      contact) doivent être renseignés avec les informations légales de
-      l'établissement.
-    </div>
-
     <div class="intro">
-      La présente politique de confidentialité décrit comment <strong>POP'S
-      Villepinte</strong> (« nous ») collecte, utilise et protège vos données
-      personnelles lorsque vous utilisez notre application mobile et nos services
-      de commande et de livraison. Nous accordons une grande importance à la
-      protection de votre vie privée et nous nous conformons au Règlement Général
-      sur la Protection des Données (RGPD) et à la loi « Informatique et
-      Libertés ».
+      La présente politique de confidentialité explique quelles données
+      personnelles l'application <strong>POP'S Villepinte</strong> collecte et
+      comment elles sont utilisées et protégées. Nous attachons une grande
+      importance au respect de votre vie privée et nous nous conformons au
+      Règlement Général sur la Protection des Données (RGPD).
     </div>
 
-    <h2><span class="num">1.</span>Responsable du traitement</h2>
+    <h2><span class="num">1.</span>Qui sommes-nous</h2>
     <p>
-      Le responsable du traitement de vos données personnelles est&nbsp;:
+      L'application POP'S Villepinte est éditée par <strong>POP'S Villepinte</strong>,
+      Centre commercial de la Noue, Av. du Parc, 93420&nbsp;Villepinte, France.
+      Pour toute question relative à vos données, vous pouvez nous contacter à
+      <a href="mailto:popsvillepinte@gmail.com">popsvillepinte@gmail.com</a>.
     </p>
-    <ul>
-      <li><strong>POP'S Villepinte</strong> — [raison sociale exacte]</li>
-      <li>Adresse&nbsp;: [adresse postale complète de l'établissement]</li>
-      <li>SIRET&nbsp;: [numéro SIRET]</li>
-      <li>E-mail&nbsp;: <a href="mailto:popsvillepinte@gmail.com">popsvillepinte@gmail.com</a></li>
-      <li>Téléphone&nbsp;: [numéro de téléphone]</li>
-    </ul>
 
     <h2><span class="num">2.</span>Données que nous collectons</h2>
-    <p>Nous collectons uniquement les données nécessaires au fonctionnement du service&nbsp;:</p>
-
-    <h3>Données que vous nous fournissez</h3>
-    <ul>
-      <li><strong>Identité et contact</strong>&nbsp;: nom, prénom, numéro de téléphone (utilisé pour vous connecter), adresse e-mail si vous la communiquez.</li>
-      <li><strong>Adresse de livraison</strong>&nbsp;: adresse postale et points de repère que vous saisissez.</li>
-      <li><strong>Commandes</strong>&nbsp;: contenu de vos commandes, instructions, et préférences (favoris).</li>
-      <li><strong>Communications</strong>&nbsp;: messages, signalements ou demandes d'assistance que vous nous envoyez.</li>
-    </ul>
-
-    <h3>Données collectées automatiquement</h3>
-    <ul>
-      <li><strong>Données de géolocalisation</strong>&nbsp;: position de livraison (coordonnées de l'adresse) afin de permettre la livraison et le suivi de la commande.</li>
-      <li><strong>Fidélité</strong>&nbsp;: nombre de commandes, points et niveau de fidélité.</li>
-      <li><strong>Identifiant de notification push</strong>&nbsp;: jeton technique de votre appareil, si vous activez les notifications.</li>
-      <li><strong>Données techniques</strong>&nbsp;: type d'appareil, système d'exploitation et données de fonctionnement nécessaires à la sécurité et au bon fonctionnement de l'application.</li>
-    </ul>
-
-    <h2><span class="num">3.</span>Finalités et bases légales</h2>
-    <table>
-      <tr>
-        <th>Finalité</th>
-        <th>Base légale (RGPD)</th>
-      </tr>
-      <tr>
-        <td>Création et gestion de votre compte, authentification par SMS</td>
-        <td>Exécution du contrat</td>
-      </tr>
-      <tr>
-        <td>Traitement, préparation et livraison de vos commandes</td>
-        <td>Exécution du contrat</td>
-      </tr>
-      <tr>
-        <td>Suivi de livraison et mise en relation avec le livreur</td>
-        <td>Exécution du contrat</td>
-      </tr>
-      <tr>
-        <td>Programme de fidélité</td>
-        <td>Exécution du contrat / intérêt légitime</td>
-      </tr>
-      <tr>
-        <td>Notifications push (statut de commande, offres)</td>
-        <td>Consentement</td>
-      </tr>
-      <tr>
-        <td>Assistance, gestion des réclamations et signalements</td>
-        <td>Intérêt légitime</td>
-      </tr>
-      <tr>
-        <td>Obligations comptables et fiscales</td>
-        <td>Obligation légale</td>
-      </tr>
-      <tr>
-        <td>Sécurité du service et prévention de la fraude</td>
-        <td>Intérêt légitime</td>
-      </tr>
-    </table>
-
-    <h2><span class="num">4.</span>Destinataires et sous-traitants</h2>
     <p>
-      Vos données sont accessibles à notre personnel habilité et à nos livreurs
-      (uniquement les informations nécessaires à la livraison&nbsp;: nom, téléphone
-      et adresse de livraison). Nous faisons appel à des prestataires techniques
-      (sous-traitants au sens du RGPD) qui agissent pour notre compte&nbsp;:
+      Nous collectons uniquement les informations strictement nécessaires à la
+      création de votre compte et à l'utilisation du service&nbsp;:
     </p>
-    <table>
-      <tr>
-        <th>Prestataire</th>
-        <th>Rôle</th>
-      </tr>
-      <tr>
-        <td>Supabase</td>
-        <td>Hébergement de la base de données et authentification</td>
-      </tr>
-      <tr>
-        <td>Vercel</td>
-        <td>Hébergement de l'interface de programmation (API)</td>
-      </tr>
-      <tr>
-        <td>Prelude</td>
-        <td>Envoi des codes de vérification par SMS</td>
-      </tr>
-      <tr>
-        <td>Mapbox</td>
-        <td>Cartographie et calcul d'itinéraire de livraison</td>
-      </tr>
-      <tr>
-        <td>Expo</td>
-        <td>Acheminement des notifications push</td>
-      </tr>
-      <tr>
-        <td>Apple App Store / Google Play</td>
-        <td>Distribution de l'application</td>
-      </tr>
-    </table>
+    <ul>
+      <li><strong>Votre nom</strong>&nbsp;;</li>
+      <li><strong>Votre numéro de téléphone</strong>, qui sert à créer votre compte et à vous identifier via un code de vérification envoyé par SMS.</li>
+    </ul>
     <p>
-      Nous ne vendons jamais vos données personnelles. Elles ne sont communiquées
-      à des tiers que dans les cas prévus par la loi ou avec votre accord.
+      Nous ne collectons aucune autre donnée personnelle&nbsp;: pas de données de
+      localisation, pas de contacts, pas de photos, pas de données de paiement
+      stockées par nos soins.
     </p>
+
+    <h2><span class="num">3.</span>Pourquoi nous utilisons ces données</h2>
+    <p>Votre nom et votre numéro de téléphone sont utilisés pour&nbsp;:</p>
+    <ul>
+      <li>créer et sécuriser votre compte&nbsp;;</li>
+      <li>vous authentifier au moyen d'un code à usage unique envoyé par SMS&nbsp;;</li>
+      <li>traiter vos commandes et vous identifier auprès de notre établissement&nbsp;;</li>
+      <li>vous contacter si nécessaire au sujet d'une commande.</li>
+    </ul>
+    <p>
+      <strong>Base légale</strong>&nbsp;: l'exécution du contrat (fourniture du
+      service). Nous n'utilisons pas vos données à des fins publicitaires et nous
+      ne les vendons jamais.
+    </p>
+
+    <h2><span class="num">4.</span>Partage des données</h2>
+    <p>
+      Nous ne partageons pas vos données avec des tiers à des fins commerciales.
+      Nous faisons uniquement appel à des prestataires techniques qui agissent
+      pour notre compte et selon nos instructions&nbsp;:
+    </p>
+    <ul>
+      <li>un hébergeur sécurisé pour le stockage de la base de données et l'authentification&nbsp;;</li>
+      <li>un prestataire d'envoi de SMS pour vous transmettre votre code de vérification.</li>
+    </ul>
 
     <h2><span class="num">5.</span>Durée de conservation</h2>
-    <ul>
-      <li><strong>Compte et profil</strong>&nbsp;: conservés tant que votre compte est actif, puis supprimés en cas de demande de suppression ou après une période d'inactivité prolongée.</li>
-      <li><strong>Historique de commandes</strong>&nbsp;: conservé pendant la durée nécessaire au service, puis archivé conformément aux obligations légales.</li>
-      <li><strong>Données de facturation</strong>&nbsp;: conservées jusqu'à 10&nbsp;ans au titre des obligations comptables et fiscales.</li>
-      <li><strong>Jeton de notification</strong>&nbsp;: supprimé lorsque vous désactivez les notifications ou supprimez votre compte.</li>
-    </ul>
-
-    <h2><span class="num">6.</span>Vos droits</h2>
-    <p>Conformément au RGPD, vous disposez des droits suivants&nbsp;:</p>
-    <ul>
-      <li><strong>Droit d'accès</strong> à vos données personnelles&nbsp;;</li>
-      <li><strong>Droit de rectification</strong> des données inexactes&nbsp;;</li>
-      <li><strong>Droit à l'effacement</strong> (« droit à l'oubli »)&nbsp;;</li>
-      <li><strong>Droit à la limitation</strong> du traitement&nbsp;;</li>
-      <li><strong>Droit d'opposition</strong> au traitement&nbsp;;</li>
-      <li><strong>Droit à la portabilité</strong> de vos données&nbsp;;</li>
-      <li><strong>Droit de retirer votre consentement</strong> à tout moment (notamment pour les notifications).</li>
-    </ul>
     <p>
-      Pour exercer ces droits, contactez-nous à
-      <a href="mailto:popsvillepinte@gmail.com">popsvillepinte@gmail.com</a>.
-      Nous répondons dans un délai maximum d'un mois.
+      Vos données sont conservées tant que votre compte est actif. Elles sont
+      supprimées lorsque vous demandez la suppression de votre compte, ou après
+      une période d'inactivité prolongée.
     </p>
 
-    <h2><span class="num">7.</span>Suppression de votre compte</h2>
-    <p>
-      Vous pouvez demander à tout moment la suppression de votre compte et de
-      l'ensemble des données associées, directement depuis notre page dédiée&nbsp;:
-      <a href="account-deletion.html">Supprimer mon compte</a>. Votre demande est
-      traitée dans un délai de 30&nbsp;jours. Certaines données peuvent être
-      conservées de façon anonymisée lorsque la loi l'exige.
-    </p>
-
-    <h2><span class="num">8.</span>Sécurité</h2>
+    <h2><span class="num">6.</span>Sécurité</h2>
     <p>
       Nous mettons en œuvre des mesures techniques et organisationnelles
-      appropriées pour protéger vos données contre tout accès non autorisé,
-      perte ou divulgation&nbsp;: chiffrement des communications (HTTPS),
-      authentification sécurisée par code à usage unique, et accès restreint aux
-      données par notre personnel habilité.
+      appropriées pour protéger vos données&nbsp;: communications chiffrées
+      (HTTPS), authentification par code à usage unique et accès restreint aux
+      données.
     </p>
 
-    <h2><span class="num">9.</span>Transferts hors de l'Union européenne</h2>
+    <h2><span class="num">7.</span>Vos droits</h2>
+    <p>Conformément au RGPD, vous pouvez à tout moment&nbsp;:</p>
+    <ul>
+      <li>accéder à vos données et en demander une copie&nbsp;;</li>
+      <li>les faire rectifier si elles sont inexactes&nbsp;;</li>
+      <li>en demander la suppression&nbsp;;</li>
+      <li>vous opposer à leur traitement.</li>
+    </ul>
     <p>
-      Certains de nos prestataires peuvent traiter des données en dehors de
-      l'Union européenne. Dans ce cas, ces transferts sont encadrés par des
-      garanties appropriées, telles que les clauses contractuelles types de la
-      Commission européenne, afin d'assurer un niveau de protection adéquat.
+      Pour exercer ces droits, écrivez-nous à
+      <a href="mailto:popsvillepinte@gmail.com">popsvillepinte@gmail.com</a>.
     </p>
 
-    <h2><span class="num">10.</span>Mineurs</h2>
+    <h2><span class="num">8.</span>Suppression de votre compte</h2>
     <p>
-      Notre service n'est pas destiné aux personnes de moins de 15&nbsp;ans. Nous
-      ne collectons pas sciemment de données concernant des mineurs sans le
-      consentement des titulaires de l'autorité parentale.
+      Vous pouvez demander la suppression de votre compte et des données associées
+      à tout moment depuis notre page dédiée&nbsp;:
+      <a href="account-deletion.html">Supprimer mon compte</a>.
     </p>
 
-    <h2><span class="num">11.</span>Modifications de la politique</h2>
+    <h2><span class="num">9.</span>Mineurs</h2>
     <p>
-      Nous pouvons modifier la présente politique de confidentialité afin de
-      refléter des évolutions légales ou techniques. La date de dernière mise à
-      jour figure en haut de cette page. En cas de modification importante, nous
-      vous en informerons par les moyens appropriés.
+      Notre service n'est pas destiné aux personnes de moins de 15&nbsp;ans et nous
+      ne collectons pas sciemment leurs données.
     </p>
 
-    <h2><span class="num">12.</span>Contact et réclamation</h2>
+    <h2><span class="num">10.</span>Modifications</h2>
+    <p>
+      Nous pouvons mettre à jour cette politique de confidentialité. La date de
+      dernière mise à jour figure en haut de cette page.
+    </p>
+
+    <h2><span class="num">11.</span>Contact</h2>
     <div class="contact-card">
-      <p style="margin-bottom: 8px;">
-        Pour toute question relative à vos données personnelles&nbsp;:
-      </p>
+      <p style="margin-bottom: 8px;">Pour toute question relative à vos données&nbsp;:</p>
       <ul style="margin-bottom: 12px;">
         <li>E-mail&nbsp;: <a href="mailto:popsvillepinte@gmail.com">popsvillepinte@gmail.com</a></li>
-        <li>Adresse&nbsp;: [adresse postale complète]</li>
+        <li>Adresse&nbsp;: Centre commercial de la Noue, Av. du Parc, 93420&nbsp;Villepinte, France</li>
       </ul>
       <p style="margin: 0;">
-        Vous avez également le droit d'introduire une réclamation auprès de la
-        <strong>CNIL</strong> (Commission Nationale de l'Informatique et des
-        Libertés)&nbsp;: <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a>.
+        Vous pouvez également introduire une réclamation auprès de la
+        <strong>CNIL</strong>&nbsp;:
+        <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer">www.cnil.fr</a>.
       </p>
     </div>
 
     <hr />
-    <footer>
-      © 2026 POP'S Villepinte · Tous droits réservés
-    </footer>
+    <footer>© 2026 POP'S Villepinte · Tous droits réservés</footer>
   </div>
 </body>
 </html>
