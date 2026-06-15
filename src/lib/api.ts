@@ -242,6 +242,23 @@ export const ordersApi = {
   myReports: () => api<CustomerTicket[]>("/orders/reports"),
 };
 
+export const accountApi = {
+  // Files an in-app account-deletion request (App Store Guideline 5.1.1(v)).
+  // The server matches it to the account by phone and an admin fulfils it,
+  // deleting the auth user + personal data while anonymised order records may
+  // be retained for legal/accounting obligations.
+  requestDeletion: (body: {
+    phone: string;
+    full_name?: string;
+    email?: string;
+    reason?: string;
+  }) =>
+    api<{ id: string; created_at: string }>("/account-deletion/request", {
+      method: "POST",
+      body,
+    }),
+};
+
 export type CustomerTicket = {
   id: string;
   order_id: string;

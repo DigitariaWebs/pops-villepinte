@@ -11,6 +11,7 @@ import {
   Heart,
   LogOut,
   MessageCircle,
+  Trash2,
   User,
   X,
 } from "lucide-react-native";
@@ -523,6 +524,14 @@ export default function ProfileScreen(): React.ReactElement {
             }}
           />
           <SettingsRow icon={MessageCircle} label="Nous contacter" onPress={() => router.push(ROUTES.settings("contact"))} />
+          <View
+            style={{
+              height: 1,
+              backgroundColor: colors.border,
+              marginLeft: 56,
+            }}
+          />
+          <SettingsRow icon={Trash2} label="Supprimer mon compte" labelColor="#E3000F" onPress={() => router.push(ROUTES.settings("supprimer-compte"))} />
           <View
             style={{
               height: 1,

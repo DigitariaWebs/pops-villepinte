@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,12 +22,16 @@ import {
   Heart,
   MapPin,
   Phone,
+  Trash2,
 } from "lucide-react-native";
 
 import ProductRow from "@/components/menu/ProductRow";
-import { ordersApi, type CustomerTicket } from "@/lib/api";
+import { isGuestName } from "@/constants/profile";
+import { accountApi, ordersApi, type CustomerTicket } from "@/lib/api";
+import { useAuthStore } from "@/store/auth.store";
 import { useFavoritesStore } from "@/store/favorites.store";
 import { useMenuStore } from "@/store/menu.store";
+import { useProfileStore } from "@/store/profile.store";
 import type { Product } from "@/types";
 
 const INK = "#111111";
@@ -38,7 +50,8 @@ type SlugKey =
   | "notifications"
   | "signalements"
   | "conditions"
-  | "contact";
+  | "contact"
+  | "supprimer-compte";
 
 const TITLES: Record<SlugKey, string> = {
   favoris: "Favoris",
@@ -47,6 +60,7 @@ const TITLES: Record<SlugKey, string> = {
   signalements: "Mes signalements",
   conditions: "Conditions générales",
   contact: "Nous contacter",
+  "supprimer-compte": "Supprimer mon compte",
 };
 
 /* ─────────────── FAVORIS ─────────────── */
@@ -591,6 +605,235 @@ function SignalementsContent(): React.ReactElement {
   );
 }
 
+/* ─────────────── SUPPRIMER MON COMPTE ─────────────── */
+const DANGER = "#E3000F";
+
+function DeleteAccountContent(): React.ReactElement {
+  const router = useRouter();
+  const profile = useProfileStore((s) => s.profile);
+  const authPhone = useAuthStore((s) => s.phone);
+  const logout = useAuthStore((s) => s.logout);
+
+  const phone = (profile.phone || authPhone || "").trim();
+
+  const [reason, setReason] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const submit = (): void => {
+    if (!phone) {
+      Alert.alert(
+        "Téléphone introuvable",
+        "Impossible d'identifier ton compte. Reconnecte-toi puis réessaie.",
+      );
+      return;
+    }
+    Alert.alert(
+      "Supprimer ton compte ?",
+      "Ton compte et tes données personnelles seront supprimés. Cette action est définitive.",
+      [
+        { text: "Annuler", style: "cancel" },
+        {
+          text: "Supprimer",
+          style: "destructive",
+          onPress: () => {
+            void (async () => {
+              try {
+                setSubmitting(true);
+                await accountApi.requestDeletion({
+                  phone,
+                  full_name: isGuestName(profile.name)
+                    ? undefined
+                    : profile.name.trim() || undefined,
+                  reason: reason.trim() || undefined,
+                });
+                setDone(true);
+              } catch (e) {
+                Alert.alert(
+                  "Erreur",
+                  e instanceof Error
+                    ? e.message
+                    : "La demande n'a pas pu être envoyée. Réessaie.",
+                );
+              } finally {
+                setSubmitting(false);
+              }
+            })();
+          },
+        },
+      ],
+    );
+  };
+
+  if (done) {
+    return (
+      <View style={{ alignItems: "center", paddingTop: 48, paddingHorizontal: 24 }}>
+        <CheckCircle2 size={64} color="#0E7C3A" strokeWidth={1.5} />
+        <Text
+          style={{
+            fontFamily: DISPLAY,
+            fontSize: 28,
+            color: INK,
+            marginTop: 24,
+            textAlign: "center",
+          }}
+        >
+          Demande enregistrée
+        </Text>
+        <Text
+          style={{
+            fontFamily: BODY,
+            fontSize: 15,
+            color: MUTED,
+            marginTop: 12,
+            textAlign: "center",
+            lineHeight: 22,
+          }}
+        >
+          Ton compte et tes données personnelles seront supprimés sous 30 jours.
+          Certaines informations de commande peuvent être conservées de façon
+          anonymisée pour nos obligations légales et comptables.
+        </Text>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Se déconnecter"
+          onPress={() => {
+            void logout();
+            router.replace("/");
+          }}
+          style={({ pressed }) => ({
+            marginTop: 32,
+            alignSelf: "stretch",
+            backgroundColor: INK,
+            borderRadius: 16,
+            paddingVertical: 16,
+            alignItems: "center",
+            opacity: pressed ? 0.9 : 1,
+          })}
+        >
+          <Text
+            style={{
+              fontFamily: BODY_SEMI,
+              fontSize: 15,
+              color: WHITE,
+            }}
+          >
+            Se déconnecter
+          </Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ paddingTop: 24, paddingHorizontal: 20 }}>
+      <View style={{ alignItems: "center", marginBottom: 8 }}>
+        <View
+          style={{
+            width: 72,
+            height: 72,
+            borderRadius: 36,
+            backgroundColor: "#FDECEA",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Trash2 size={32} color={DANGER} strokeWidth={1.75} />
+        </View>
+      </View>
+
+      <Text
+        style={{
+          fontFamily: BODY,
+          fontSize: 14,
+          color: MUTED,
+          lineHeight: 22,
+          marginTop: 16,
+        }}
+      >
+        Tu peux demander la suppression de ton compte POP'S directement ici. Une
+        fois la demande envoyée :
+      </Text>
+      <View style={{ marginTop: 12, gap: 8 }}>
+        {[
+          "Ton compte et tes données personnelles (nom, téléphone, adresses) seront supprimés.",
+          "Ta demande est traitée sous 30 jours maximum.",
+          "L'historique de tes commandes peut être conservé de façon anonymisée pour nos obligations légales et comptables.",
+        ].map((line) => (
+          <View key={line} style={{ flexDirection: "row", gap: 8 }}>
+            <Text style={{ fontFamily: BODY, fontSize: 14, color: DANGER }}>•</Text>
+            <Text
+              style={{
+                fontFamily: BODY,
+                fontSize: 14,
+                color: INK,
+                lineHeight: 21,
+                flex: 1,
+              }}
+            >
+              {line}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      <Text
+        style={{
+          fontFamily: BODY_SEMI,
+          fontSize: 13,
+          color: MUTED,
+          marginTop: 24,
+          marginBottom: 8,
+        }}
+      >
+        Raison (facultatif)
+      </Text>
+      <TextInput
+        value={reason}
+        onChangeText={setReason}
+        placeholder="Dis-nous pourquoi tu pars (facultatif)"
+        placeholderTextColor="#B0B0B0"
+        multiline
+        maxLength={2000}
+        style={{
+          minHeight: 96,
+          borderWidth: 1,
+          borderColor: "#E5E5E5",
+          borderRadius: 14,
+          padding: 14,
+          fontFamily: BODY,
+          fontSize: 14,
+          color: INK,
+          textAlignVertical: "top",
+        }}
+      />
+
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Demander la suppression de mon compte"
+        disabled={submitting}
+        onPress={submit}
+        style={({ pressed }) => ({
+          marginTop: 24,
+          backgroundColor: DANGER,
+          borderRadius: 16,
+          paddingVertical: 16,
+          alignItems: "center",
+          opacity: submitting ? 0.6 : pressed ? 0.9 : 1,
+        })}
+      >
+        {submitting ? (
+          <ActivityIndicator color={WHITE} />
+        ) : (
+          <Text style={{ fontFamily: BODY_SEMI, fontSize: 15, color: WHITE }}>
+            Demander la suppression
+          </Text>
+        )}
+      </Pressable>
+    </View>
+  );
+}
+
 /* ─────────────── MAIN SCREEN ─────────────── */
 export default function SettingsScreen(): React.ReactElement {
   const { slug } = useLocalSearchParams<{ slug: string }>();
@@ -614,6 +857,8 @@ export default function SettingsScreen(): React.ReactElement {
         return <ConditionsContent />;
       case "contact":
         return <ContactContent />;
+      case "supprimer-compte":
+        return <DeleteAccountContent />;
       default:
         return null;
     }
