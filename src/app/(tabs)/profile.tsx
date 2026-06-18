@@ -18,6 +18,7 @@ import {
 import * as Haptics from "expo-haptics";
 import { useRouter } from "expo-router";
 
+import GuestPrompt from "@/components/common/GuestPrompt";
 import Screen from "@/components/layout/Screen";
 import TextField from "@/components/form/TextField";
 import SettingsRow from "@/components/profile/SettingsRow";
@@ -41,6 +42,7 @@ import { useNotificationsStore } from "@/store/notifications.store";
 import { useProfileStore } from "@/store/profile.store";
 
 export default function ProfileScreen(): React.ReactElement {
+  const authed = useAuthStore((s) => s.authed);
   const profile = useProfileStore((s) => s.profile);
   const updateName = useProfileStore((s) => s.updateName);
   const setProfilePhone = useProfileStore((s) => s.setPhone);
@@ -150,6 +152,19 @@ export default function ProfileScreen(): React.ReactElement {
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     void logout();
   };
+
+  // Guests have no account to manage — invite them to sign in instead of
+  // rendering (and fetching) the personal profile.
+  if (!authed) {
+    return (
+      <Screen scroll={false}>
+        <GuestPrompt
+          title="Crée ton compte POP'S"
+          message="Connecte-toi pour gérer ton profil, suivre tes commandes et profiter de tes récompenses."
+        />
+      </Screen>
+    );
+  }
 
   return (
     <Screen>

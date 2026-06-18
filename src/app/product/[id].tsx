@@ -12,6 +12,7 @@ import QuantityStepper from "@/components/menu/QuantityStepper";
 import SupplementSelector from "@/components/menu/SupplementSelector";
 import VariantSelector from "@/components/menu/VariantSelector";
 import { colors, font, radius, shadow } from "@/constants/theme";
+import { useRequireAccount } from "@/hooks/useRequireAccount";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
 import { useFavoritesStore } from "@/store/favorites.store";
@@ -39,6 +40,7 @@ export default function ProductDetailScreen(): React.ReactElement {
     id ? s.productIds.includes(id) : false,
   );
   const toggleFavorite = useFavoritesStore((s) => s.toggle);
+  const requireAccount = useRequireAccount();
 
   const [variantId, setVariantId] = useState<string | undefined>(
     product?.product_variants?.[0]?.id,
@@ -143,6 +145,7 @@ export default function ProductDetailScreen(): React.ReactElement {
                 }
                 accessibilityState={{ selected: isFavorite }}
                 onPress={() => {
+                  if (!requireAccount("ajouter aux favoris")) return;
                   void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   void toggleFavorite(product.id);
                 }}

@@ -257,6 +257,14 @@ export const accountApi = {
       method: "POST",
       body,
     }),
+  // Self-service deletion for the signed-in user (App Store Guideline 5.1.1(v)).
+  // Locks the account immediately and schedules the permanent purge 30 days out.
+  // Returns the scheduled purge date.
+  deleteAccount: (body?: { reason?: string }) =>
+    api<{ scheduled_purge_at: string }>("/account-deletion/me", {
+      method: "DELETE",
+      body: body ?? {},
+    }),
 };
 
 export type CustomerTicket = {

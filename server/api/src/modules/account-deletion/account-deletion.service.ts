@@ -37,6 +37,46 @@ export class AccountDeletionService {
     return { id: data.id, created_at: data.created_at };
   }
 
+  // Self-service deletion for the signed-in user. Per Apple 5.1.1(v) the user
+  // must be able to delete their own account in-app with no admin step. We
+  // honour a 30-day grace period: lock the account immediately (is_blocked,
+  // enforced by SupabaseAuthGuard → 403 on every call, so it's effectively
+  // closed from the user's side) and schedule the permanent purge. A daily
+  // pg_cron job (purge_scheduled_account_deletions) deletes the auth user once
+  // scheduled_purge_at passes, which cascades the profile and all user data.
+  async deleteOwnAccount(userId: string, reason?: string) {
+    const { data: profile } = await this.supabase
+      .from('profiles')
+      .select('phone, name')
+      .eq('id', userId)
+      .maybeSingle();
+
+    const scheduledPurgeAt = new Date(
+      Date.now() + 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const { error: insertErr } = await this.supabase
+      .from('account_deletion_requests')
+      .insert({
+        full_name: profile?.name?.trim() || null,
+        phone: profile?.phone?.trim() || 'unknown',
+        reason: reason?.trim() || null,
+        matched_user_id: userId,
+        status: 'scheduled',
+        scheduled_purge_at: scheduledPurgeAt,
+      });
+    if (insertErr) throw insertErr;
+
+    // Immediate lock — the account is closed right away from the user's POV.
+    const { error: blockErr } = await this.supabase
+      .from('profiles')
+      .update({ is_blocked: true })
+      .eq('id', userId);
+    if (blockErr) throw blockErr;
+
+    return { scheduled_purge_at: scheduledPurgeAt };
+  }
+
   // Best-effort link to the owning account. Accounts auth by phone, but the
   // requester may type it loosely (spaces, local 0-prefix), so match on the
   // trailing 9 significant digits rather than an exact string.

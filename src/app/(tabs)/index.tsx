@@ -30,6 +30,7 @@ import { displayNameOrFallback } from "@/constants/profile";
 import { ROUTES } from "@/constants/routes";
 import { colors, font, radius } from "@/constants/theme";
 import { useDeferredMount } from "@/hooks/useDeferredMount";
+import { useRequireAccount } from "@/hooks/useRequireAccount";
 import { formatPriceEUR } from "@/lib/format";
 import { requestLocationOncePerSession } from "@/lib/location";
 import { useMenuStore } from "@/store/menu.store";
@@ -798,6 +799,7 @@ export default function AccueilScreen(): React.ReactElement {
 function HomeNotificationsBell(): React.ReactElement {
   const router = useRouter();
   const unread = useNotificationsStore((s) => s.unread);
+  const requireAccount = useRequireAccount();
   return (
     <Pressable
       accessibilityRole="button"
@@ -807,6 +809,7 @@ function HomeNotificationsBell(): React.ReactElement {
           : "Notifications"
       }
       onPress={() => {
+        if (!requireAccount("voir tes notifications")) return;
         void Haptics.selectionAsync();
         router.push(ROUTES.notifications as never);
       }}

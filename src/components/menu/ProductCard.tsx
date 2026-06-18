@@ -11,6 +11,7 @@ import * as Haptics from "expo-haptics";
 
 import { ROUTES } from "@/constants/routes";
 import { colors, shadow } from "@/constants/theme";
+import { useRequireAccount } from "@/hooks/useRequireAccount";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
 import { useFavoritesStore } from "@/store/favorites.store";
@@ -60,6 +61,7 @@ export default function ProductCard({
     s.productIds.includes(product.id),
   );
   const toggleFavorite = useFavoritesStore((s) => s.toggle);
+  const requireAccount = useRequireAccount();
   const pressScale = useSharedValue(1);
   const addPressScale = useSharedValue(1);
   const favPressScale = useSharedValue(1);
@@ -91,6 +93,7 @@ export default function ProductCard({
   };
 
   const handleToggleFavorite = (): void => {
+    if (!requireAccount("ajouter aux favoris")) return;
     void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     void toggleFavorite(product.id);
   };

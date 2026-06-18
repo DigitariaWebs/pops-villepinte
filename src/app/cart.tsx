@@ -14,6 +14,7 @@ import CartItemRow from "@/components/cart/CartItemRow";
 import CartTotals from "@/components/cart/CartTotals";
 import { ROUTES } from "@/constants/routes";
 import { colors } from "@/constants/theme";
+import { useRequireAccount } from "@/hooks/useRequireAccount";
 import { formatPriceEUR } from "@/lib/format";
 import { useCartStore } from "@/store/cart.store";
 import { useMenuStore } from "@/store/menu.store";
@@ -26,6 +27,7 @@ export default function CartScreen(): React.ReactElement {
   const items = useCartStore((s) => s.items);
   const total = useCartStore((s) => s.totalEUR());
   const ACCOMPAGNEMENTS = useMenuStore((s) => s.accompagnements);
+  const requireAccount = useRequireAccount();
 
   const [toastVisible, setToastVisible] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -52,6 +54,8 @@ export default function CartScreen(): React.ReactElement {
   };
 
   const handleValidate = (): void => {
+    // Guests can build a cart but must log in to place an order.
+    if (!requireAccount("passer commande")) return;
     void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     router.push(ROUTES.checkout);
   };

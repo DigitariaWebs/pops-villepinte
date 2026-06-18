@@ -16,6 +16,7 @@ const PATTERN_HEIGHT = Dimensions.get("window").height * 0.35;
 export default function AuthIndex(): React.ReactElement {
   const insets = useSafeAreaInsets();
   const setAuthChoice = useAuthStore((s) => s.setAuthChoice);
+  const enterGuest = useAuthStore((s) => s.enterGuest);
   // Defer the ~250-node food pattern until after first paint so the auth
   // landing renders instantly instead of blocking on the image grid.
   const patternReady = useDeferredMount();
@@ -25,6 +26,11 @@ export default function AuthIndex(): React.ReactElement {
   ): void => {
     void Haptics.selectionAsync();
     setAuthChoice(choice);
+  };
+
+  const handleGuest = (): void => {
+    void Haptics.selectionAsync();
+    enterGuest();
   };
 
   return (
@@ -84,7 +90,8 @@ export default function AuthIndex(): React.ReactElement {
             maxWidth: 320,
           }}
         >
-          Connecte-toi pour commander, ou crée un compte en 30 secondes.
+          Découvre le menu sans compte. Connecte-toi pour commander ou crée
+          un compte en 30 secondes.
         </Text>
 
         <View style={{ marginTop: 40, gap: 14 }}>
@@ -133,6 +140,27 @@ export default function AuthIndex(): React.ReactElement {
               }}
             >
               S'inscrire
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={handleGuest}
+            style={({ pressed }) => ({
+              alignItems: "center",
+              paddingVertical: 10,
+              opacity: pressed ? 0.6 : 1,
+            })}
+          >
+            <Text
+              style={{
+                fontFamily: "Poppins_700Bold",
+                fontSize: 14,
+                letterSpacing: 0.5,
+                color: colors.ink,
+                textDecorationLine: "underline",
+              }}
+            >
+              Découvrir le menu
             </Text>
           </Pressable>
 

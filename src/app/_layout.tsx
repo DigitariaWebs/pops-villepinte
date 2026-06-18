@@ -83,6 +83,7 @@ export default function RootLayout(): React.ReactNode {
   const authChoice = useAuthStore((s) => s.authChoice);
   const phone = useAuthStore((s) => s.phone);
   const role = useAuthStore((s) => s.role);
+  const guestMode = useAuthStore((s) => s.guestMode);
   const sessionRestored = useAuthStore((s) => s.sessionRestored);
   const splashDone = splashAnimDone && hydrated && sessionRestored;
   const completeOnboarding = useAuthStore((s) => s.completeOnboarding);
@@ -299,7 +300,15 @@ export default function RootLayout(): React.ReactNode {
     );
   }
 
-  if (!authed && !authChoice) {
+  // Guest mode: the user chose "Découvrir le menu" and is browsing without an
+  // account. We skip every auth/signup gate below and fall straight through to
+  // the customer Stack (role is null, so neither driver branch fires). Account-
+  // based actions inside the app prompt for login via useRequireAccount. The
+  // `!guestMode` guards on the auth screens below ensure a guest isn't bounced
+  // back to the landing/OTP screens while browsing.
+  const isGuest = !authed && guestMode;
+
+  if (!authed && !guestMode && !authChoice) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
@@ -308,7 +317,7 @@ export default function RootLayout(): React.ReactNode {
     );
   }
 
-  if (!authed && authChoice === "driver-signin") {
+  if (!authed && !guestMode && authChoice === "driver-signin") {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
@@ -317,7 +326,7 @@ export default function RootLayout(): React.ReactNode {
     );
   }
 
-  if (!authed) {
+  if (!authed && !guestMode) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />
@@ -333,8 +342,8 @@ export default function RootLayout(): React.ReactNode {
   // Drivers skip signup (they're admin-created with name already filled).
   // Without this guard, a driver with a stale signupDone=false in persisted
   // state would land on the customer-flavored SignupForm before reaching the
-  // role branch below.
-  if (!signupDone && role !== "driver") {
+  // role branch below. Guests skip it too — they have no account to name.
+  if (!signupDone && role !== "driver" && !isGuest) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
         <StatusBar style="dark" />

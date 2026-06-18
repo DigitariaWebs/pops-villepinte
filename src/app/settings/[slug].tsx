@@ -26,12 +26,10 @@ import {
 } from "lucide-react-native";
 
 import ProductRow from "@/components/menu/ProductRow";
-import { isGuestName } from "@/constants/profile";
 import { accountApi, ordersApi, type CustomerTicket } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
 import { useFavoritesStore } from "@/store/favorites.store";
 import { useMenuStore } from "@/store/menu.store";
-import { useProfileStore } from "@/store/profile.store";
 import type { Product } from "@/types";
 
 const INK = "#111111";
@@ -610,27 +608,16 @@ const DANGER = "#E3000F";
 
 function DeleteAccountContent(): React.ReactElement {
   const router = useRouter();
-  const profile = useProfileStore((s) => s.profile);
-  const authPhone = useAuthStore((s) => s.phone);
   const logout = useAuthStore((s) => s.logout);
-
-  const phone = (profile.phone || authPhone || "").trim();
 
   const [reason, setReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
 
   const submit = (): void => {
-    if (!phone) {
-      Alert.alert(
-        "Téléphone introuvable",
-        "Impossible d'identifier ton compte. Reconnecte-toi puis réessaie.",
-      );
-      return;
-    }
     Alert.alert(
       "Supprimer ton compte ?",
-      "Ton compte et tes données personnelles seront supprimés. Cette action est définitive.",
+      "Ton compte sera fermé immédiatement et tes données personnelles seront définitivement supprimées sous 30 jours. Cette action est irréversible.",
       [
         { text: "Annuler", style: "cancel" },
         {
@@ -640,11 +627,7 @@ function DeleteAccountContent(): React.ReactElement {
             void (async () => {
               try {
                 setSubmitting(true);
-                await accountApi.requestDeletion({
-                  phone,
-                  full_name: isGuestName(profile.name)
-                    ? undefined
-                    : profile.name.trim() || undefined,
+                await accountApi.deleteAccount({
                   reason: reason.trim() || undefined,
                 });
                 setDone(true);
@@ -653,7 +636,7 @@ function DeleteAccountContent(): React.ReactElement {
                   "Erreur",
                   e instanceof Error
                     ? e.message
-                    : "La demande n'a pas pu être envoyée. Réessaie.",
+                    : "La suppression n'a pas pu être effectuée. Réessaie.",
                 );
               } finally {
                 setSubmitting(false);
@@ -678,7 +661,7 @@ function DeleteAccountContent(): React.ReactElement {
             textAlign: "center",
           }}
         >
-          Demande enregistrée
+          Compte fermé
         </Text>
         <Text
           style={{
@@ -690,9 +673,10 @@ function DeleteAccountContent(): React.ReactElement {
             lineHeight: 22,
           }}
         >
-          Ton compte et tes données personnelles seront supprimés sous 30 jours.
-          Certaines informations de commande peuvent être conservées de façon
-          anonymisée pour nos obligations légales et comptables.
+          Ton compte a été fermé. Tes données personnelles seront définitivement
+          supprimées sous 30 jours. Certaines informations de commande peuvent
+          être conservées de façon anonymisée pour nos obligations légales et
+          comptables.
         </Text>
         <Pressable
           accessibilityRole="button"
@@ -751,13 +735,13 @@ function DeleteAccountContent(): React.ReactElement {
           marginTop: 16,
         }}
       >
-        Tu peux demander la suppression de ton compte POP'S directement ici. Une
-        fois la demande envoyée :
+        Tu peux supprimer ton compte POP'S directement ici. Une fois la
+        suppression confirmée :
       </Text>
       <View style={{ marginTop: 12, gap: 8 }}>
         {[
-          "Ton compte et tes données personnelles (nom, téléphone, adresses) seront supprimés.",
-          "Ta demande est traitée sous 30 jours maximum.",
+          "Ton compte est fermé immédiatement et tu es déconnecté.",
+          "Tes données personnelles (nom, téléphone, adresses) sont définitivement supprimées sous 30 jours.",
           "L'historique de tes commandes peut être conservé de façon anonymisée pour nos obligations légales et comptables.",
         ].map((line) => (
           <View key={line} style={{ flexDirection: "row", gap: 8 }}>
@@ -810,7 +794,7 @@ function DeleteAccountContent(): React.ReactElement {
 
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel="Demander la suppression de mon compte"
+        accessibilityLabel="Supprimer mon compte"
         disabled={submitting}
         onPress={submit}
         style={({ pressed }) => ({
@@ -826,7 +810,7 @@ function DeleteAccountContent(): React.ReactElement {
           <ActivityIndicator color={WHITE} />
         ) : (
           <Text style={{ fontFamily: BODY_SEMI, fontSize: 15, color: WHITE }}>
-            Demander la suppression
+            Supprimer mon compte
           </Text>
         )}
       </Pressable>

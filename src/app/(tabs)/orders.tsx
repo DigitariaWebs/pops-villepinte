@@ -5,6 +5,7 @@ import { Package, Receipt } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 
 import FloatingCartBar from "@/components/cart/FloatingCartBar";
+import GuestPrompt from "@/components/common/GuestPrompt";
 import Screen from "@/components/layout/Screen";
 import ActiveOrderCard from "@/components/orders/ActiveOrderCard";
 import OrderDetailsSheet from "@/components/orders/OrderDetailsSheet";
@@ -12,6 +13,7 @@ import OrdersEmpty from "@/components/orders/OrdersEmpty";
 import PastOrderRow from "@/components/orders/PastOrderRow";
 import { ROUTES } from "@/constants/routes";
 import { colors, font, radius } from "@/constants/theme";
+import { useAuthStore } from "@/store/auth.store";
 import { useCartStore } from "@/store/cart.store";
 import { useOrdersStore } from "@/store/orders.store";
 import { useProfileStore } from "@/store/profile.store";
@@ -24,11 +26,14 @@ export default function OrdersScreen(): React.ReactElement {
   const fetchOrders = useOrdersStore((s) => s.fetchOrders);
   const addItem = useCartStore((s) => s.addItem);
   const profilePhone = useProfileStore((s) => s.profile.phone);
+  const authed = useAuthStore((s) => s.authed);
   const [detailsOrder, setDetailsOrder] = useState<Order | null>(null);
 
   useEffect(() => {
+    // Guests have no orders and no token — skip the authed fetch.
+    if (!authed) return;
     void fetchOrders();
-  }, []);
+  }, [authed]);
 
   const hasContent = active !== null || history.length > 0;
 
@@ -49,6 +54,17 @@ export default function OrdersScreen(): React.ReactElement {
     },
     [addItem, router],
   );
+
+  if (!authed) {
+    return (
+      <Screen scroll={false} floatingBottom={<FloatingCartBar />}>
+        <GuestPrompt
+          title="Connecte-toi pour tes commandes"
+          message="Crée un compte ou connecte-toi pour suivre tes commandes et retrouver ton historique."
+        />
+      </Screen>
+    );
+  }
 
   if (!hasContent) {
     return (

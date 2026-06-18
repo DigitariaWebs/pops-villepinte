@@ -33,6 +33,16 @@ type AuthState = {
    */
   role: UserRole;
   /**
+   * `true` when the user chose to browse without an account ("Découvrir le
+   * menu" on the auth landing). Lets the root layout render the customer tab
+   * stack while `authed` stays false, so the menu and cart are reachable but
+   * account-based actions (checkout, orders, profile, favorites, notifications)
+   * prompt for login via `useRequireAccount`. Cleared the moment a real auth
+   * lands (verifyOtp / driverSignIn) or on logout. Persisted so a returning
+   * guest stays in guest mode across cold starts.
+   */
+  guestMode: boolean;
+  /**
    * `true` once restoreSession has completed (success or failure). The root
    * layout uses this to keep the splash on screen until we've made the final
    * routing decision, so a returning driver never flashes the customer home
@@ -54,6 +64,10 @@ type AuthState = {
   setAccessToken: (token: string | null) => void;
   completeOnboarding: () => void;
   setAuthChoice: (choice: AuthChoice) => void;
+  /** Enter guest browsing (no account). */
+  enterGuest: () => void;
+  /** Leave guest browsing — used when a guest taps "Se connecter". */
+  exitGuest: () => void;
   /** `phone` MUST be E.164 (e.g. `+33612345678`). */
   sendOtp: (phone: string) => Promise<{ error?: string }>;
   /** `phone` MUST be E.164. */
@@ -135,6 +149,7 @@ export const useAuthStore = create<AuthState>()(
       authChoice: null,
       phone: "",
       role: null,
+      guestMode: false,
       sessionRestored: false,
       loading: false,
       accessToken: null,
@@ -149,6 +164,14 @@ export const useAuthStore = create<AuthState>()(
 
       setAuthChoice: (choice) => {
         set({ authChoice: choice });
+      },
+
+      enterGuest: () => {
+        set({ guestMode: true });
+      },
+
+      exitGuest: () => {
+        set({ guestMode: false });
       },
 
       sendOtp: async (phone: string) => {
@@ -230,6 +253,7 @@ export const useAuthStore = create<AuthState>()(
           role: "customer",
           signupDone: !isNewUser,
           authChoice: null,
+          guestMode: false,
           loading: false,
         });
         return { isNewUser };
@@ -285,6 +309,7 @@ export const useAuthStore = create<AuthState>()(
           // Drivers are admin-created so the "signup" step doesn't apply.
           signupDone: true,
           authChoice: null,
+          guestMode: false,
           loading: false,
         });
         return {};
@@ -309,6 +334,7 @@ export const useAuthStore = create<AuthState>()(
           phone: "",
           role: null,
           authChoice: null,
+          guestMode: false,
           accessToken: null,
         });
       },
@@ -412,6 +438,7 @@ export const useAuthStore = create<AuthState>()(
         authChoice: state.authChoice,
         phone: state.phone,
         role: state.role,
+        guestMode: state.guestMode,
       }),
     },
   ),
