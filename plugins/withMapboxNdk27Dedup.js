@@ -6,7 +6,7 @@
 // build.gradle that rewrites every Mapbox maps/plugin module to its -ndk27
 // sibling pinned to one version, so the whole app resolves to one set of AARs.
 
-const { withProjectBuildGradle } = require("@expo/config-plugins");
+const { withProjectBuildGradle } = require("expo/config-plugins");
 
 // Must be >= the version @rnmapbox/maps targets (its package.json `mapbox.android`,
 // 11.20.1 for rnmapbox 10.3.1) so its Kotlin resolves all Maps SDK symbols, and
