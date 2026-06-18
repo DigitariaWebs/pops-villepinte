@@ -27,7 +27,10 @@
         "buildType": "app-bundle",
         "autoIncrement": true
       },
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://pops-villepinte.vercel.app/api/v1"
+      }
     }
   },
   "submit": {
