@@ -30,6 +30,7 @@ import ProductRow from "@/components/menu/ProductRow";
 import SearchField, { normalizeSearch } from "@/components/menu/SearchField";
 import { colors, font } from "@/constants/theme";
 import { useDeferredMount } from "@/hooks/useDeferredMount";
+import { useAuthStore } from "@/store/auth.store";
 import { useMenuStore } from "@/store/menu.store";
 
 function CategoryScrollHint(): React.ReactElement {
@@ -79,6 +80,10 @@ function CategoryScrollHint(): React.ReactElement {
 
 export default function MenuScreen(): React.ReactElement {
   const insets = useSafeAreaInsets();
+  // When the guest strip is shown, Screen already consumed the top inset, so
+  // the header pads a flat 12px instead of adding insets.top a second time.
+  const showGuestBanner = useAuthStore((s) => !s.authed && s.guestMode);
+  const headerTopPadding = showGuestBanner ? 12 : insets.top + 12;
   const params = useLocalSearchParams<{ cat?: string }>();
   const CATEGORIES = useMenuStore((s) => s.categories);
   const PRODUCTS = useMenuStore((s) => s.products);
@@ -168,7 +173,7 @@ export default function MenuScreen(): React.ReactElement {
         style={{
           backgroundColor: colors.white,
           paddingHorizontal: 20,
-          paddingTop: insets.top + 12,
+          paddingTop: headerTopPadding,
           paddingBottom: 8,
           flexDirection: "row",
           alignItems: "center",
