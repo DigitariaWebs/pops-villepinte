@@ -9,7 +9,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { provisionAndSignInByPhone } from '../../common/supabase/auth-helpers';
+import {
+  cancelPendingDeletion,
+  provisionAndSignInByPhone,
+} from '../../common/supabase/auth-helpers';
 import {
   SUPABASE_ADMIN,
   SUPABASE_ANON,
@@ -91,7 +94,21 @@ export class AuthPreludeService implements OnModuleInit {
       );
     }
 
-    return provisionAndSignInByPhone(this.admin, this.anon, phone);
+    const session = await provisionAndSignInByPhone(
+      this.admin,
+      this.anon,
+      phone,
+    );
+
+    // If this number was pending self-service deletion, signing back in within
+    // the 30-day grace period reactivates the account: cancel the deletion and
+    // unblock the profile *before* responding, so the client's immediate
+    // /profile call succeeds. `reactivated` tells the app to welcome them back.
+    const reactivated = session.user.id
+      ? await cancelPendingDeletion(this.admin, session.user.id)
+      : false;
+
+    return { ...session, reactivated };
   }
 
   private requireMobile(rawPhone: string): string {

@@ -43,6 +43,12 @@ type AuthState = {
    */
   guestMode: boolean;
   /**
+   * `true` for one sign-in when the user reactivated an account that was
+   * pending deletion. The customer shell shows a "welcome back" modal and then
+   * calls `dismissReactivation()`. Not persisted — it's a one-shot UI signal.
+   */
+  justReactivated: boolean;
+  /**
    * `true` once restoreSession has completed (success or failure). The root
    * layout uses this to keep the splash on screen until we've made the final
    * routing decision, so a returning driver never flashes the customer home
@@ -68,6 +74,8 @@ type AuthState = {
   enterGuest: () => void;
   /** Leave guest browsing — used when a guest taps "Se connecter". */
   exitGuest: () => void;
+  /** Clear the one-shot "welcome back" reactivation flag. */
+  dismissReactivation: () => void;
   /** `phone` MUST be E.164 (e.g. `+33612345678`). */
   sendOtp: (phone: string) => Promise<{ error?: string }>;
   /** `phone` MUST be E.164. */
@@ -89,6 +97,12 @@ type SessionPayload = {
   access_token: string;
   refresh_token: string;
   user?: { id?: string };
+  /**
+   * `true` when this sign-in reactivated an account that was pending
+   * self-service deletion (the server cancelled the scheduled purge). Drives
+   * the "welcome back" prompt.
+   */
+  reactivated?: boolean;
 };
 
 type ApiEnvelope<T> = { data?: T; error?: { message?: string } };
@@ -150,6 +164,7 @@ export const useAuthStore = create<AuthState>()(
       phone: "",
       role: null,
       guestMode: false,
+      justReactivated: false,
       sessionRestored: false,
       loading: false,
       accessToken: null,
@@ -172,6 +187,10 @@ export const useAuthStore = create<AuthState>()(
 
       exitGuest: () => {
         set({ guestMode: false });
+      },
+
+      dismissReactivation: () => {
+        set({ justReactivated: false });
       },
 
       sendOtp: async (phone: string) => {
@@ -254,6 +273,7 @@ export const useAuthStore = create<AuthState>()(
           signupDone: !isNewUser,
           authChoice: null,
           guestMode: false,
+          justReactivated: data.reactivated === true,
           loading: false,
         });
         return { isNewUser };

@@ -1,11 +1,14 @@
+import { Fragment } from "react";
 import { Tabs } from "expo-router";
 import { Home, UtensilsCrossed, Receipt, User } from "lucide-react-native";
 
+import ReactivationModal from "@/components/auth/ReactivationModal";
 import FloatingTabBar from "@/components/layout/FloatingTabBar";
 import { colors } from "@/constants/theme";
 
 export default function TabLayout(): React.ReactNode {
   return (
+    <Fragment>
     <Tabs
       tabBar={(props) => <FloatingTabBar {...props} />}
       screenOptions={{
@@ -49,5 +52,7 @@ export default function TabLayout(): React.ReactNode {
         }}
       />
     </Tabs>
+    <ReactivationModal />
+    </Fragment>
   );
 }

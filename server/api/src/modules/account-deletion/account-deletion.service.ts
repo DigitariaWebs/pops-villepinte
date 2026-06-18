@@ -97,7 +97,15 @@ export class AccountDeletionService {
 
   // ── Admin ───────────────────────────────────────────────────────────────────
 
-  async list(status?: 'pending' | 'processing' | 'completed' | 'rejected') {
+  async list(
+    status?:
+      | 'pending'
+      | 'processing'
+      | 'scheduled'
+      | 'completed'
+      | 'rejected'
+      | 'cancelled',
+  ) {
     let qb = this.supabase
       .from('account_deletion_requests')
       .select(

@@ -113,3 +113,42 @@ async function findAuthUserByPhone(
   if (error) throw error;
   return data.user ?? null;
 }
+
+/**
+ * If the user has a self-service deletion still in its 30-day grace period,
+ * cancel it: mark every 'scheduled' request as 'cancelled' and unblock the
+ * profile. Returns `true` when a pending deletion was found and reversed, so
+ * the caller can tell the app to show a "welcome back" prompt.
+ *
+ * Scoped strictly to grace-period deletions (status = 'scheduled'): an admin
+ * ban (is_blocked with no scheduled request) is deliberately left untouched.
+ */
+export async function cancelPendingDeletion(
+  admin: SupabaseClient,
+  userId: string,
+): Promise<boolean> {
+  const { data: pending, error: findErr } = await admin
+    .from('account_deletion_requests')
+    .select('id')
+    .eq('matched_user_id', userId)
+    .eq('status', 'scheduled');
+  if (findErr) throw findErr;
+  if (!pending || pending.length === 0) return false;
+
+  const { error: cancelErr } = await admin
+    .from('account_deletion_requests')
+    .update({ status: 'cancelled', processed_at: new Date().toISOString() })
+    .in(
+      'id',
+      pending.map((r) => r.id),
+    );
+  if (cancelErr) throw cancelErr;
+
+  const { error: unblockErr } = await admin
+    .from('profiles')
+    .update({ is_blocked: false })
+    .eq('id', userId);
+  if (unblockErr) throw unblockErr;
+
+  return true;
+}

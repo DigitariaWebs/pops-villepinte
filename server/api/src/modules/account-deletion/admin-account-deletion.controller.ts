@@ -12,7 +12,13 @@ import { AdminGuard } from '../../common/guards/admin.guard';
 import { AccountDeletionService } from './account-deletion.service';
 import { UpdateDeletionRequestDto } from './dto/update-deletion-request.dto';
 
-type DeletionStatus = 'pending' | 'processing' | 'completed' | 'rejected';
+type DeletionStatus =
+  | 'pending'
+  | 'processing'
+  | 'scheduled'
+  | 'completed'
+  | 'rejected'
+  | 'cancelled';
 
 @Controller('admin')
 @UseGuards(AdminGuard)

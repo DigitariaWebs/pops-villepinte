@@ -617,7 +617,7 @@ function DeleteAccountContent(): React.ReactElement {
   const submit = (): void => {
     Alert.alert(
       "Supprimer ton compte ?",
-      "Ton compte sera fermé immédiatement et tes données personnelles seront définitivement supprimées sous 30 jours. Cette action est irréversible.",
+      "Ton compte sera fermé immédiatement et tes données seront définitivement supprimées sous 30 jours. Tu changes d'avis ? Reconnecte-toi avec le même numéro avant 30 jours et ton compte est restauré.",
       [
         { text: "Annuler", style: "cancel" },
         {
@@ -674,9 +674,10 @@ function DeleteAccountContent(): React.ReactElement {
           }}
         >
           Ton compte a été fermé. Tes données personnelles seront définitivement
-          supprimées sous 30 jours. Certaines informations de commande peuvent
-          être conservées de façon anonymisée pour nos obligations légales et
-          comptables.
+          supprimées sous 30 jours. Tu changes d'avis ? Reconnecte-toi avec ce
+          numéro avant 30 jours et on restaure ton compte. Certaines informations
+          de commande peuvent être conservées de façon anonymisée pour nos
+          obligations légales et comptables.
         </Text>
         <Pressable
           accessibilityRole="button"
@@ -742,6 +743,7 @@ function DeleteAccountContent(): React.ReactElement {
         {[
           "Ton compte est fermé immédiatement et tu es déconnecté.",
           "Tes données personnelles (nom, téléphone, adresses) sont définitivement supprimées sous 30 jours.",
+          "Tu changes d'avis ? Reconnecte-toi avec le même numéro avant 30 jours et ton compte est restauré.",
           "L'historique de tes commandes peut être conservé de façon anonymisée pour nos obligations légales et comptables.",
         ].map((line) => (
           <View key={line} style={{ flexDirection: "row", gap: 8 }}>
