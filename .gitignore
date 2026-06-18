@@ -53,3 +53,5 @@ pops_keys/
 
 # standalone marketing / acquisition site (separate project)
 /acquisition-site
+
+build/
