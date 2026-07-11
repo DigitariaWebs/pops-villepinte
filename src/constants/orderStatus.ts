@@ -23,10 +23,22 @@ export const TERMINAL_ORDER_STATUSES: readonly OrderStatus[] = [
   ORDER_STATUS.CANCELLED,
 ];
 
+/**
+ * Statuses where the customer may still cancel their own order — only before
+ * the kitchen starts cooking. Mirrors the server's CUSTOMER_CANCELLABLE_STATUSES.
+ */
+export const CUSTOMER_CANCELLABLE_STATUSES: readonly OrderStatus[] = [
+  ORDER_STATUS.RECEIVED,
+];
+
 export function isActiveOrderStatus(status: OrderStatus): boolean {
   return ACTIVE_ORDER_STATUSES.includes(status);
 }
 
 export function isTerminalOrderStatus(status: OrderStatus): boolean {
   return TERMINAL_ORDER_STATUSES.includes(status);
+}
+
+export function isCustomerCancellableStatus(status: OrderStatus): boolean {
+  return CUSTOMER_CANCELLABLE_STATUSES.includes(status);
 }

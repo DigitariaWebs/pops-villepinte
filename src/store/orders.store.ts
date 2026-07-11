@@ -53,6 +53,12 @@ export type PlaceOrderDelivery =
       lng: number;
     };
 
+/** Insert or replace an order in the active list, keeping newest first. */
+function upsertActive(active: Order[], order: Order): Order[] {
+  const rest = active.filter((o) => o.id !== order.id);
+  return [order, ...rest];
+}
+
 export type PlaceOrderResult = {
   order: Order;
   clientSecret: string;
@@ -60,7 +66,7 @@ export type PlaceOrderResult = {
 };
 
 type OrdersState = {
-  active: Order | null;
+  active: Order[];
   history: Order[];
   loading: boolean;
   error: string | null;
@@ -81,7 +87,7 @@ type OrdersState = {
 export const useOrdersStore = create<OrdersState>()(
   persist(
     (set, get) => ({
-      active: null,
+      active: [],
       history: [],
       loading: false,
       error: null,
@@ -120,7 +126,10 @@ export const useOrdersStore = create<OrdersState>()(
           // The order is created 'pending' — keep it as active so the customer
           // can see it while the PaymentSheet runs, but the cart is only
           // cleared by the checkout screen once payment succeeds.
-          set({ active: order, loading: false });
+          set((state) => ({
+            active: upsertActive(state.active, order),
+            loading: false,
+          }));
           return {
             order,
             clientSecret: data.stripe_client_secret,
@@ -140,7 +149,8 @@ export const useOrdersStore = create<OrdersState>()(
         await ordersApi.confirmPayment(id);
         try {
           const data = await ordersApi.get(id);
-          set({ active: toOrder(data) });
+          const order = toOrder(data);
+          set((state) => ({ active: upsertActive(state.active, order) }));
         } catch {
           // Non-fatal — the webhook will finalise state; detail screen refetches.
         }
@@ -154,9 +164,9 @@ export const useOrdersStore = create<OrdersState>()(
             ordersApi.list("past"),
           ]);
 
-          const currentActive = activeData.length > 0 ? toOrder(activeData[0]) : null;
+          const active = activeData.map(toOrder);
           const history = pastData.map(toOrder);
-          set({ active: currentActive, history, loading: false });
+          set({ active, history, loading: false });
         } catch {
           set({ loading: false });
         }
@@ -167,7 +177,7 @@ export const useOrdersStore = create<OrdersState>()(
           const data = await ordersApi.get(id);
           const order = toOrder(data);
           if (isActiveOrderStatus(order.status)) {
-            set({ active: order });
+            set((state) => ({ active: upsertActive(state.active, order) }));
           }
           return order;
         } catch {
@@ -181,7 +191,7 @@ export const useOrdersStore = create<OrdersState>()(
           const order = toOrder(data);
           // Picked-up is terminal — drop from active, prepend to history.
           set((state) => ({
-            active: state.active?.id === id ? null : state.active,
+            active: state.active.filter((o) => o.id !== id),
             history: [order, ...state.history.filter((o) => o.id !== id)],
           }));
           return order;
@@ -198,7 +208,7 @@ export const useOrdersStore = create<OrdersState>()(
           const data = await ordersApi.cancel(id);
           const order = toOrder(data);
           set((state) => ({
-            active: state.active?.id === id ? null : state.active,
+            active: state.active.filter((o) => o.id !== id),
             history: [order, ...state.history],
           }));
         } catch (e: unknown) {
@@ -210,28 +220,62 @@ export const useOrdersStore = create<OrdersState>()(
 
       refreshActive: async () => {
         const { active } = get();
-        if (!active) return;
-        try {
-          const data = await ordersApi.get(active.id);
-          const order = toOrder(data);
-          if (isTerminalOrderStatus(order.status)) {
-            set((state) => ({
-              active: null,
-              history: [order, ...state.history],
-            }));
+        if (active.length === 0) return;
+        const results = await Promise.all(
+          active.map(async (a) => {
+            try {
+              return toOrder(await ordersApi.get(a.id));
+            } catch {
+              return null;
+            }
+          }),
+        );
+
+        const refreshed: Order[] = [];
+        const nowTerminal: Order[] = [];
+        for (const [i, order] of results.entries()) {
+          // Failed refetch — keep the existing order in the active list.
+          if (order === null) {
+            refreshed.push(active[i]);
+          } else if (isTerminalOrderStatus(order.status)) {
+            nowTerminal.push(order);
           } else {
-            set({ active: order });
+            refreshed.push(order);
           }
-        } catch {
-          // ignore
         }
+
+        set((state) => ({
+          active: refreshed,
+          history:
+            nowTerminal.length > 0
+              ? [
+                  ...nowTerminal,
+                  ...state.history.filter(
+                    (h) => !nowTerminal.some((t) => t.id === h.id),
+                  ),
+                ]
+              : state.history,
+        }));
       },
 
       clearError: () => set({ error: null }),
     }),
     {
       name: "pops.orders.v2",
+      version: 1,
       storage: createJSONStorage(() => asyncStorageAdapter),
+      // v0 persisted `active` as a single Order | null; v1 holds an array.
+      migrate: (persisted: unknown, version) => {
+        const state = (persisted ?? {}) as Partial<OrdersState>;
+        if (version < 1) {
+          const legacyActive = state.active as unknown as Order | null;
+          return {
+            ...state,
+            active: legacyActive ? [legacyActive] : [],
+          };
+        }
+        return state;
+      },
       partialize: (state) => ({
         active: state.active,
         history: state.history,

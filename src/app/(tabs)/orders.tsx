@@ -35,7 +35,7 @@ export default function OrdersScreen(): React.ReactElement {
     void fetchOrders();
   }, [authed]);
 
-  const hasContent = active !== null || history.length > 0;
+  const hasContent = active.length > 0 || history.length > 0;
 
   const handleReorder = useCallback(
     (order: Order) => {
@@ -163,8 +163,8 @@ export default function OrdersScreen(): React.ReactElement {
         </Text>
       </View>
 
-      {/* Active order */}
-      {active !== null ? (
+      {/* Active orders */}
+      {active.length > 0 ? (
         <View style={{ marginTop: 20 }}>
           <View
             style={{
@@ -192,10 +192,14 @@ export default function OrdersScreen(): React.ReactElement {
                 textTransform: "uppercase",
               }}
             >
-              En cours
+              En cours{active.length > 1 ? ` (${active.length})` : ""}
             </Text>
           </View>
-          <ActiveOrderCard order={active} />
+          <View style={{ gap: 14 }}>
+            {active.map((order) => (
+              <ActiveOrderCard key={order.id} order={order} />
+            ))}
+          </View>
         </View>
       ) : null}
 

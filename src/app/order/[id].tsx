@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ArrowLeft } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
@@ -22,6 +22,7 @@ import OrderTimeline from "@/components/order/OrderTimeline";
 import PickupInstructions from "@/components/order/PickupInstructions";
 import SuccessOverlay from "@/components/order/SuccessOverlay";
 import {
+  isCustomerCancellableStatus,
   isTerminalOrderStatus,
   ORDER_STATUS,
 } from "@/constants/orderStatus";
@@ -39,17 +40,22 @@ export default function OrderDetailScreen(): React.ReactElement {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const order = useOrdersStore((s) => {
-    if (s.active?.id === id) return s.active;
-    return s.history.find((o) => o.id === id) ?? null;
+    return (
+      s.active.find((o) => o.id === id) ??
+      s.history.find((o) => o.id === id) ??
+      null
+    );
   });
   const refreshActive = useOrdersStore((s) => s.refreshActive);
   const fetchOrderById = useOrdersStore((s) => s.fetchOrderById);
   const confirmPickedUp = useOrdersStore((s) => s.confirmPickedUp);
+  const cancelOrder = useOrdersStore((s) => s.cancelOrder);
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
   const countdown = useCountdown(
@@ -102,6 +108,40 @@ export default function OrderDetailScreen(): React.ReactElement {
       setConfirming(false);
     }
   }, [order, confirming, confirmPickedUp]);
+
+  const handleCancel = useCallback(() => {
+    if (!order || cancelling) return;
+    Alert.alert(
+      "Annuler la commande ?",
+      "Ta commande n'est pas encore en préparation. Une fois annulée, tu seras remboursé et elle ne pourra pas être rétablie.",
+      [
+        { text: "Garder ma commande", style: "cancel" },
+        {
+          text: "Annuler la commande",
+          style: "destructive",
+          onPress: async () => {
+            setCancelling(true);
+            try {
+              await cancelOrder(order.id);
+              void Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success,
+              );
+              router.replace(ROUTES.orders);
+            } catch (e) {
+              void Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Error,
+              );
+              setToastMessage(
+                e instanceof Error ? e.message : "Annulation impossible",
+              );
+              setToastVisible(true);
+              setCancelling(false);
+            }
+          },
+        },
+      ],
+    );
+  }, [order, cancelling, cancelOrder, router]);
 
   const handleSuccessFinish = useCallback(() => {
     if (!order) return;
@@ -157,6 +197,8 @@ export default function OrderDetailScreen(): React.ReactElement {
   const showCta = showPickupCta || showDeliveryCta;
   const canConfirmReceipt = isDelivery ? false : isReady;
   const isDelivered = order.status === ORDER_STATUS.PICKED_UP;
+  // Customer self-cancel is allowed only before the kitchen starts cooking.
+  const canCancel = isCustomerCancellableStatus(order.status);
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.surface }}>
@@ -271,6 +313,34 @@ export default function OrderDetailScreen(): React.ReactElement {
               }}
             >
               Signaler un problème
+            </Text>
+          </Pressable>
+        ) : null}
+
+        {/* Cancel — only while the order hasn't reached "en préparation". */}
+        {canCancel ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Annuler la commande"
+            onPress={handleCancel}
+            disabled={cancelling}
+            style={{
+              marginHorizontal: 24,
+              marginTop: 24,
+              alignItems: "center",
+              paddingVertical: 12,
+              opacity: cancelling ? 0.6 : 1,
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Poppins_600SemiBold",
+                fontSize: 13,
+                color: colors.danger,
+                textDecorationLine: "underline",
+              }}
+            >
+              {cancelling ? "Annulation…" : "Annuler ma commande"}
             </Text>
           </Pressable>
         ) : null}
