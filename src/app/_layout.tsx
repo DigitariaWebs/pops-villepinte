@@ -9,6 +9,7 @@ import * as NavigationBar from "expo-navigation-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { StripeProvider } from "@stripe/stripe-react-native";
 
 import AuthFlow from "@/components/auth/AuthFlow";
 import AuthIndex from "@/components/auth/AuthIndex";
@@ -35,6 +36,14 @@ import { useNotificationsStore } from "@/store/notifications.store";
 import { useProfileStore } from "@/store/profile.store";
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+
+// Stripe publishable key (pk_test_… / pk_live_…) + Apple Pay merchant id, read
+// from EAS/.env at build time. The merchant id must match the one registered in
+// the Apple Developer portal and the @stripe/stripe-react-native plugin config.
+const STRIPE_PUBLISHABLE_KEY =
+  process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? "";
+const STRIPE_MERCHANT_ID =
+  process.env.EXPO_PUBLIC_STRIPE_MERCHANT_ID ?? "merchant.com.progix.pops";
 
 // rnmapbox is pinned to 10.1.39 — a Paper/old-architecture-era release forced
 // by the precompiled nav SDK's MapboxMaps 11.11.0 dependency. RN 0.83 runs the
@@ -380,26 +389,32 @@ export default function RootLayout(): React.ReactNode {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaProvider>
-        <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
-          <Stack.Screen name="cart" options={{ presentation: "modal" }} />
-          <Stack.Screen name="checkout" />
-          <Stack.Screen
-            name="delivery-picker"
-            options={{ presentation: "modal" }}
-          />
-          <Stack.Screen
-            name="notifications"
-            options={{ presentation: "modal" }}
-          />
-          <Stack.Screen name="order/[id]" />
-          <Stack.Screen name="settings/[slug]" />
-        </Stack>
-      </SafeAreaProvider>
-    </GestureHandlerRootView>
+    <StripeProvider
+      publishableKey={STRIPE_PUBLISHABLE_KEY}
+      merchantIdentifier={STRIPE_MERCHANT_ID}
+      urlScheme="pops"
+    >
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <StatusBar style="dark" />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
+            <Stack.Screen name="cart" options={{ presentation: "modal" }} />
+            <Stack.Screen name="checkout" />
+            <Stack.Screen
+              name="delivery-picker"
+              options={{ presentation: "modal" }}
+            />
+            <Stack.Screen
+              name="notifications"
+              options={{ presentation: "modal" }}
+            />
+            <Stack.Screen name="order/[id]" />
+            <Stack.Screen name="settings/[slug]" />
+          </Stack>
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </StripeProvider>
   );
 }

@@ -11,6 +11,7 @@ import { HealthModule } from './modules/health/health.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { PaymentsModule } from './modules/payments/payments.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { SeedModule } from './modules/seed/seed.module';
@@ -34,6 +35,7 @@ import { AccountDeletionModule } from './modules/account-deletion/account-deleti
     MenuModule,
     ProfileModule,
     OrdersModule,
+    PaymentsModule,
     AdminModule,
     AnalyticsModule,
     SeedModule,

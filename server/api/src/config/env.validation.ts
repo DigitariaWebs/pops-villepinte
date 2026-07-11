@@ -25,6 +25,17 @@ const envSchema = z.object({
   // in Supabase Auth. After provisioning, Supabase owns the password.
   SUPER_ADMIN_EMAIL: z.string().email().optional(),
   SUPER_ADMIN_PASSWORD: z.string().min(8).optional(),
+
+  // Stripe — online payment. Kept optional so the API still boots before the
+  // keys are provisioned, but order creation hard-fails (503) until they are
+  // set: payment is required to place an order. Use sk_test_/whsec_ in staging
+  // and sk_live_/whsec_ in production.
+  STRIPE_SECRET_KEY: z.string().min(20).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().min(20).optional(),
+  // Safe to expose to clients; surfaced to the app on order creation as a
+  // fallback so the build doesn't have to hardcode it.
+  STRIPE_PUBLISHABLE_KEY: z.string().min(20).optional(),
+  STRIPE_CURRENCY: z.string().length(3).default('eur'),
 });
 
 export type Env = z.infer<typeof envSchema>;

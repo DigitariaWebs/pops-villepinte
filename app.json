@@ -46,6 +46,13 @@
       "expo-router",
       "expo-font",
       [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.progix.pops",
+          "enableGooglePay": true
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "backgroundColor": "#f2b40a",

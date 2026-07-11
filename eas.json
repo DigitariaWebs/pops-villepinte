@@ -17,7 +17,14 @@
       "android": {
         "buildType": "apk"
       },
-      "channel": "preview"
+      "channel": "preview",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://pops-villepinte.vercel.app/api/v1",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdnanl4a29mdGhtbnd5amF1d2dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5MjMwMTMsImV4cCI6MjA5MzQ5OTAxM30.T90ns_J0NgVjrdRcFEQmS86amTCsO78PAj96DzVd5oA",
+        "EXPO_PUBLIC_MAPBOX_PUBLIC_TOKEN": "pk.eyJ1IjoibW9oYW1lZGJ6YSIsImEiOiJjbXAyM3NtazkwY2VzMnNxeXp0MWdqZnhpIn0.atkw_dqMmBEGIts_WbUrcA",
+        "EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY": "pk_test_51TjXM3C1XrjpLABrjMTrH8EW6lIqBcxt9gvSmN5HEQsCKMdeJ3j8PP3HcwOwVhTS9tLfXN5wdKTE3Aha32Fccee900K5jMKqqX",
+        "EXPO_PUBLIC_STRIPE_MERCHANT_ID": "merchant.com.progix.pops"
+      }
     },
     "production": {
       "ios": {
@@ -29,7 +36,9 @@
       },
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://pops-villepinte.vercel.app/api/v1"
+        "EXPO_PUBLIC_API_URL": "https://pops-villepinte.vercel.app/api/v1",
+        "EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY": "pk_live_REPLACE_WITH_YOUR_LIVE_PUBLISHABLE_KEY",
+        "EXPO_PUBLIC_STRIPE_MERCHANT_ID": "merchant.com.progix.pops"
       }
     }
   },

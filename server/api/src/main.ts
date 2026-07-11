@@ -12,6 +12,10 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: false, trustProxy: true }),
+    // Capture the raw request body so the Stripe webhook can verify the
+    // signature over the exact bytes Stripe signed. Nest exposes it as
+    // req.rawBody on the routes that need it; JSON parsing still happens.
+    { rawBody: true },
   );
 
   const cfg = app.get(ConfigService<Env, true>);

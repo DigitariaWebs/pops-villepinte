@@ -41,6 +41,17 @@ export class OrdersController {
     return this.ordersService.getCustomerOrderById(user.id, id);
   }
 
+  // Customer confirms after the Stripe PaymentSheet reports success. Idempotent
+  // with the webhook — re-checks the PaymentIntent with Stripe and releases the
+  // order if it succeeded, without waiting on webhook latency.
+  @Post(':id/confirm-payment')
+  confirmPayment(
+    @CurrentUser() user: { id: string },
+    @Param('id') id: string,
+  ) {
+    return this.ordersService.confirmPayment(user.id, id);
+  }
+
   @Patch(':id/cancel')
   cancelOrder(
     @CurrentUser() user: { id: string },

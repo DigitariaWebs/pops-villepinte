@@ -6,9 +6,12 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  ServiceUnavailableException,
+  forwardRef,
 } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { SUPABASE_ADMIN } from '../../common/supabase/supabase.module';
+import { PaymentsService } from '../payments/payments.service';
 import {
   recalculateLineUnitPrice,
   recalculateLineTotal,
@@ -54,6 +57,8 @@ export class OrdersService {
     @Inject(SUPABASE_ADMIN) private readonly supabase: SupabaseClient,
     private readonly gateway: OrdersGateway,
     private readonly notifications: NotificationsService,
+    @Inject(forwardRef(() => PaymentsService))
+    private readonly payments: PaymentsService,
   ) {}
 
   // Human-friendly copy for the customer's push + history rows.
@@ -96,6 +101,14 @@ export class OrdersService {
   }
 
   async createOrder(userId: string, dto: CreateOrderDto) {
+    // Payment is required to place an order. Fail fast if Stripe isn't wired
+    // yet rather than persisting an order that can never be paid.
+    if (!this.payments.isConfigured()) {
+      throw new ServiceUnavailableException(
+        "Le paiement en ligne n'est pas encore disponible. Réessaie bientôt.",
+      );
+    }
+
     // 0. Resolve pickup vs delivery + fee. We do this up front so any user
     // error surfaces before we waste round-trips fetching the catalogue.
     const pickupMode: 'pickup' | 'delivery' = dto.pickupMode ?? 'pickup';
@@ -397,10 +410,40 @@ export class OrdersService {
     // 7. Fetch complete order with items
     const fullOrder = await this.getOrderById(order.id);
 
-    // 8. Emit SSE event
-    this.gateway.emit({ type: 'order:created', data: fullOrder });
+    // 8. Create the Stripe PaymentIntent for the server-authoritative total.
+    // We deliberately do NOT emit order:created here — the order stays out of
+    // the kitchen/admin operational views until payment succeeds. The payments
+    // webhook (or the client's confirm call) flips payment_status to 'paid' and
+    // emits order:created at that point.
+    const { clientSecret, publishableKey } =
+      await this.payments.createIntentForOrder({
+        id: order.id,
+        user_id: userId,
+        total_eur: totalEur,
+        customer_name: dto.customerName,
+      });
 
-    return fullOrder;
+    return {
+      ...fullOrder,
+      stripe_client_secret: clientSecret,
+      stripe_publishable_key: publishableKey,
+    };
+  }
+
+  /** Delegate to PaymentsService — customer confirms after PaymentSheet. */
+  confirmPayment(userId: string, orderId: string) {
+    return this.payments.confirmPayment(userId, orderId);
+  }
+
+  /** Full order with embedded item names/prices, for SSE + payment events. */
+  async getAdminOrderById(orderId: string) {
+    const { data, error } = await this.supabase
+      .from('orders')
+      .select(ADMIN_ORDER_SELECT)
+      .eq('id', orderId)
+      .single();
+    if (error) throw new NotFoundException('Order not found');
+    return data;
   }
 
   async getCustomerOrders(userId: string, query: CustomerOrdersQueryDto) {
@@ -584,7 +627,12 @@ export class OrdersService {
   async getAdminOrders(query: AdminOrdersQueryDto) {
     let qb = this.supabase
       .from('orders')
-      .select(ADMIN_ORDER_SELECT);
+      .select(ADMIN_ORDER_SELECT)
+      // Operational views (today / live / kitchen) only ever show orders that
+      // are actually paid. Unpaid ones (pending / processing / failed) never
+      // reach the kitchen; they live only in the payments dashboard. Refunded
+      // orders were paid + cooked, so they stay visible (with a refunded badge).
+      .in('payment_status', ['paid', 'refunded']);
 
     if (query.status) {
       qb = qb.eq('status', query.status);
