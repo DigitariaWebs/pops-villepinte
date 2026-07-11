@@ -5,16 +5,21 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  UnauthorizedException,
   forwardRef,
 } from '@nestjs/common';
 import { SupabaseClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
-import { SUPABASE_ADMIN } from '../../common/supabase/supabase.module';
+import {
+  SUPABASE_ADMIN,
+  SUPABASE_ANON,
+} from '../../common/supabase/supabase.module';
 import { NotificationsService } from '../notifications/notifications.service';
 import { OrdersService } from '../orders/orders.service';
 import { OrdersGateway } from '../orders/orders.gateway';
 import { StripeService } from './stripe.service';
 import { PaymentsQueryDto } from './dto/payments-query.dto';
+import { RefundOrderDto } from './dto/refund-order.dto';
 
 /** Round to 2 decimals (money). */
 function round2(n: number): number {
@@ -41,6 +46,7 @@ export class PaymentsService {
 
   constructor(
     @Inject(SUPABASE_ADMIN) private readonly supabase: SupabaseClient,
+    @Inject(SUPABASE_ANON) private readonly anon: SupabaseClient,
     private readonly stripe: StripeService,
     private readonly gateway: OrdersGateway,
     private readonly notifications: NotificationsService,
@@ -275,11 +281,15 @@ export class PaymentsService {
       .maybeSingle();
     if (!order) return;
 
+    // charge.amount_refunded is the cumulative refunded total for the charge.
+    // A partial refund leaves the order collectable, so keep it 'paid' and
+    // only flip to 'refunded' once the whole charge has been returned.
+    const fullyRefunded = charge.amount_refunded >= charge.amount;
     const { error } = await this.supabase
       .from('orders')
       .update({
-        payment_status: 'refunded',
-        refunded_at: new Date().toISOString(),
+        payment_status: fullyRefunded ? 'refunded' : 'paid',
+        refunded_at: fullyRefunded ? new Date().toISOString() : null,
         amount_refunded_eur: toEur(charge.amount_refunded),
       })
       .eq('id', order.id);
@@ -292,12 +302,43 @@ export class PaymentsService {
   // ─── Admin refund ────────────────────────────────────────────────────
 
   /**
-   * Admin-initiated refund. Refunds the full captured amount by default.
-   * Stripe fires charge.refunded which finalises payment_status via the
-   * webhook, but we also update optimistically so the dashboard reflects it
+   * Re-authenticate the operator before an irreversible money movement. The
+   * admin JWT proves *a* session exists, but a refund is sensitive enough that
+   * we require the password to be re-entered and verified here — a stolen or
+   * left-open session can't silently drain refunds. Verified against Supabase
+   * with the anon client so we never trust a client-side claim.
+   */
+  private async verifyOperatorPassword(
+    email: string | null,
+    password: string,
+  ): Promise<void> {
+    if (!email) {
+      throw new UnauthorizedException(
+        "Compte sans email — impossible de vérifier le mot de passe.",
+      );
+    }
+    const { error } = await this.anon.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      throw new UnauthorizedException('Mot de passe incorrect.');
+    }
+  }
+
+  /**
+   * Admin-initiated refund. Full by default; pass `amount_eur` for a partial
+   * refund (validated against the remaining refundable). Requires the
+   * operator's password (see verifyOperatorPassword). A partial refund keeps
+   * payment_status = 'paid' so further partial refunds remain possible; the
+   * status only flips to 'refunded' once the cumulative amount reaches the
+   * order total. Stripe fires charge.refunded which reconciles the same fields
+   * via the webhook, but we update optimistically so the dashboard reflects it
    * immediately even if the webhook is delayed.
    */
-  async refundOrder(orderId: string) {
+  async refundOrder(orderId: string, dto: RefundOrderDto, email: string | null) {
+    await this.verifyOperatorPassword(email, dto.password);
+
     const { data: order, error } = await this.supabase
       .from('orders')
       .select(
@@ -316,19 +357,43 @@ export class PaymentsService {
       throw new BadRequestException('Aucun paiement Stripe à rembourser.');
     }
 
+    const total = Number(order.total_eur);
+    const alreadyRefunded = Number(order.amount_refunded_eur ?? 0);
+    const remaining = round2(total - alreadyRefunded);
+    if (remaining <= 0) {
+      throw new BadRequestException('Cette commande est déjà remboursée.');
+    }
+
+    // Partial refund: validate the requested amount fits within what's left.
+    // Omitted amount = refund the full remaining balance.
+    const amountEur = dto.amount_eur != null ? round2(dto.amount_eur) : remaining;
+    if (amountEur <= 0) {
+      throw new BadRequestException('Le montant doit être supérieur à 0.');
+    }
+    if (amountEur > remaining) {
+      throw new BadRequestException(
+        `Montant trop élevé — ${remaining.toFixed(2)} € remboursable au maximum.`,
+      );
+    }
+
     const refund = await this.stripe.createRefund({
       payment_intent: order.stripe_payment_intent_id,
+      amount: toMinorUnits(amountEur),
     });
+
+    const refundedThisTime =
+      refund.amount != null ? toEur(refund.amount) : amountEur;
+    const newRefundedTotal = round2(alreadyRefunded + refundedThisTime);
+    // Only mark fully refunded once nothing meaningful remains (guard against
+    // float dust so €0.001 of rounding doesn't leave a phantom "paid" order).
+    const fullyRefunded = newRefundedTotal >= round2(total - 0.005);
 
     const { data: updated, error: updErr } = await this.supabase
       .from('orders')
       .update({
-        payment_status: 'refunded',
-        refunded_at: new Date().toISOString(),
-        amount_refunded_eur:
-          refund.amount != null
-            ? toEur(refund.amount)
-            : Number(order.total_eur),
+        payment_status: fullyRefunded ? 'refunded' : 'paid',
+        refunded_at: fullyRefunded ? new Date().toISOString() : null,
+        amount_refunded_eur: newRefundedTotal,
       })
       .eq('id', order.id)
       .select('id, payment_status, refunded_at, amount_refunded_eur')

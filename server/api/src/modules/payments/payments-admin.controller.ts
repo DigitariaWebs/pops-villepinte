@@ -1,7 +1,20 @@
-import { Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import {
+  CurrentUser,
+  type AuthUser,
+} from '../../common/decorators/current-user.decorator';
 import { PaymentsService } from './payments.service';
 import { PaymentsQueryDto } from './dto/payments-query.dto';
+import { RefundOrderDto } from './dto/refund-order.dto';
 
 @Controller('admin/payments')
 @UseGuards(AdminGuard)
@@ -21,7 +34,11 @@ export class PaymentsAdminController {
   }
 
   @Post(':id/refund')
-  refund(@Param('id') id: string) {
-    return this.payments.refundOrder(id);
+  refund(
+    @Param('id') id: string,
+    @Body() dto: RefundOrderDto,
+    @CurrentUser() user: AuthUser,
+  ) {
+    return this.payments.refundOrder(id, dto, user.email);
   }
 }
