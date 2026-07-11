@@ -205,6 +205,15 @@ export default function CheckoutScreen(): React.ReactElement {
         delivery,
       );
 
+      // Guard against a backend that hasn't been updated with the payment flow
+      // (would return an order with no client secret). Fail with a clear message
+      // instead of the raw Stripe SDK error.
+      if (!clientSecret) {
+        throw new Error(
+          "Le paiement est momentanément indisponible. Réessaie dans un instant.",
+        );
+      }
+
       // 2. Present the Stripe PaymentSheet (card + Apple Pay / Google Pay).
       const { error: initError } = await initPaymentSheet({
         merchantDisplayName: "POP'S Villepinte",
