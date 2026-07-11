@@ -58,3 +58,4 @@ build/
 
 # Build artifacts
 *.apk
+*.log
