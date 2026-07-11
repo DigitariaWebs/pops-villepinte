@@ -16,13 +16,14 @@ export default function ActiveOrderCard({
   order,
 }: ActiveOrderCardProps): React.ReactElement {
   const router = useRouter();
-  const { minutes, isExpired } = useCountdown(
+  const { minutes, progress, isExpired } = useCountdown(
     order.createdAt,
     order.estimatedReadyAt,
   );
 
   const itemCount = order.items.reduce((a, i) => a + i.quantity, 0);
   const isReady = order.status === "ready" || isExpired;
+  const fillPct = isReady ? 100 : Math.round(progress * 100);
 
   return (
     <Pressable
@@ -87,30 +88,57 @@ export default function ActiveOrderCard({
         {itemCount} article{itemCount > 1 ? "s" : ""} · {formatPriceEUR(order.totalEUR)}
       </Text>
 
-      {/* Bottom row */}
-      <View
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          marginTop: 16,
-          gap: 8,
-          backgroundColor: "rgba(0,0,0,0.08)",
-          borderRadius: radius.sm,
-          paddingHorizontal: 14,
-          paddingVertical: 10,
-          alignSelf: "flex-start",
-        }}
-      >
-        <Clock size={16} color={colors.ink} strokeWidth={2} />
-        <Text
+      {/* Progress */}
+      <View style={{ marginTop: 16 }}>
+        <View
           style={{
-            fontFamily: font.bodyBold,
-            fontSize: 14,
-            color: colors.ink,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 8,
           }}
         >
-          {isReady ? "C'est prêt ! 🎉" : `Prête dans ~${minutes} min`}
-        </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <Clock size={16} color={colors.ink} strokeWidth={2} />
+            <Text
+              style={{
+                fontFamily: font.bodyBold,
+                fontSize: 14,
+                color: colors.ink,
+              }}
+            >
+              {isReady ? "C'est prêt ! 🎉" : `Prête dans ~${minutes} min`}
+            </Text>
+          </View>
+          <Text
+            style={{
+              fontFamily: font.bodyBold,
+              fontSize: 13,
+              color: "rgba(0,0,0,0.55)",
+            }}
+          >
+            {fillPct}%
+          </Text>
+        </View>
+
+        {/* Progress bar */}
+        <View
+          style={{
+            height: 8,
+            borderRadius: radius.pill,
+            backgroundColor: "rgba(0,0,0,0.12)",
+            overflow: "hidden",
+          }}
+        >
+          <View
+            style={{
+              height: "100%",
+              width: `${fillPct}%`,
+              borderRadius: radius.pill,
+              backgroundColor: isReady ? colors.success : colors.ink,
+            }}
+          />
+        </View>
       </View>
     </Pressable>
   );

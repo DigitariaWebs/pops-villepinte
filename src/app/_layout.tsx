@@ -411,6 +411,7 @@ export default function RootLayout(): React.ReactNode {
               options={{ presentation: "modal" }}
             />
             <Stack.Screen name="order/[id]" />
+            <Stack.Screen name="order-history" />
             <Stack.Screen name="settings/[slug]" />
           </Stack>
         </SafeAreaProvider>

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { Package, Receipt } from "lucide-react-native";
+import { ChevronRight, Package, Receipt } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 
 import FloatingCartBar from "@/components/cart/FloatingCartBar";
@@ -251,7 +251,7 @@ export default function OrdersScreen(): React.ReactElement {
           </View>
 
           <View style={{ gap: 14 }}>
-            {history.map((order) => (
+            {history.slice(0, 3).map((order) => (
               <PastOrderRow
                 key={order.id}
                 order={order}
@@ -263,6 +263,42 @@ export default function OrdersScreen(): React.ReactElement {
               />
             ))}
           </View>
+
+          {history.length > 3 ? (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Voir toutes mes commandes"
+              onPress={() => {
+                void Haptics.selectionAsync();
+                router.push(ROUTES.orderHistory);
+              }}
+              style={({ pressed }) => ({
+                marginHorizontal: 20,
+                marginTop: 14,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                backgroundColor: colors.ink,
+                borderRadius: radius.pill,
+                paddingVertical: 14,
+                opacity: pressed ? 0.9 : 1,
+              })}
+            >
+              <Text
+                style={{
+                  fontFamily: font.bodyBold,
+                  fontSize: 13,
+                  color: colors.white,
+                  letterSpacing: 1,
+                  textTransform: "uppercase",
+                }}
+              >
+                Voir toutes mes commandes
+              </Text>
+              <ChevronRight size={16} color={colors.white} strokeWidth={2.5} />
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
 

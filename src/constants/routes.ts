@@ -7,6 +7,7 @@ export const ROUTES = {
   home: "/" as const,
   menu: "/menu" as const,
   orders: "/orders" as const,
+  orderHistory: "/order-history" as const,
   cart: "/cart" as const,
   checkout: "/checkout" as const,
   notifications: "/notifications" as const,
