@@ -15,10 +15,14 @@ export default function TabLayout(): React.ReactNode {
         headerShown: false,
         tabBarActiveTintColor: colors.ink,
         tabBarInactiveTintColor: colors.inkMuted,
-        // Horizontal slide between tabs. Direction is derived from the tab
-        // order declared below: moving to a higher-indexed tab slides the new
-        // screen in from the right; moving lower slides it in from the left.
-        animation: "shift",
+        // Cross-fade between tabs. We deliberately avoid the transform-based
+        // "shift" animation: combined with react-native-screens' detach of
+        // inactive tabs, returning to a previously-visited tab (e.g. Menu →
+        // Commandes → Menu) could leave the screen translated off-frame and
+        // render blank. A fade keeps every screen at translateX 0, so it
+        // always re-appears correctly. (iOS uses the native tab bar instead —
+        // see _layout.ios.tsx.)
+        animation: "fade",
       }}
     >
       <Tabs.Screen

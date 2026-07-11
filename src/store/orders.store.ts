@@ -53,6 +53,12 @@ export type PlaceOrderDelivery =
       lng: number;
     };
 
+export type PlaceOrderResult = {
+  order: Order;
+  clientSecret: string;
+  publishableKey: string | null;
+};
+
 type OrdersState = {
   active: Order | null;
   history: Order[];
@@ -62,7 +68,8 @@ type OrdersState = {
     cartItems: CartItem[],
     customerName: string,
     delivery?: PlaceOrderDelivery,
-  ) => Promise<Order>;
+  ) => Promise<PlaceOrderResult>;
+  confirmPayment: (id: string) => Promise<void>;
   fetchOrders: () => Promise<void>;
   fetchOrderById: (id: string) => Promise<Order | null>;
   cancelOrder: (id: string) => Promise<void>;
@@ -110,13 +117,32 @@ export const useOrdersStore = create<OrdersState>()(
         try {
           const data = await ordersApi.create(payload);
           const order = toOrder(data);
+          // The order is created 'pending' — keep it as active so the customer
+          // can see it while the PaymentSheet runs, but the cart is only
+          // cleared by the checkout screen once payment succeeds.
           set({ active: order, loading: false });
-          return order;
+          return {
+            order,
+            clientSecret: data.stripe_client_secret,
+            publishableKey: data.stripe_publishable_key,
+          };
         } catch (e: unknown) {
           const message =
             e instanceof Error ? e.message : "Erreur lors de la commande";
           set({ error: message, loading: false });
           throw e;
+        }
+      },
+
+      // After the PaymentSheet reports success: confirm server-side, then pull
+      // the fresh order (now paid / released) into `active`.
+      confirmPayment: async (id: string) => {
+        await ordersApi.confirmPayment(id);
+        try {
+          const data = await ordersApi.get(id);
+          set({ active: toOrder(data) });
+        } catch {
+          // Non-fatal — the webhook will finalise state; detail screen refetches.
         }
       },
 

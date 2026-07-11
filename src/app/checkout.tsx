@@ -23,6 +23,7 @@ import {
 } from "lucide-react-native";
 import * as Haptics from "expo-haptics";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useStripe } from "@stripe/stripe-react-native";
 
 import OrderConfirmation from "@/components/order/OrderConfirmation";
 import DeliveryMapPreview from "@/components/checkout/DeliveryMapPreview";
@@ -47,14 +48,23 @@ import { useProfileStore } from "@/store/profile.store";
 
 type Mode = "pickup" | "delivery";
 
+// Google Pay runs in Stripe's test environment when we're using a test key, so
+// no real card is charged during staging.
+const STRIPE_TEST_MODE = (
+  process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ""
+).startsWith("pk_test");
+
 export default function CheckoutScreen(): React.ReactElement {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const items = useCartStore((s) => s.items);
   const total = useCartStore((s) => s.totalEUR());
   const clearCart = useCartStore((s) => s.clearCart);
   const placeOrder = useOrdersStore((s) => s.placeOrder);
+  const confirmOrderPayment = useOrdersStore((s) => s.confirmPayment);
   const orderLoading = useOrdersStore((s) => s.loading);
+  const [paying, setPaying] = useState(false);
   const profile = useProfileStore((s) => s.profile);
   const getProductById = useMenuStore((s) => s.getProductById);
   const getSupplementById = useMenuStore((s) => s.getSupplementById);
@@ -176,6 +186,7 @@ export default function CheckoutScreen(): React.ReactElement {
 
     try {
       setSubmitError(undefined);
+      setPaying(true);
       const delivery =
         mode === "delivery" && selectedAddress
           ? ({
@@ -185,17 +196,66 @@ export default function CheckoutScreen(): React.ReactElement {
               lng: selectedAddress.lng,
             } as const)
           : ({ pickupMode: "pickup" as const } as const);
-      const newOrder = await placeOrder(items, registeredName, delivery);
+
+      // 1. Create the order server-side (still unpaid) and get the Stripe
+      //    PaymentIntent client secret for its authoritative total.
+      const { order, clientSecret } = await placeOrder(
+        items,
+        registeredName,
+        delivery,
+      );
+
+      // Guard against a backend that hasn't been updated with the payment flow
+      // (would return an order with no client secret). Fail with a clear message
+      // instead of the raw Stripe SDK error.
+      if (!clientSecret) {
+        throw new Error(
+          "Le paiement est momentanément indisponible. Réessaie dans un instant.",
+        );
+      }
+
+      // 2. Present the Stripe PaymentSheet (card + Apple Pay / Google Pay).
+      const { error: initError } = await initPaymentSheet({
+        merchantDisplayName: "POP'S Villepinte",
+        paymentIntentClientSecret: clientSecret,
+        applePay: { merchantCountryCode: "FR" },
+        googlePay: {
+          merchantCountryCode: "FR",
+          currencyCode: "EUR",
+          testEnv: STRIPE_TEST_MODE,
+        },
+        returnURL: "pops://stripe-redirect",
+        defaultBillingDetails: { name: registeredName },
+        allowsDelayedPaymentMethods: false,
+      });
+      if (initError) throw new Error(initError.message);
+
+      const { error: sheetError } = await presentPaymentSheet();
+      if (sheetError) {
+        // "Canceled" = the customer dismissed the sheet. Leave the cart intact
+        // so they can try again; the unpaid order stays hidden from the kitchen.
+        if (sheetError.code === "Canceled") {
+          setPaying(false);
+          return;
+        }
+        throw new Error(sheetError.message);
+      }
+
+      // 3. Paid — confirm server-side (belt-and-braces with the webhook), then
+      //    clear the cart and celebrate.
+      await confirmOrderPayment(order.id);
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       clearCart();
       clearPickedAddress();
-      setPendingOrderId(newOrder.id);
+      setPendingOrderId(order.id);
       setShowConfirmation(true);
     } catch (e: unknown) {
       void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       const message =
-        e instanceof Error ? e.message : "Erreur lors de la commande";
+        e instanceof Error ? e.message : "Erreur lors du paiement";
       setSubmitError(message);
+    } finally {
+      setPaying(false);
     }
   };
 
@@ -401,10 +461,10 @@ export default function CheckoutScreen(): React.ReactElement {
                   Paiement
                 </Text>
                 <Text style={{ fontFamily: font.bodyBold, fontSize: 16, color: colors.ink, marginTop: 6 }}>
-                  Sur place
+                  Carte
                 </Text>
                 <Text style={{ fontFamily: font.body, fontSize: 11, color: colors.inkMuted, marginTop: 2 }}>
-                  Cash ou CB
+                  Apple Pay · Google Pay
                 </Text>
               </View>
             </View>
@@ -628,7 +688,7 @@ export default function CheckoutScreen(): React.ReactElement {
 
         <Pressable
           onPress={() => void handleConfirm()}
-          disabled={orderLoading}
+          disabled={orderLoading || paying}
           style={{
             backgroundColor: canConfirm ? colors.primary : "#E8E8E8",
             borderRadius: radius.lg,
@@ -656,7 +716,11 @@ export default function CheckoutScreen(): React.ReactElement {
               letterSpacing: 0.5,
             }}
           >
-            {canConfirm ? "CONFIRMER LA COMMANDE" : "COMPLÉTEZ LES CHAMPS"}
+            {paying
+              ? "PAIEMENT…"
+              : canConfirm
+                ? "PAYER"
+                : "COMPLÉTEZ LES CHAMPS"}
           </Text>
           <View
             style={{
@@ -677,6 +741,27 @@ export default function CheckoutScreen(): React.ReactElement {
             </Text>
           </View>
         </Pressable>
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 6,
+            marginTop: 10,
+          }}
+        >
+          <ShieldCheck size={12} color={colors.inkMuted} strokeWidth={2} />
+          <Text
+            style={{
+              fontFamily: font.body,
+              fontSize: 11,
+              color: colors.inkMuted,
+            }}
+          >
+            Paiement sécurisé · Carte, Apple Pay & Google Pay
+          </Text>
+        </View>
       </View>
 
       <OrderConfirmation
@@ -990,7 +1075,7 @@ function DeliveryPanel({
                     .toFixed(2)
                     .replace(".", ",")}€/km`
                 : `Forfait ${baseFee.toFixed(2).replace(".", ",")}€`}{" "}
-              · Cash à la livraison
+              · Paiement par carte
             </Text>
           </View>
         </View>

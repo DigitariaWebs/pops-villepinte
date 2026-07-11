@@ -220,8 +220,18 @@ export const favoritesApi = {
 };
 
 export const ordersApi = {
+  // Creates the order as payment_status='pending' and returns the Stripe
+  // PaymentIntent client secret the app hands to the PaymentSheet. The order is
+  // NOT released to the kitchen until payment succeeds.
   create: (data: CreateOrderPayload) =>
-    api<OrderData>("/orders", { method: "POST", body: data }),
+    api<CreateOrderResponse>("/orders", { method: "POST", body: data }),
+  // Called after the PaymentSheet reports success — idempotently confirms the
+  // payment server-side (belt-and-braces alongside the Stripe webhook).
+  confirmPayment: (id: string) =>
+    api<{ id: string; payment_status: string; status: string }>(
+      `/orders/${id}/confirm-payment`,
+      { method: "POST" },
+    ),
   list: (filter?: "active" | "past") =>
     api<OrderData[]>("/orders", { params: { filter } }),
   get: (id: string) => api<OrderData>(`/orders/${id}`),
@@ -523,4 +533,22 @@ export type OrderData = {
   delivery_code?: string | null;
   /** The customer's rating of the driver, once left (single-order endpoint). */
   driver_rating?: { stars: number; feedback: string | null } | null;
+  /** Payment lifecycle, independent of fulfilment `status`. */
+  payment_status?:
+    | "pending"
+    | "processing"
+    | "paid"
+    | "failed"
+    | "refunded";
+  payment_method?: string | null;
+  paid_at?: string | null;
+};
+
+/**
+ * Response of POST /orders — the created (unpaid) order plus the Stripe
+ * PaymentIntent client secret the app feeds to the PaymentSheet.
+ */
+export type CreateOrderResponse = OrderData & {
+  stripe_client_secret: string;
+  stripe_publishable_key: string | null;
 };
