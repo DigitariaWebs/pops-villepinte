@@ -55,3 +55,6 @@ pops_keys/
 /acquisition-site
 
 build/
+
+# Build artifacts
+*.apk
